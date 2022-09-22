@@ -8,7 +8,7 @@
             "name": "Python: Django",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\newJw\\manage.py",
+            "program": "${workspaceFolder}\\newjw\\manage.py",
             "args": [
                 "runserver"
             ],
