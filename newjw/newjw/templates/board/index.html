@@ -13,3 +13,11 @@
 {% endif %}
 
 {% endblock %}
+
+{% block inline_javascript %}
+<script>
+    $('#datatables-ajax').DataTable({
+        "ajax": 'tables-datatables-ajax.json'
+    });
+</script>
+{% endblock inline_javascript %}
