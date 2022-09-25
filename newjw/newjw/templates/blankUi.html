@@ -1,0 +1,43 @@
+{% load static i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Bootstrap 5 Admin &amp; Dashboard Template">
+	<meta name="author" content="Bootlab">
+
+    <title>
+        {% block title %}
+        J & J Project
+        {% endblock title %}
+    </title>
+
+    {% block css %}
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="{% static 'css/light.css' %}" rel="stylesheet" class="js-stylesheet">
+    {% endblock %}
+
+	<script src="{% static 'js/settings.js' %}"></script>
+	<!-- END SETTINGS -->
+</head>
+<body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-behavior="sticky">
+
+	{% block content %}
+
+	{% endblock content %}
+
+
+	<script src="{% static 'js/app.js' %}"></script>
+	{% block inline_javascript %}
+	
+	{% endblock inline_javascript %}
+	
+
+</body>
+
+</html>
