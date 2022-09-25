@@ -65,7 +65,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
-    #"newjw.board.apps.BoardConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
