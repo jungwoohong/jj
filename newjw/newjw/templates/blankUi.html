@@ -15,14 +15,13 @@
         {% endblock title %}
     </title>
 
-    {% block css %}
+    
     <link rel="icon" href="{% static 'img/favicon.ico' %}">
 
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="{% static 'css/light.css' %}" rel="stylesheet" class="js-stylesheet">
+	{% block css %}
     {% endblock %}
-
-	<script src="{% static 'js/settings.js' %}"></script>
 	<!-- END SETTINGS -->
 </head>
 <body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-behavior="sticky">
