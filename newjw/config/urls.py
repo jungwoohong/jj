@@ -16,6 +16,7 @@ urlpatterns = [
     path("users/", include("newjw.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     path("board/", include("newjw.board.urls")),
+    path("frame/", include("newjw.frame.urls")),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
