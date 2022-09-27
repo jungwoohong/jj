@@ -5,4 +5,5 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def index(request):
-    return render(request, 'board/index.html')
+    post_data = Board.object.all();
+    return render(request, 'board/boardList.html',post_data)
