@@ -3,6 +3,14 @@
 {% load static i18n %}
 {% block css %}
 <link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<style>
+  .handsontable .odd {
+ background: #fff 
+}
+.handsontable .even {
+  background: #eee
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -21,19 +29,27 @@
     const container = document.querySelector('#example1');
 
 const hot = new Handsontable(container, {
-  data: [
-    ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
-    ['2017', 10, 11, 12, 13, 15, 16],
-    ['2018', 10, 11, 12, 13, 15, 16],
-    ['2019', 10, 11, 12, 13, 15, 16],
-    ['2020', 10, 11, 12, 13, 15, 16],
-    ['2021', 10, 11, 12, 13, 15, 16]
-  ],
+  // data: [
+  //   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
+  //   ['2017', 10, 11, 12, 13, 15, 16],
+  //   ['2018', 10, 11, 12, 13, 15, 16],
+  //   ['2019', 10, 11, 12, 13, 15, 16],
+  //   ['2020', 10, 11, 12, 13, 15, 16],
+  //   ['2021', 10, 11, 12, 13, 15, 16]
+  // ],
+  data:Handsontable.helper.createSpreadsheetData(30, 30),
   rowHeaders: true,
   colHeaders: true,
   contextMenu: true,
+  comments: true,
   height: 'auto',
   language: 'ko-KR',
+  mergeCells:[],
+  cells(row) {
+    return {
+    	className: row % 2 === 0 ? 'even' : 'odd',
+    };
+  },
   licenseKey: 'non-commercial-and-evaluation'
 });
 </script>
