@@ -1,3 +1,9 @@
+
+
+{% if request.user.is_authenticated %}
+    {% include "home.html" %}
+{% else %}    
 <script>
     location.href='/accounts/login/';
 </script>
+{% endif %}
