@@ -1,7 +1,7 @@
 from django.urls import path
 
-from . import views
+from newjw.frame.views import frameViewReg
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('reg/', frameViewReg.as_view() ),
 ]

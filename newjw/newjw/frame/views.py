@@ -1,8 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.contrib.auth.decorators import login_required
 
-@login_required
-def index(request):
-    return render(request, 'frame/index.html')
+class frameViewReg(LoginRequiredMixin, View):
+    
+    def get(self, request):
+        return render(request, 'frame/reg.html')
+
+    def post(self, request):
+        return render(request, 'frame/reg.html')  
