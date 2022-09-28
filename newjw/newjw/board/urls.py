@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views
+from newjw.board.views import *
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index.as_view()),
+    path('getBoardList',getBoardList.as_view()),
 ]
