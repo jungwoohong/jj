@@ -15,18 +15,28 @@
 
 {% block content %}
     <div id="example1"></div>
+    <div>
+      <span id ="save">
+        저장하기
+      </span>
+    </div>
 {% endblock %}
 
 {% block inline_javascript %}
 
 <script>
-
+  $.ajaxSetup({
+    headers: { "X-CSRFToken": '{{csrf_token}}' }
+  });
 </script>
+
+
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
     
     const container = document.querySelector('#example1');
+    const save = document.querySelector('#save');
 
 const hot = new Handsontable(container, {
   // data: [
@@ -51,6 +61,22 @@ const hot = new Handsontable(container, {
     };
   },
   licenseKey: 'non-commercial-and-evaluation'
+});
+
+save.addEventListener('click', () => {
+  // save all cell's data
+  fetch("{% url 'frameViewSave' %}", {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ data: hot.getData() })
+  })
+    .then(response => {
+      exampleConsole.innerText = 'Data saved';
+      console.log('The POST request is only used here for the demo purposes');
+    });
 });
 </script>
 {% endblock inline_javascript %}

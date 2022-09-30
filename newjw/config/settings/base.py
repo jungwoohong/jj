@@ -192,6 +192,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "newjw.users.context_processors.allauth_settings",
             ],
+            'libraries': {
+                'staticTag': 'newjw.lib.staticTag',
+            }            
         },
     }
 ]
