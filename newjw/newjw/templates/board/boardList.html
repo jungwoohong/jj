@@ -26,25 +26,12 @@
 											</tr>
 										</thead>
 										<tbody>
-                      {% for post in posts %}
-											<tr>
-												<td>{{post.id}}</td>
-												<td>{{post.title}}</td>
-												<td>{{post.user_id}}</td>
-												<td>{{post.registered_date}}</td>
-												<td>{{post.view_count}}</td>
-											</tr>
-                      {% endfor %}
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
 										</tbody>
-										<tfoot>
-											<tr>
-												<th>id</th>
-												<th>title</th>
-												<th>user_id</th>
-												<th>registered_date</th>
-												<th>view_count</th>
-											</tr>
-										</tfoot>
 									</table>
 								</div>
 							</div>
@@ -56,30 +43,46 @@
 
 {% block inline_javascript %}
 <script>
-  // DataTables with Column Search by Select Inputs
-  document.addEventListener("DOMContentLoaded", function() {
-    $('#datatables-column-search-select-inputs').DataTable({
-      // initComplete: function() {
-      //   this.api().columns().every(function() {
-      //     var column = this;
-      //     var select = $('<select class="form-control"><option value=""></option></select>')
-      //       .appendTo($(column.footer()).empty())
-      //       .on('change', function() {
-      //         var val = $.fn.dataTable.util.escapeRegex(
-      //           $(this).val()
-      //         );
-      //         column
-      //           .search(val ? '^' + val + '$' : '', true, false)
-      //           .draw();
-      //       });
-      //     column.data().unique().sort().each(function(d, j) {
-      //       select.append('<option value="' + d + '">' + d + '</option>')
-      //     });
-      //   });
-      // },
+  $('#datatables-column-search-select-inputs').DataTable({
+      serverSide: true,
+		  processing: true,
+      ordering:  true,
       paging: true,
-      ajax
+      ajax: { 
+              type: "GET",
+              datatype : 'json',
+              url: './getBoardList', 
+            },
+      columns: [
+                    { data: "id"},
+                    { data: "title"},
+                    { data: "user_id"},
+                    { data: "registered_date"},
+                    { data: "view_count"}
+                ]
     });
-  });
+  // DataTables with Column Search by Select Inputs
+  // document.addEventListener("DOMContentLoaded", function() {
+  //   $('#datatables-column-search-select-inputs').DataTable({
+  //     initComplete: function() {
+  //       this.api().columns().every(function() {
+  //         var column = this;
+  //         var select = $('<select class="form-control"><option value=""></option></select>')
+  //           .appendTo($(column.footer()).empty())
+  //           .on('change', function() {
+  //             var val = $.fn.dataTable.util.escapeRegex(
+  //               $(this).val()
+  //             );
+  //             column
+  //               .search(val ? '^' + val + '$' : '', true, false)
+  //               .draw();
+  //           });
+  //         column.data().unique().sort().each(function(d, j) {
+  //           select.append('<option value="' + d + '">' + d + '</option>')
+  //         });
+  //       });
+  //     },
+  //   });
+  // });
 </script>
 {% endblock inline_javascript %}
