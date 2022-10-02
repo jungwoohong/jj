@@ -24,13 +24,6 @@
 
 {% block inline_javascript %}
 
-<script>
-  $.ajaxSetup({
-    headers: { "X-CSRFToken": '{{csrf_token}}' }
-  });
-</script>
-
-
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
@@ -64,19 +57,18 @@ const hot = new Handsontable(container, {
 });
 
 save.addEventListener('click', () => {
-  // save all cell's data
-  fetch("{% url 'frameViewSave' %}", {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ data: hot.getData() })
-  })
-    .then(response => {
-      exampleConsole.innerText = 'Data saved';
-      console.log('The POST request is only used here for the demo purposes');
+
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameViewSave' %}",        
+      dataType : 'json',        
+      data : {data: JSON.stringify(hot.getData())},
+      success : function(data) {
+        alert(data.msg)
+      }
     });
+          
+    
 });
 </script>
 {% endblock inline_javascript %}

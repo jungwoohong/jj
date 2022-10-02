@@ -84,6 +84,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "core",
     "newjw.users",
     "newjw.board",
     "newjw.frame",
@@ -193,7 +194,7 @@ TEMPLATES = [
                 "newjw.users.context_processors.allauth_settings",
             ],
             'libraries': {
-                'staticTag': 'newjw.lib.staticTag',
+                # 'staticTag': 'newjw.lib.staticTag',
             }            
         },
     }

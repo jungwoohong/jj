@@ -54,8 +54,8 @@
 							<span class="align-middle">템플릿</span>
            				 </a>
 						<ul id="template" class="sidebar-dropdown list-unstyled collapse show" data-bs-parent="#sidebar">
-							<li class="sidebar-item active"><a class="sidebar-link" href="/frame/reg">작성</a></li>
-							<li class="sidebar-item"><a class="sidebar-link" href="#">조회</a></li>
+							<li class="sidebar-item active"><a class="sidebar-link" href="{% url 'frameReg' %}">작성</a></li>
+							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'frameLoadList' %}">조회</a></li>
 						</ul>
 					</li>
 					<li class="sidebar-item">
@@ -147,6 +147,11 @@
 	</div>
 
 	<script src="{% static 'js/app.js' %}"></script>
+	<script>
+		$.ajaxSetup({
+		  headers: { "X-CSRFToken": '{{csrf_token}}' }
+		});
+	</script>	
 	{% block inline_javascript %}
 	
 	{% endblock inline_javascript %}

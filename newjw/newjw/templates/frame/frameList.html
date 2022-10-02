@@ -1,0 +1,53 @@
+
+{% extends "default.html" %}
+{% load static i18n %}
+{% block css %}
+{% endblock %}
+
+{% block content %}
+				<div class="container-fluid p-0">
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title">템플릿 조회</h5>
+								</div>
+								<div class="card-body">
+									<table id="datatables-column-search-select-inputs" class="table table-striped" style="width:100%">
+										<thead>
+											<tr>												
+												<th>작성자</th>
+												<th>작성일</th>												
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+{% endblock %}
+
+{% block inline_javascript %}
+<script>
+  $('#datatables-column-search-select-inputs').DataTable({
+      serverSide: true,
+		  processing: true,
+      ordering:  true,
+      paging: true,
+      ajax: { 
+              type: "GET",
+              datatype : 'json',
+              url: "{% url 'frameLoadListData' %}", 
+            },
+      columns: [
+                    { data: "email"},
+                    { data: "create_date"},                    
+                ]
+    });
+
+</script>
+{% endblock inline_javascript %}

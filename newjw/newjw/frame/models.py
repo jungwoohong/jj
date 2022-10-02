@@ -1,11 +1,16 @@
 from django.db import models
 
 # 템플릿 저장소
-class posta(models.Model):
+class post(models.Model):
     email               = models.CharField(max_length=150 ,null=True,default='')
     json_data           = models.TextField(null=True,default='')
     create_date         = models.DateTimeField(auto_now_add=True)
     last_update_date    = models.DateTimeField(auto_now=True)
+    
+    class Meta : 
+         ordering = ['-id']
+              
+    #     abstract = True
 
 # 엑셀 데이터
 class post_data(models.Model):
