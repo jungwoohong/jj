@@ -21,7 +21,7 @@
 						<h5 class="card-title">템플릿 조회</h5>
 					</div>
 					<div class="card-body">
-						<table id="datatables-column-search-select-inputs" class="table table-striped text-center" style="width:100%">
+						<table id="datatables" class="table table-striped text-center" style="width:100%;cursor: pointer;">
 							<thead >
 								<tr >
 									<th>번호</th>
@@ -43,26 +43,26 @@
 
 {% block inline_javascript %}
 <script>
-  $('#datatables-column-search-select-inputs').DataTable({
+  $('#datatables').DataTable({
       serverSide: true,
 	  processing: true,
       ordering:  true,
       paging: true,
+	  language : lang_kor,
       ajax: { 
               type: "GET",
               datatype : 'json',
               url: "{% url 'frameLoadListData' %}", 
             },
       columns: [
-					{"data": "title",
+					{"data": "id",
 					render: function (data, type, row, meta) {
 						return meta.row + meta.settings._iDisplayStart + 1;
 					}},
 					{ data: "title"},
                     { data: "email"},
                     {'data': "create_date",    
-                      "render": function (data) { if (data === null) return ""; 
-                                return window.moment(data).format('YYYY-MM-DD')}
+                      "render": function (data) { return dateFormat(data)}
                     },               
                 ],
 		columnDefs: [
@@ -72,6 +72,13 @@
 		}
 		]				
     });
+
+	$("#datatables").on('click', 'tbody tr', function () {
+
+		let row = $("#datatables").DataTable().row($(this)).data();
+		console.log(row);
+	});
+		
 
 </script>
 {% endblock inline_javascript %}

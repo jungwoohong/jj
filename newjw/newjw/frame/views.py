@@ -57,7 +57,7 @@ class frameLoadList(LoginRequiredMixin, View):
 class frameLoadListData(LoginRequiredMixin, DatatablesServerSideView):
 
     model = post
-    columns = ['title','email', 'create_date']
+    columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
     #foreign_fields = {'create': 'create__date'}
 
