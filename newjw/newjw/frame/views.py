@@ -1,16 +1,13 @@
 from pprint import pprint
 from django.shortcuts import render
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-import json
 from core.views import DatatablesServerSideView
 
-from matplotlib.font_manager import json_load
-
+import json
 from .models import post
 from .forms import postForm
 
