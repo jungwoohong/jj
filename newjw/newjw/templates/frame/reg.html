@@ -14,12 +14,34 @@
 {% endblock %}
 
 {% block content %}
-    <div id="example1"></div>
-    <div>
-      <span id ="save">
-        저장하기
-      </span>
+
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">템플릿 생성</h5>
+          </div>
+          <div class="card-body" >
+            <form>
+              <div class="mb-3">
+                <label class="form-label">제목</label>
+                <input type="text" id="title" class="form-control" placeholder="제목">
+              </div>              
+            </form>            
+            <div id="excelGrid">
+              <div>
+                <span id ="save">
+                  저장하기
+                </span>
+              </div>            
+          </div>
+        </div>
+      </div>
     </div>
+
+  </div>
+
 {% endblock %}
 
 {% block inline_javascript %}
@@ -28,18 +50,10 @@
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
     
-    const container = document.querySelector('#example1');
+    const container = document.querySelector('#excelGrid');
     const save = document.querySelector('#save');
 
 const hot = new Handsontable(container, {
-  // data: [
-  //   ['', 'Tesla', 'Nissan', 'Toyota', 'Honda', 'Mazda', 'Ford'],
-  //   ['2017', 10, 11, 12, 13, 15, 16],
-  //   ['2018', 10, 11, 12, 13, 15, 16],
-  //   ['2019', 10, 11, 12, 13, 15, 16],
-  //   ['2020', 10, 11, 12, 13, 15, 16],
-  //   ['2021', 10, 11, 12, 13, 15, 16]
-  // ],
   data:Handsontable.helper.createSpreadsheetData(30, 30),
   rowHeaders: true,
   colHeaders: true,
@@ -62,7 +76,9 @@ save.addEventListener('click', () => {
       type : 'POST',
       url : "{% url 'frameViewSave' %}",        
       dataType : 'json',        
-      data : {data: JSON.stringify(hot.getData())},
+      data : {
+        title:$('#title').val(),
+        data: JSON.stringify(hot.getData())},
       success : function(data) {
         alert(data.msg)
       }

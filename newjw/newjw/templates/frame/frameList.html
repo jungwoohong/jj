@@ -2,40 +2,50 @@
 {% extends "default.html" %}
 {% load static i18n %}
 {% block css %}
+<style>
+	#datatables-column-search-select-inputs tr th{
+		text-align:center;
+	}
+	.text-leftIm{
+		text-align:left!important;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
-				<div class="container-fluid p-0">
-					<div class="row">
-						<div class="col-12">
-							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title">템플릿 조회</h5>
-								</div>
-								<div class="card-body">
-									<table id="datatables-column-search-select-inputs" class="table table-striped" style="width:100%">
-										<thead>
-											<tr>												
-												<th>작성자</th>
-												<th>작성일</th>												
-											</tr>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
+	<div class="container-fluid p-0">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title">템플릿 조회</h5>
 					</div>
-
+					<div class="card-body">
+						<table id="datatables-column-search-select-inputs" class="table table-striped text-center" style="width:100%">
+							<thead >
+								<tr >
+									<th>번호</th>
+									<th>제목</th>
+									<th>작성자</th>
+									<th>작성일</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
 				</div>
+			</div>
+		</div>
+
+	</div>
 {% endblock %}
 
 {% block inline_javascript %}
 <script>
   $('#datatables-column-search-select-inputs').DataTable({
       serverSide: true,
-		  processing: true,
+	  processing: true,
       ordering:  true,
       paging: true,
       ajax: { 
@@ -44,9 +54,23 @@
               url: "{% url 'frameLoadListData' %}", 
             },
       columns: [
+					{"data": "title",
+					render: function (data, type, row, meta) {
+						return meta.row + meta.settings._iDisplayStart + 1;
+					}},
+					{ data: "title"},
                     { data: "email"},
-                    { data: "create_date"},                    
-                ]
+                    {'data': "create_date",    
+                      "render": function (data) { if (data === null) return ""; 
+                                return window.moment(data).format('YYYY-MM-DD')}
+                    },               
+                ],
+		columnDefs: [
+		{
+			"targets": 1, 
+			"className": "text-leftIm"
+		}
+		]				
     });
 
 </script>
