@@ -19,22 +19,29 @@
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header">
-            <h5 class="card-title">템플릿 생성</h5>
+          <div class="card-header" style="padding:20px 0px 0px 22px">
+            <h5 class="card-title">
+              {% if data.id %}
+                템플릿 수정
+              {% else %}
+                템플릿 생성
+              {% endif %}
+              </h5>
           </div>
           <div class="card-body" >
+            <div class="text-lg-end">                          
+                <button id ="save" class="btn btn-outline-success">저장하기</button>
+                {% if data.id %}
+                  <button id ="list" class="btn btn-outline-primary">목록으로</button>
+                {% endif %}
+            </div>               
             <form>
               <div class="mb-3">
                 <label class="form-label">제목</label>
-                <input type="text" id="title" class="form-control" placeholder="제목">
+                <input type="text" id="title" class="form-control" placeholder="제목" value="{{ data.title }}">
               </div>              
             </form>            
-            <div id="excelGrid">
-              <div>
-                <span id ="save">
-                  저장하기
-                </span>
-              </div>            
+            <div id="excelGrid">         
           </div>
         </div>
       </div>
@@ -50,16 +57,32 @@
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
     
-    const container = document.querySelector('#excelGrid');
-    const save = document.querySelector('#save');
+  const container = document.querySelector('#excelGrid');
+  const save = document.querySelector('#save');
+  const list = document.querySelector('#list');
+
+  function loadExcelData(id){
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameJsonData' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        console.log(data)
+        hot.loadData(data.data);
+      }
+    }); 
+  }
 
 const hot = new Handsontable(container, {
-  data:Handsontable.helper.createSpreadsheetData(30, 30),
+  startRows: 20,
+  startCols: 20,  
+  width: 'auto',
+  height: 'auto',
   rowHeaders: true,
   colHeaders: true,
   contextMenu: true,
   comments: true,
-  height: 'auto',
   language: 'ko-KR',
   mergeCells:[],
   cells(row) {
@@ -70,6 +93,8 @@ const hot = new Handsontable(container, {
   licenseKey: 'non-commercial-and-evaluation'
 });
 
+
+
 save.addEventListener('click', () => {
 
     $.ajax({        
@@ -77,6 +102,7 @@ save.addEventListener('click', () => {
       url : "{% url 'frameViewSave' %}",        
       dataType : 'json',        
       data : {
+        id:'{{data.id}}',
         title:$('#title').val(),
         data: JSON.stringify(hot.getData())},
       success : function(data) {
@@ -85,6 +111,15 @@ save.addEventListener('click', () => {
     });          
   });
 
-  navFun('template',0,0)
+  navFun('template',0,0);
+  loadExcelData('{{ data.id }}');
+
+  if(list){
+    list.addEventListener('click', () => {
+      history.back();
+    });
+  }
+
+  
 </script>
 {% endblock inline_javascript %}

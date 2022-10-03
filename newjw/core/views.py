@@ -14,8 +14,7 @@ import json
 import six
 
 
-DATATABLES_SERVERSIDE_MAX_COLUMNS = 30
-
+DATATABLES_SERVERSIDE_MAX_COLUMNS = 100
 
 class DatatablesServerSideView(View):
     columns = []
@@ -51,11 +50,12 @@ class DatatablesServerSideView(View):
 
         # Prepare the queryset and apply the search and order filters
         qs = self.get_initial_queryset()
+        print(params)
 
         if 'search_value' in params:
             qs = self.filter_queryset(params['search_value'], qs)
 
-        if len(params['orders']):
+        if len(params['orders']):            
             qs = qs.order_by(
                 *[order.get_order_mode() for order in params['orders']])
 
