@@ -88,6 +88,7 @@ LOCAL_APPS = [
     "newjw.users",
     "newjw.board",
     "newjw.frame",
+    "newjw.document",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

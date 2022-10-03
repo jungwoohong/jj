@@ -49,8 +49,7 @@ class DatatablesServerSideView(View):
             return HttpResponseBadRequest()
 
         # Prepare the queryset and apply the search and order filters
-        qs = self.get_initial_queryset()
-        print(params)
+        qs = self.get_initial_queryset()        
 
         if 'search_value' in params:
             qs = self.filter_queryset(params['search_value'], qs)

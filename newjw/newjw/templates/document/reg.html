@@ -1,0 +1,122 @@
+
+{% extends "default.html" %}
+{% load static i18n %}
+{% block css %}
+<link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<style>
+  .handsontable .odd {
+ background: #fff 
+}
+.handsontable .even {
+  background: #eee
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header" style="padding:20px 0px 0px 22px">
+            <h5 class="card-title">
+              {% if data.id %}
+                템플릿 수정
+              {% else %}
+                문서 작성 
+              {% endif %}
+              </h5>
+          </div>
+          <div class="card-body" >
+            <div class="text-lg-end">
+                <button id ="save" class="btn btn-outline-success">저장하기</button>
+                <button id ="uploadBtn" class="btn btn-outline-secondary">Excel 업로드</button>             
+            </div>               
+            <form>
+              <div class="mb-3">
+                <label class="form-label">제목</label>
+                <input type="text" id="title" class="form-control" placeholder="제목" value="{{ data.title }}">
+              </div>              
+            </form>            
+            <div id="excelGrid">         
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block inline_javascript %}
+
+<script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script>
+    
+  const container = document.querySelector('#excelGrid');
+  const save = document.querySelector('#save');
+  const list = document.querySelector('#uploadBtn');
+  
+
+  function loadExcelData(id){
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameJsonData' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        console.log(data)
+        hot.loadData(data.data);
+      }
+    }); 
+  }
+
+const hot = new Handsontable(container, {
+  startRows: 20,
+  startCols: 20,  
+  width: 'auto',
+  height: 'auto',
+  rowHeaders: true,
+  colHeaders: true,
+  contextMenu: true,
+  comments: true,
+  language: 'ko-KR',
+  mergeCells:[],
+  cells(row) {
+    return {
+    	className: row % 2 === 0 ? 'even' : 'odd',
+    };
+  },
+  licenseKey: 'non-commercial-and-evaluation'
+});
+
+
+
+save.addEventListener('click', () => {
+
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameViewSave' %}",        
+      dataType : 'json',        
+      data : {
+        id:'{{data.id}}',
+        title:$('#title').val(),
+        data: JSON.stringify(hot.getData())},
+      success : function(data) {
+        alert(data.msg)
+      }
+    });          
+  });
+
+  navFun('template',0,0);
+  loadExcelData('{{ data.id }}');
+
+  uploadBtn.addEventListener('click', () => {
+    window.open("{% url 'docUpload' %}","_blank", "top=200,left=500,width=450,height=450");
+    
+  });
+  
+</script>
+{% endblock inline_javascript %}

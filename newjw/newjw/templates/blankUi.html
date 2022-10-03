@@ -30,8 +30,14 @@
 
 	{% endblock content %}
 
-
 	<script src="{% static 'js/app.js' %}"></script>
+
+	<script>
+		$.ajaxSetup({
+		  headers: { "X-CSRFToken": '{{csrf_token}}' }
+		});
+	</script>
+
 	{% block inline_javascript %}
 	
 	{% endblock inline_javascript %}
