@@ -2,14 +2,6 @@
 {% extends "default.html" %}
 {% load static i18n %}
 {% block css %}
-<style>
-	#datatables-column-search-select-inputs tr th{
-		text-align:center;
-	}
-	.text-leftIm{
-		text-align:left!important;
-	}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -21,7 +13,7 @@
 						<h5 class="card-title">템플릿 조회</h5>
 					</div>
 					<div class="card-body">
-						<table id="datatables" class="table table-striped text-center" style="width:100%;cursor: pointer;">
+						<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
 							<thead >
 								<tr >
 									<th>번호</th>
@@ -78,7 +70,8 @@
 		let row = $("#datatables").DataTable().row($(this)).data();
 		console.log(row);
 	});
-		
+	
+	navFun('template',0,1)
 
 </script>
 {% endblock inline_javascript %}

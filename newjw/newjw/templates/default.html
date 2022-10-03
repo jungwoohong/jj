@@ -20,6 +20,7 @@
 
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="{% static 'css/light.css' %}" rel="stylesheet" class="js-stylesheet">
+	<link href="{% static 'css/util.css' %}" rel="stylesheet" >
 	{% block css %}
     {% endblock %}
 
@@ -48,17 +49,17 @@
 						Plugins & Addons
 					</li>
 
-					<li class="sidebar-item active">
+					<li class="sidebar-item firstLi">
 						<a data-bs-target="#template" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="layout"></i> 
 							<span class="align-middle">템플릿</span>
            				 </a>
-						<ul id="template" class="sidebar-dropdown list-unstyled collapse show" data-bs-parent="#sidebar">
-							<li class="sidebar-item active"><a class="sidebar-link" href="{% url 'frameReg' %}">작성</a></li>
+						<ul id="template" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'frameReg' %}">작성</a></li>
 							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'frameLoadList' %}">조회</a></li>
 						</ul>
 					</li>
-					<li class="sidebar-item">
+					<li class="sidebar-item firstLi">
 						<a data-bs-target="#documentManage" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="book-open"></i> 
 							<span class="align-middle">문서관리</span>
@@ -69,7 +70,7 @@
 						</ul>
 					</li>
 					
-					<li class="sidebar-item">
+					<li class="sidebar-item firstLi">
 						<a data-bs-target="#bbs" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="list"></i> 
 							<span class="align-middle">게시판</span>
@@ -80,7 +81,7 @@
 						</ul>
 					</li>		
 					
-					<li class="sidebar-item">
+					<li class="sidebar-item firstLi">
 						<a data-bs-target="#share" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="users"></i> 
 							<span class="align-middle">공유</span>
@@ -147,6 +148,7 @@
 	</div>
 
 	<script src="{% static 'js/app.js' %}"></script>
+	<script src="{% static 'js/util.js' %}"></script>
 	<script src="{% static 'js/datatableUtil.js' %}"></script>
 	<script>
 		$.ajaxSetup({
