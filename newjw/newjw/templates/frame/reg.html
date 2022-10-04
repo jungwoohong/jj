@@ -36,9 +36,9 @@
                 {% endif %}
             </div>               
             <form>
-              <div class="mb-3">
-                <label class="form-label">제목</label>
-                <input type="text" id="title" class="form-control" placeholder="제목" value="{{ data.title }}">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput1" placeholder="제목" value="{{ data.title }}">
+                <label for="floatingInput1">제목</label>
               </div>              
             </form>            
             <div id="excelGrid">         
@@ -60,6 +60,7 @@
   const container = document.querySelector('#excelGrid');
   const save = document.querySelector('#save');
   const list = document.querySelector('#list');
+  var     id = "{{data.id}}";
 
   function loadExcelData(id){
     $.ajax({        
@@ -102,7 +103,7 @@ save.addEventListener('click', () => {
       url : "{% url 'frameViewSave' %}",        
       dataType : 'json',        
       data : {
-        id:'{{data.id}}',
+        id:id,
         title:$('#title').val(),
         data: JSON.stringify(hot.getData())},
       success : function(data) {
@@ -112,7 +113,8 @@ save.addEventListener('click', () => {
   });
 
   navFun('template',0,0);
-  loadExcelData('{{ data.id }}');
+  
+  if(id) loadExcelData('{{ data.id }}');
 
   if(list){
     list.addEventListener('click', () => {

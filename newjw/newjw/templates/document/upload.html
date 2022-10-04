@@ -68,9 +68,11 @@ function DropFile(dropAreaId, fileListId) {
     }
   
     function handleFiles(files) {
+      console.log(files[0].name);
+      var reg = /(.csv|.xls|.xlsx)$/;
       
-      var reg = /(.*?)\/(csv|xls)$/;
-      if (!files[0].type.match(reg)) {
+      console.log(files[0].name.match(reg))
+      if (!files[0].name.match(reg)) {
         alert("확장자는 엑셀 확장자만 가능합니다.");
         return;
       }

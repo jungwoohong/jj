@@ -3,6 +3,7 @@
 {% load static i18n %}
 {% block css %}
 <link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<link href="{% static 'css/upload.css' %}" rel="stylesheet" > 
 <style>
   .handsontable .odd {
  background: #fff 
@@ -31,15 +32,36 @@
           <div class="card-body" >
             <div class="text-lg-end">
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
-                <button id ="uploadBtn" class="btn btn-outline-secondary">Excel 업로드</button>             
+                <button class="btn btn-outline-secondary my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>            
             </div>               
             <form>
-              <div class="mb-3">
-                <label class="form-label">제목</label>
-                <input type="text" id="title" class="form-control" placeholder="제목" value="{{ data.title }}">
-              </div>              
+              <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-right">제목</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" placeholder="" value="{{ data.title }}">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-right">기간 설정</label>
+                <div id="reportrange" class="overflow-hidden col-sm-10 form-control" style="width:210px;margin-left:12px;">
+                  <i class="far fa-calendar"></i>&nbsp;
+                  <span></span> <i class="fas fa-caret-down"></i>
+                </div>
+              </div>                                        
             </form>            
-            <div id="excelGrid">         
+            <div id="excelGrid">   
+              
+              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                  <h5 id="offcanvasRightLabel">Excel Upload</h5>
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                  <div>
+                    {% include "document/uploadIn.html" %}
+                  </div>
+                </div>
+              </div>             
           </div>
         </div>
       </div>
@@ -57,8 +79,6 @@
     
   const container = document.querySelector('#excelGrid');
   const save = document.querySelector('#save');
-  const list = document.querySelector('#uploadBtn');
-  
 
   function loadExcelData(id){
     $.ajax({        
@@ -111,12 +131,64 @@ save.addEventListener('click', () => {
   });
 
   navFun('documentManage',1,0);
-  loadExcelData('{{ data.id }}');
 
-  uploadBtn.addEventListener('click', () => {
-    window.open("{% url 'docUpload' %}","_blank", "top=200,left=500,width=450,height=450");
-    
-  });
+  const dropFile = new DropFile("drop-file", "files");
+
   
+$('#uploadBtn').click(function(){
+
+    var form = new FormData();    
+    form.append( "file1", filesVal[0],filesVal[0].name );
+  
+     jQuery.ajax({
+         url : "{% url 'docUpload' %}"
+       , type : "POST"
+       , processData : false
+       , contentType : false
+       , data : form
+       , success:function(data) {
+          hot.loadData(data.data);
+          uploadFiles = [];
+          $('#files > .fileDiv').remove();
+          $('#offcanvasRight').offcanvas('hide');
+           
+       }
+       ,error: function (jqXHR) 
+       { 
+           alert(jqXHR.responseText); 
+       }
+   });
+});
+
+  var start = moment().subtract(29, "days");
+  var end = moment();
+
+  function cb(start, end) {
+    $("#reportrange span").html(start.format("YYYY.MM.DD") + " - " + end.format("YYYY.MM.DD"));
+  }
+  $("#reportrange").daterangepicker({
+    startDate: start,
+    endDate: end,
+    "locale": {
+                    "format": "YYYY-MM-DD",
+                    "separator": " ~ ",
+                    "applyLabel": "확인",
+                    "cancelLabel": "취소",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+                    "firstDay": 1
+                },
+    ranges: {
+      "Last 7 Days": [moment().subtract(6, "days"), moment()],
+      "Last 30 Days": [moment().subtract(29, "days"), moment()],
+      "This Month": [moment().startOf("month"), moment().endOf("month")],
+      "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+    }
+  }, cb);
+  cb(start, end);
 </script>
 {% endblock inline_javascript %}

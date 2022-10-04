@@ -1,0 +1,19 @@
+
+<div class="contents">
+  <div class="upload-box">
+    <div id="drop-file" class="drag-file">
+        <img src="/static/img/fileImg.jpg" style="width:100px;height:100px;">
+      <p class="message">여기에 파일을 넣어주세요.</p>
+    </div>
+    <label class="file-label" for="chooseFile">파일 선택</label>
+    <input class="file" id="chooseFile" type="file" multiple onchange="dropFile.handleFiles(this.files)">
+  </div>
+  <div id="files" class="files">
+    <div class="file">
+    </div>
+  </div>
+  <div class="" style="text-align:center">
+    <button id ="uploadBtn" class="btn btn-success">저장하기</button> 
+  </div>
+</div>
+</div>

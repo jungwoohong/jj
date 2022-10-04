@@ -3,3 +3,102 @@ function navFun(id,fisrt,next){
     $('#'+id).addClass('show');
     $('#'+id).find('.sidebar-item').eq(next).addClass('active');
 }
+
+var filesVal ="";
+var uploadFiles = [];
+
+function DropFile(dropAreaId, fileListId) {
+    let dropArea = document.getElementById(dropAreaId);
+    let fileList = document.getElementById(fileListId);
+  
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  
+    function highlight(e) {
+      preventDefaults(e);
+      dropArea.classList.add("highlight");
+    }
+  
+    function unhighlight(e) {
+      preventDefaults(e);
+      dropArea.classList.remove("highlight");
+    }
+  
+    function handleDrop(e) {
+        
+      unhighlight(e);
+      let dt = e.dataTransfer;
+      let files = dt.files;
+  
+      handleFiles(files);
+  
+      const fileList = document.getElementById(fileListId);
+      if (fileList) {
+        fileList.scrollTo({ top: fileList.scrollHeight });
+      }
+    }
+  
+    function handleFiles(files) {
+        console.log(files.length)
+      if (files.length != 1) {
+        alert("하나 이상은 안됩니다.");
+        return;
+      }  
+      var reg = /(.csv|.xls|.xlsx)$/;
+      if (!files[0].name.match(reg)) {
+        alert("확장자는 엑셀 확장자만 가능합니다.");
+        return;
+      }
+
+      uploadFiles.push(files);
+      if(uploadFiles.length >=2) {
+        alert("하나 이상은 안됩니다.");
+        return;
+      }
+      filesVal = files;      
+      files = [...files];            
+      files.forEach(previewFile);
+
+      
+    }
+  
+    function previewFile(file) {
+      
+      fileList.appendChild(renderFile(file));
+    }
+  
+    function renderFile(file) {
+      let fileDOM = document.createElement("div");
+      fileDOM.className = "file fileDiv";
+      fileDOM.innerHTML = `
+        <div class="thumbnail">
+          <img src="/static/img/fileImg.jpg" alt="파일타입 이미지" class="image">
+        </div>
+        <div class="details">
+          <header class="header">
+            <span class="name">${file.name}</span>
+            <span class="size">${file.size}</span>
+          </header>
+          <div class="progress">
+            <div class="bar"></div>
+          </div>
+          <div class="status">
+            <span class="percent">100% done</span>
+            <span class="speed">90KB/sec</span>
+          </div>
+        </div>
+      `;
+      return fileDOM;
+    }
+  
+    dropArea.addEventListener("dragenter", highlight, false);
+    dropArea.addEventListener("dragover", highlight, false);
+    dropArea.addEventListener("dragleave", unhighlight, false);
+    dropArea.addEventListener("drop", handleDrop, false);
+  
+    return {
+      handleFiles
+    };
+  }
