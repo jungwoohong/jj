@@ -97,7 +97,6 @@ const hot = new Handsontable(container, {
 
 
 save.addEventListener('click', () => {
-
     $.ajax({        
       type : 'POST',
       url : "{% url 'frameViewSave' %}",        
@@ -108,6 +107,7 @@ save.addEventListener('click', () => {
         data: JSON.stringify(hot.getData())},
       success : function(data) {
         alert(data.msg)
+
       }
     });          
   });
