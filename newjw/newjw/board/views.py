@@ -7,6 +7,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 import json
+from core.views import DatatablesServerSideView
 
 from .models import post
 
@@ -16,56 +17,16 @@ class index(LoginRequiredMixin, View):
         return render(request, 'board/boardList.html')
 
 
-class getBoardList(LoginRequiredMixin, View):
+class getBoardListData(LoginRequiredMixin, DatatablesServerSideView):
 
-    def get(self, request):
+    model = post
+    columns = ['id','title','user_id', 'registered_date', 'view_count']
+    searchable_columns = ['title']
+    #foreign_fields = {'create': 'create__date'}
 
-        datatables = request.GET
-        draw = int(datatables.get('draw'))
-        start = int(datatables.get('start'))
-        length = int(datatables.get('length'))
-        search = datatables.get('search[value]')
-        print("draw : ", draw, "start : ", start, "length : ", length)
-        posts = post.objects.all()
-        posts_total = posts.count()
-        posts_filtered = posts_total
-        print("posts_total : " , posts_total)
-
-        if search:
-            posts = post.objects.filter(  # or 같은 조건문으로 사용할 때 Q()
-                Q(id__icontains=search) |
-                Q(title__icontains=search) |
-                Q(user_id__icontains=search)
-            )
-            posts_total = posts.count()
-            posts_filtered = posts_total
-
-        paginator = Paginator(posts, length)
-        page_number = int(start / length) + 1
-
-        try:
-            object_list = paginator.page(page_number).object_list
-        except PageNotAnInteger:
-            object_list = paginator.page(1).object_list
-        except EmptyPage:
-            object_list = paginator.page(1).object_list
-        
-        print(page_number)
-
-        data = [{
-                'id': ol.id,
-                'title': ol.title,
-                'user_id': ol.user_id,
-                'registered_date': ol.registered_date,
-                'view_count': ol.view_count
-			    } for ol in object_list
-		    ]
-
-        return JsonResponse({
-            'draw': draw,
-			'recordsTotal': posts_total,
-			'recordsFiltered': posts_filtered,
-            'data':data}, safe=False)
+    def get_initial_queryset(self):
+        qs = super(getBoardListData, self).get_initial_queryset()
+        return qs.filter(id__isnull=False)
 
 
 class postReg(LoginRequiredMixin, View):

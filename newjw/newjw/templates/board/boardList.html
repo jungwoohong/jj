@@ -10,12 +10,10 @@
 						<div class="col-12">
 							<div class="card">
 								<div class="card-header">
-									<h5 class="card-title">게시판</h5>
-									<!-- <h6 class="card-subtitle text-muted">The searching functionality provided by DataTables is useful for quickly search through the information in the table. See official documentation <a href="https://datatables.net/examples/api/multi_filter_select.html"
-										 target="_blank" rel="noopener noreferrer nofollow">here</a>.</h6> -->
+									<h5 class="card-title">공지사항</h5>
 								</div>
 								<div class="card-body">
-									<table id="datatables-column-search-select-inputs" class="table table-striped" style="width:100%">
+									<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
 										<thead>
 											<tr>
 												<th>번호</th>
@@ -26,11 +24,6 @@
 											</tr>
 										</thead>
 										<tbody>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
 										</tbody>
 									</table>
 								</div>
@@ -44,46 +37,45 @@
 
 {% block inline_javascript %}
 <script>
-  $('#datatables-column-search-select-inputs').DataTable({
+  $('#datatables').DataTable({
       serverSide: true,
-		  processing: true,
+	    processing: true,
       ordering:  true,
       paging: true,
+	    language : lang_kor,
+	    order: [[0, 'desc']],
       ajax: { 
               type: "GET",
               datatype : 'json',
-              url: './getBoardList', 
-            },
+              url: "{% url 'getBoardListData' %}", 
+            },		
       columns: [
-                    { data: "id"},
-                    { data: "title"},
-                    { data: "user_id"},
-                    { data: "registered_date"},
-                    { data: "view_count"}
-                ]
+					{"data": "id",
+					  render: function (data, type, row, meta) {
+						return meta.row + meta.settings._iDisplayStart + 1;
+					}},
+					{ data: "title"},
+          { data: "user_id"},
+          {'data': "registered_date",    
+            "render": function (data) { return dateFormat(data)}
+          },
+          { data: "view_count"},               
+      ],
+	    columnDefs: [		
+					{ "name": "id",   "targets": 0 },
+					{ "name": "title",  "targets": 1, "className": "text-leftIm" },
+					{ "name": "user_id", "targets": 2 },
+					{ "name": "registered_date",  "targets": 3 },
+          { "name": "view_count", "targets": 4 },
+	    ]				
     });
-  // DataTables with Column Search by Select Inputs
-  // document.addEventListener("DOMContentLoaded", function() {
-  //   $('#datatables-column-search-select-inputs').DataTable({
-  //     initComplete: function() {
-  //       this.api().columns().every(function() {
-  //         var column = this;
-  //         var select = $('<select class="form-control"><option value=""></option></select>')
-  //           .appendTo($(column.footer()).empty())
-  //           .on('change', function() {
-  //             var val = $.fn.dataTable.util.escapeRegex(
-  //               $(this).val()
-  //             );
-  //             column
-  //               .search(val ? '^' + val + '$' : '', true, false)
-  //               .draw();
-  //           });
-  //         column.data().unique().sort().each(function(d, j) {
-  //           select.append('<option value="' + d + '">' + d + '</option>')
-  //         });
-  //       });
-  //     },
-  //   });
-  // });
+
+	$("#datatables").on('click', 'tbody tr', function () {
+
+		let row = $("#datatables").DataTable().row($(this)).data();		
+		location.href="{% url 'frameReg' %}?id="+row.id
+	});
+	
+	navFun('template',0,1)
 </script>
 {% endblock inline_javascript %}

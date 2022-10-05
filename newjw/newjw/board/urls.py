@@ -4,6 +4,6 @@ from newjw.board.views import *
 
 urlpatterns = [
     path('', index.as_view()),
-    path('getBoardList',getBoardList.as_view()),
-    path('postReg',postReg.as_view(), name="postReg"),
+    path('getBoardListData/',getBoardListData.as_view(), name="getBoardListData"),
+    path('postReg/',postReg.as_view(), name="postReg"),
 ]
