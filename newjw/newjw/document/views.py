@@ -44,3 +44,11 @@ class docUpload(LoginRequiredMixin, View):
         retrunMsg = {"data": parsed}
 
         return JsonResponse(retrunMsg)
+
+
+class autocompleteData(LoginRequiredMixin, View):
+    
+    def post(self, request):
+        data = ['홍길동','홍정우','홍천재']
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)

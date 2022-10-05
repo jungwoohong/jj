@@ -32,9 +32,12 @@
           <div class="card-body" >
             <div class="text-lg-end">
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
+                <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>  
                 <button class="btn btn-outline-secondary my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>            
             </div>               
             <form>
+              <input type="hidden" id="dt_start" name="dt_start" value="" />
+              <input type="hidden" id="dt_end" name="dt_end" value="" />
               <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-right">제목</label>
                 <div class="col-sm-10">
@@ -101,18 +104,74 @@ const hot = new Handsontable(container, {
   rowHeaders: true,
   colHeaders: true,
   contextMenu: true,
+  dropdownMenu: true,
+  multiColumnSorting: true,
+  filters: true,
+  manualRowMove: true,  
   comments: true,
   language: 'ko-KR',
   mergeCells:[],
+  fillHandle: true,
   cells(row) {
     return {
     	className: row % 2 === 0 ? 'even' : 'odd',
     };
   },
+  afterChange: (changes) => {
+    changes?.forEach(([row, prop, oldValue, newValue]) => {
+      console.log(row);
+      console.log(prop);
+      console.log(oldValue);
+      console.log(newValue);
+    });
+  }, 
+  // columns: [
+  //   {
+  //     type: 'autocomplete',
+  //     source(query, process) {
+  //       $.ajax({        
+  //         type : 'POST',
+  //         url : "{% url 'autocompleteData' %}",        
+  //         dataType : 'json',        
+  //         data : {query:query},
+  //         success : function(data) {
+  //           process(data.data) 
+  //         }
+  //       });         
+  //     },
+  //     strict: false
+  //   },
+  //   {
+  //     type: 'autocomplete',
+  //     source(query, process) {
+  //       fetch('https://handsontable.com/docs/scripts/json/autocomplete.json')
+  //         .then(response => response.json())
+  //         .then(response => process(response.data));
+  //     },
+  //     strict: false
+  //   },    
+  // ],
   licenseKey: 'non-commercial-and-evaluation'
 });
 
 
+const exportPlugin = hot.getPlugin('exportFile');
+const button = document.querySelector('#export-file');
+
+button.addEventListener('click', () => {
+  exportPlugin.downloadFile('csv', {
+    bom: false,
+    columnDelimiter: ',',
+    columnHeaders: false,
+    exportHiddenColumns: true,
+    exportHiddenRows: true,
+    fileExtension: 'csv',
+    filename: 'Handsontable-CSV-file_[YYYY]-[MM]-[DD]',
+    mimeType: 'text/csv',
+    rowDelimiter: '\r\n',
+    rowHeaders: true
+  });
+});
 
 save.addEventListener('click', () => {
 
@@ -160,33 +219,26 @@ $('#uploadBtn').click(function(){
    });
 });
 
-  var start = moment().subtract(29, "days");
-  var end = moment();
+  var start = moment();
+  var end = moment().subtract(-6, "days");
 
   function cb(start, end) {
-    $("#reportrange span").html(start.format("YYYY.MM.DD") + " - " + end.format("YYYY.MM.DD"));
+    let dtStart = start.format("YYYY.MM.DD");
+    let dtEnd   = end.format("YYYY.MM.DD");
+
+    $("#reportrange span").html(dtStart + " - " + dtEnd);
+    $('#dt_start').val(dtStart);
+    $('#dt_end').val(dtEnd);
   }
+
   $("#reportrange").daterangepicker({
     startDate: start,
     endDate: end,
-    "locale": {
-                    "format": "YYYY-MM-DD",
-                    "separator": " ~ ",
-                    "applyLabel": "확인",
-                    "cancelLabel": "취소",
-                    "fromLabel": "From",
-                    "toLabel": "To",
-                    "customRangeLabel": "Custom",
-                    "weekLabel": "W",
-                    "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
-                    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-                    "firstDay": 1
-                },
+    "locale": daterangepickerLocalKr,
     ranges: {
-      "Last 7 Days": [moment().subtract(6, "days"), moment()],
-      "Last 30 Days": [moment().subtract(29, "days"), moment()],
-      "This Month": [moment().startOf("month"), moment().endOf("month")],
-      "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+      "14일간": [moment(),moment().subtract(-14, "days")],
+      "30일간": [moment(),moment().subtract(-29, "days")],
+      "60일간": [moment(),moment().subtract(-59, "days")],
     }
   }, cb);
   cb(start, end);
