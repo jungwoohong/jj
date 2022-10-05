@@ -1,0 +1,127 @@
+
+{% extends "default.html" %}
+{% load static i18n %}
+{% block css %}
+<link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<style>
+  .handsontable .odd {
+ background: #fff 
+}
+.handsontable .even {
+  background: #eee
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header" style="padding:20px 0px 0px 22px">
+            <h5 class="card-title">
+              {% if data.id %}
+                템플릿 수정
+              {% else %}
+                템플릿 생성
+              {% endif %}
+              </h5>
+          </div>
+          <div class="card-body" >
+            <div class="text-lg-end">                          
+                <button id ="save" class="btn btn-outline-success">저장하기</button>
+                {% if data.id %}
+                  <button id ="list" class="btn btn-outline-primary">목록으로</button>
+                {% endif %}
+            </div>               
+            <form>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control title" id="floatingInput1" placeholder="제목" value="{{ data.title }}">
+                <label for="floatingInput1">제목</label>
+              </div>              
+            </form>            
+            <div id="excelGrid">         
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block inline_javascript %}
+
+<script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script>
+    
+  const container = document.querySelector('#excelGrid');
+  const save = document.querySelector('#save');
+  const list = document.querySelector('#list');
+  var     id = "{{data.id}}";
+
+  function loadExcelData(id){
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameJsonData' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        console.log(data)
+        hot.loadData(data.data);
+      }
+    }); 
+  }
+
+const hot = new Handsontable(container, {
+  startRows: 20,
+  startCols: 20,  
+  width: 'auto',
+  height: 'auto',
+  rowHeaders: true,
+  colHeaders: true,
+  contextMenu: true,
+  comments: true,
+  language: 'ko-KR',
+  mergeCells:[],
+  cells(row) {
+    return {
+    	className: row % 2 === 0 ? 'even' : 'odd',
+    };
+  },
+  licenseKey: 'non-commercial-and-evaluation'
+});
+
+
+
+save.addEventListener('click', () => {
+
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'frameViewSave' %}",        
+      dataType : 'json',        
+      data : {
+        id:id,
+        title:$('.title').val(),
+        data: JSON.stringify(hot.getData())},
+      success : function(data) {
+        alert(data.msg)
+      }
+    });          
+  });
+
+  navFun('template',0,0);
+  
+  if(id) loadExcelData('{{ data.id }}');
+
+  if(list){
+    list.addEventListener('click', () => {
+      history.back();
+    });
+  }
+
+  
+</script>
+{% endblock inline_javascript %}

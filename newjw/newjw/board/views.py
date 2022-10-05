@@ -68,3 +68,6 @@ class getBoardList(LoginRequiredMixin, View):
             'data':data}, safe=False)
 
 
+class postReg(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'board/reg.html')
