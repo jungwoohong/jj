@@ -37,7 +37,7 @@
             </div>               
             <form>
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="floatingInput1" placeholder="제목" value="{{ data.title }}">
+                <input type="text" class="form-control title" id="floatingInput1" placeholder="제목" value="{{ data.title }}">
                 <label for="floatingInput1">제목</label>
               </div>              
             </form>            
@@ -104,7 +104,7 @@ save.addEventListener('click', () => {
       dataType : 'json',        
       data : {
         id:id,
-        title:$('#title').val(),
+        title:$('.title').val(),
         data: JSON.stringify(hot.getData())},
       success : function(data) {
         alert(data.msg)
