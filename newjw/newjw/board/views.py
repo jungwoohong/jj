@@ -9,6 +9,7 @@ from django.db.models import Q
 import json
 from core.views import DatatablesServerSideView
 
+from .forms import postForm
 from .models import post
 
 
@@ -32,3 +33,33 @@ class getBoardListData(LoginRequiredMixin, DatatablesServerSideView):
 class postReg(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'board/reg.html')
+
+class postSave(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        msg = "실패하였습니다."
+
+        id          = request.POST.get('id')
+        category    = request.POST.get('category')
+        title       = request.POST.get('title')
+        content     = request.POST.get('content')
+        loginId     = request.user.username   
+
+        arr = {"email": loginId, "category": category, "title": title,"content": content }
+        form = postForm(arr)
+
+        if form.is_valid():
+            if id == '':
+                record = form.save()
+                msg = "저장하였습니다."
+            else:
+                updateData = post.objects.get(id=id)
+                updateData.title        = title
+                updateData.conent        = content
+                updateData.save()
+                msg = "수정하였습니다."                         
+
+        retrunMsg = {"msg": msg}
+        
+        return JsonResponse(retrunMsg)   
