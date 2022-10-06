@@ -23,7 +23,7 @@
           <h5 class="card-title">공지사항 작성</h5>
         </div>
         <div class="card-body">
-          <form>
+          <form id="frm">
             <div class="row">
               <div class="mb-3 col-md-6">
                 <label class="form-label" for="inputEmail4">작성자</label>
@@ -39,7 +39,8 @@
               <textarea id="content" class="form-control" rows="10" placeholder="내용을 작성해주세요"></textarea>
             </div>
             <div class="mb-3">
-              첨부파일 넣을거얌
+              <label class="form-label w-100">파일 첨부</label>
+              <input type="file" id="attachFile" name="attachFile">
             </div>
             <input type="hidden" class="form-control" id="category" value="1">
           </form>
@@ -55,17 +56,19 @@
 {% block inline_javascript %}
 <script>
   const save = document.querySelector('#save');
+  var formData = $('#frm').serialize();
 
   save.addEventListener('click', () => {
     $.ajax({
       type : 'POST',
+      contentType: 'multipart/form-data',
       url : "{% url 'postSave' %}",        
       dataType : 'json',        
-      data : {
-        id:"",
-        category:$('#category').val(),
-        title:$('#title').val(),
-        content:$('#content').val()},
+      data : formData,
+      processData : false,
+      contentType : false,     
+      cache: false,           
+      timeout: 600000,  
       success : function(data) {
         alert(data.msg);
         location.href="{% url 'indexPage' %}"

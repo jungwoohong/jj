@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 import json
 from core.views import DatatablesServerSideView
+from django.core.files.storage import FileSystemStorage
 
 from .forms import postForm
 from .models import post
@@ -39,6 +40,8 @@ class postSave(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
 
         msg = "실패하였습니다."
+
+        myfile = request.FILES['attachFile']
 
         id          = request.POST.get('id')
         category    = request.POST.get('category')
