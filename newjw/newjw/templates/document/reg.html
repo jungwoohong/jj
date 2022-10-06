@@ -11,6 +11,16 @@
 .handsontable .even {
   background: #eee
 }
+
+.tab .nav-tabs .nav-link.active {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
+
+.tab .tab-content {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
 </style>
 {% endblock %}
 
@@ -51,8 +61,20 @@
                   <span></span> <i class="fas fa-caret-down"></i>
                 </div>
               </div>                                        
-            </form>            
-            <div id="excelGrid">   
+            </form>
+            <div class="col-12">
+							<div class="tab">
+								<ul class="nav nav-tabs" role="tablist">
+									<li class="nav-item"><a class="nav-link active" href="#tab-1" data-bs-toggle="tab" role="tab">Sheet1</a></li>
+								</ul>
+								<div class="tab-content">
+									<div class="tab-pane active" id="tab-1" role="tabpanel">
+                    <div id="excelGrid"> </div>
+									</div>                
+								</div>
+							</div>
+						</div>                        
+              
               
               <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
                 <div class="offcanvas-header">

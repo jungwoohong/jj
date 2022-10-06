@@ -37,28 +37,27 @@ class frameViewSave(LoginRequiredMixin, View):
 
         msg = "실패하였습니다."
 
-        if request.method == 'POST':
-            id          = request.POST.get('id')
-            json_data   = request.POST.get('data')
-            title       = request.POST.get('title')
-            loginId     = request.user.username            
-                        
-            arr = {"email": loginId,"json_data": json_data, "title": title }            
-            form = postForm(arr)
+        id          = request.POST.get('id')
+        json_data   = request.POST.get('data')
+        title       = request.POST.get('title')
+        loginId     = request.user.username            
+                    
+        arr = {"email": loginId,"json_data": json_data, "title": title }            
+        form = postForm(arr)
 
-            if form.is_valid():
-                if id == '':
-                    record = form.save()
-                    msg = "저장하였습니다."                    
-                else :
-                    updateData = post.objects.get(id=id)
-                    updateData.json_data    = json_data
-                    updateData.title        = title
-                    updateData.save()
-                    msg = "수정하였습니다."                         
+        if form.is_valid():
+            if id == '':
+                record = form.save()
+                msg = "저장하였습니다."                    
+            else :
+                updateData = post.objects.get(id=id)
+                updateData.json_data    = json_data
+                updateData.title        = title
+                updateData.save()
+                msg = "수정하였습니다."                         
 
-            retrunMsg = {"msg": msg}
-            return JsonResponse(retrunMsg)
+        retrunMsg = {"msg": msg}
+        return JsonResponse(retrunMsg)
 
 
 class frameLoadList(LoginRequiredMixin, View):

@@ -46,7 +46,7 @@ class postSave(LoginRequiredMixin, View):
         content     = request.POST.get('content')
         loginId     = request.user.username   
 
-        arr = {"email": loginId, "category": category, "title": title,"content": content }
+        arr = {"user_id": loginId, "category": category, "title": title,"conent": content }
         form = postForm(arr)
 
         if form.is_valid():
