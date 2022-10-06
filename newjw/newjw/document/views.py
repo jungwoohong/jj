@@ -68,8 +68,27 @@ class docSave(LoginRequiredMixin, View):
 
         if form.is_valid():
             if id == '':
-                # record = form.save()
+                record = form.save()
                 
+
+                jsonList = json.loads(json_data)
+                cell_row = 0
+                cell_line = 0
+
+                for forData in jsonList :
+                    cell_row = cell_row+1
+                    cell_line = 0
+                    for rs in forData :
+                        cell_line = cell_line+1
+                        cell_type = "cell"
+                        if cell_row == 1 or cell_row == 2 :
+                            cell_type = "header"
+
+                        arrDataCollection = {"post":record.id,"cell_row":cell_row,"cell_line":cell_line,"data":rs,"cell_type":cell_type} 
+                        formDataCollection = dataCollectionForm(arrDataCollection)
+
+                        if formDataCollection.is_valid():
+                            formDataCollection.save()
 
                 msg = "저장하였습니다."                    
             else :
