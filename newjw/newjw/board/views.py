@@ -46,7 +46,7 @@ class postSave(LoginRequiredMixin, View):
         content     = request.POST.get('content')
         loginId     = request.user.username   
 
-        arr = {"user_id": loginId, "category": category, "title": title,"conent": content }
+        arr = {"user_id": loginId, "category": category, "title": title,"content": content }
         form = postForm(arr)
 
         if form.is_valid():
@@ -56,7 +56,7 @@ class postSave(LoginRequiredMixin, View):
             else:
                 updateData = post.objects.get(id=id)
                 updateData.title        = title
-                updateData.conent        = content
+                updateData.content        = content
                 updateData.save()
                 msg = "수정하였습니다."                         
 
