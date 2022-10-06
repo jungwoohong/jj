@@ -33,7 +33,7 @@
           <div class="card-header" style="padding:20px 0px 0px 22px">
             <h5 class="card-title">
               {% if data.id %}
-                템플릿 수정
+                문서 수정
               {% else %}
                 문서 작성 
               {% endif %}
@@ -45,13 +45,16 @@
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>  
                 <button class="btn btn-outline-secondary my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>            
             </div>               
-            <form>
-              <input type="hidden" id="dt_start" name="dt_start" value="" />
-              <input type="hidden" id="dt_end" name="dt_end" value="" />
+            <form id="frm">
+              <input type="hidden" id="id" name="id" value="" />
+              <input type="hidden" id="start_date" name="start_date" value="" />
+              <input type="hidden" id="end_date" name="end_date" value="" />
+              <input type="hidden" id="json_data" name="json_data" value="" />
               <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-right">제목</label>
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" placeholder="" value="{{ data.title }}">
+                  <input type="text" class="form-control" id="title" name ="title" placeholder="" value="{{ data.title }}">
+                  <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
                 </div>
               </div>
               <div class="mb-3 row">
@@ -73,28 +76,29 @@
 									</div>                
 								</div>
 							</div>
-						</div>                        
-              
-              
-              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-                <div class="offcanvas-header">
-                  <h5 id="offcanvasRightLabel">Excel Upload</h5>
-                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                  <div>
-                    {% include "document/uploadIn.html" %}
-                  </div>
-                </div>
-              </div>             
+						</div>            
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
 {% endblock %}
+
+{% block layerHtml %}
+    
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasRightLabel">Excel Upload</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div>
+      {% include "document/uploadIn.html" %}
+    </div>
+  </div>
+</div> 
+{% endblock layerHtml %}
 
 {% block inline_javascript %}
 
@@ -112,7 +116,6 @@
       dataType : 'json',        
       data : {id:id},
       success : function(data) {
-        console.log(data)
         hot.loadData(data.data);
       }
     }); 
@@ -141,10 +144,6 @@ const hot = new Handsontable(container, {
   },
   afterChange: (changes) => {
     changes?.forEach(([row, prop, oldValue, newValue]) => {
-      console.log(row);
-      console.log(prop);
-      console.log(oldValue);
-      console.log(newValue);
     });
   }, 
   // columns: [
@@ -153,7 +152,7 @@ const hot = new Handsontable(container, {
   //     source(query, process) {
   //       $.ajax({        
   //         type : 'POST',
-  //         url : "{% url 'autocompleteData' %}",        
+  //         url : "",        
   //         dataType : 'json',        
   //         data : {query:query},
   //         success : function(data) {
@@ -197,16 +196,21 @@ button.addEventListener('click', () => {
 
 save.addEventListener('click', () => {
 
+  let from = $('#frm');
+  $('#json_data').val(JSON.stringify(hot.getData()));
+
     $.ajax({        
       type : 'POST',
-      url : "{% url 'frameViewSave' %}",        
+      url : "{% url 'docSave' %}",        
       dataType : 'json',        
-      data : {
-        id:'{{data.id}}',
-        title:$('#title').val(),
-        data: JSON.stringify(hot.getData())},
+      data : from.serialize(),
       success : function(data) {
-        alert(data.msg)
+
+        if(data.form.length == 0){
+          alert(data.msg)
+        } else {
+          formError(data.form);
+        } 
       }
     });          
   });
@@ -243,14 +247,16 @@ $('#uploadBtn').click(function(){
 
   var start = moment();
   var end = moment().subtract(-6, "days");
+  $('#start_date').val(start.format("YYYY.MM.DD"));
+  $('#end_date').val(end.format("YYYY.MM.DD"));
 
   function cb(start, end) {
     let dtStart = start.format("YYYY.MM.DD");
     let dtEnd   = end.format("YYYY.MM.DD");
 
     $("#reportrange span").html(dtStart + " - " + dtEnd);
-    $('#dt_start').val(dtStart);
-    $('#dt_end').val(dtEnd);
+    $('#start_date').val(dtStart);
+    $('#end_date').val(dtEnd);
   }
 
   $("#reportrange").daterangepicker({

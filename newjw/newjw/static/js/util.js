@@ -116,3 +116,17 @@ function DropFile(dropAreaId, fileListId) {
     "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
     "firstDay": 1
   }; 
+
+  function formError(obj){
+    
+    $(document).removeClass('invalid');
+    $('label[id$="-error"]').hide();
+
+    Object.entries(obj).forEach(entry => {
+      const [key, value] = entry;
+      $('#'+key).addClass('is-invalid');
+      $('#'+key+'-error').html(value);
+      $('#'+key+'-error').show();
+      $('#'+key).focus();
+    });
+  }

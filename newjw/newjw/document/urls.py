@@ -4,6 +4,6 @@ from newjw.document.views import *
 
 urlpatterns = [
     path('docReg/', docReg.as_view(),name="docReg" ),
-    path('docUpload/', docUpload.as_view(),name="docUpload" ),
-    path('autocompleteData/', autocompleteData.as_view(),name="autocompleteData" ),
+    path('docSave/', docSave.as_view(),name="docSave" ),
+    path('docUpload/', docUpload.as_view(),name="docUpload" ), 
 ]
