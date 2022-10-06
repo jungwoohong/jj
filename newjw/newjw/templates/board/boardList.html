@@ -73,7 +73,7 @@
 	$("#datatables").on('click', 'tbody tr', function () {
 
 		let row = $("#datatables").DataTable().row($(this)).data();		
-		location.href="{% url 'frameReg' %}?id="+row.id
+		location.href="{% url 'postDetailView' %}?id="+row.id
 	});
 	
 	navFun('bbs',2,0)

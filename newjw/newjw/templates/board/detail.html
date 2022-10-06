@@ -20,7 +20,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title">공지사항 작성</h5>
+          <h5 class="card-title"></h5>
         </div>
         <div class="card-body">
           <form>
@@ -32,18 +32,17 @@
             </div>
             <div class="mb-3">
               <label class="form-label" for="title">제목</label>
-              <input type="text" class="form-control" id="title" placeholder="제목을 작성해주세요">
+              <input type="text" class="form-control" id="title" value="{{ rs.title }}" readonly>
             </div>
             <div class="mb-3">
               <label class="form-label" for="content">내용</label>
-              <textarea id="content" class="form-control" rows="10" placeholder="내용을 작성해주세요"></textarea>
+              <textarea id="content" class="form-control" rows="10" readonly >{{ rs.content|safe }}</textarea>
             </div>
             <div class="mb-3">
               첨부파일 넣을거얌
             </div>
-            <input type="hidden" class="form-control" id="category" value="1">
           </form>
-          <button id = "save" class="btn btn-primary">Submit</button>
+          <button id="list" class="btn btn-primary">돌아가기</button>
         </div>
       </div>
     </div>
@@ -54,23 +53,10 @@
 
 {% block inline_javascript %}
 <script>
-  const save = document.querySelector('#save');
+const list = document.querySelector('#list');
 
-  save.addEventListener('click', () => {
-    $.ajax({
-      type : 'POST',
-      url : "{% url 'postSave' %}",        
-      dataType : 'json',        
-      data : {
-        id:"",
-        category:$('#category').val(),
-        title:$('#title').val(),
-        content:$('#content').val()},
-      success : function(data) {
-        alert(data.msg);
-        location.href="{% url 'indexPage' %}"
-      }
-    });
-  });
+list.addEventListener('click',() => {
+  location.href = "{% url 'indexPage' %}"
+})
 </script>
 {% endblock inline_javascript %}

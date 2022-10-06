@@ -63,3 +63,20 @@ class postSave(LoginRequiredMixin, View):
         retrunMsg = {"msg": msg}
         
         return JsonResponse(retrunMsg)   
+
+class postDetailView(LoginRequiredMixin, View):
+    def get(self, request):
+        
+        id = request.GET.get('id')
+        if id != '':
+            try:
+                rs = post.objects.get(id=id)
+                context = {
+                    'rs' : rs,
+                }
+                return render(request, 'board/detail.html', context)
+            except post.DoesNotExist:
+                return           
+
+
+        return render(request, 'board/boardList.html')
