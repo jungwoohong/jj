@@ -15,8 +15,8 @@ class categories(models.Model):
 class post(models.Model):
     category = models.ForeignKey(categories, on_delete=models.CASCADE)
     user_id  = models.CharField(max_length=100)
-    title    = models.CharField(max_length=300)
-    conent   = models.TextField()
+    title    = models.CharField(max_length=300,null=True,default='')
+    content   = models.TextField()
     registered_date = models.DateTimeField(auto_now_add=True)
     last_update_date= models.DateTimeField(auto_now=True)
     view_count = models.IntegerField(blank=True, default=0)
