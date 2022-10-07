@@ -133,3 +133,20 @@ class docJsonData(LoginRequiredMixin, View):
             
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)            
+
+
+class docSearchList(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'document/docSearchList.html')
+
+class docSearchListData(LoginRequiredMixin, DatatablesServerSideView):
+
+    model = post
+    columns = ['id','title','email', 'start_date','end_date','create_date']
+    searchable_columns = ['title','email']
+
+    def get_initial_queryset(self):
+        qs = super(docLoadListData, self).get_initial_queryset()
+        return qs.filter(email__isnull=False)
+        

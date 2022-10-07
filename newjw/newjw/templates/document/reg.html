@@ -42,13 +42,15 @@
           <div class="card-body" >
             <div class="text-lg-end">
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
-                <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>  
-                <button class="btn btn-outline-secondary my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>            
+                <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
+                <button class="btn btn-outline-secondary my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
+                <button id="searchBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 찾아보기</button>
+                            
             </div>               
             <form id="frm">
               <input type="hidden" id="id" name="id" value="{{ data.id }}" />
-              <input type="hidden" id="start_date" name="start_date" value="" />
-              <input type="hidden" id="end_date" name="end_date" value="" />
+              <input type="hidden" id="start_date" name="start_date" value="{{ data.start_date|date:'Y.m.d' }}" />
+              <input type="hidden" id="end_date" name="end_date" value="{{ data.end_date|date:'Y.m.d' }}" />
               <input type="hidden" id="json_data" name="json_data" value="" />
               <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-right">제목</label>
@@ -59,7 +61,7 @@
               </div>
               <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-right">기간 설정</label>
-                <div id="reportrange" class="overflow-hidden col-sm-10 form-control" style="width:210px;margin-left:12px;">
+                <div id="reportrange" class="overflow-hidden col-sm-10 form-control dateShow" style="width:210px;margin-left:12px;">
                   <i class="far fa-calendar"></i>&nbsp;
                   <span></span> <i class="fas fa-caret-down"></i>
                 </div>
@@ -179,6 +181,7 @@ const hot = new Handsontable(container, {
 
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
+const searchBtn = document.querySelector('#searchBtn');
 
 button.addEventListener('click', () => {
   exportPlugin.downloadFile('csv', {
@@ -207,8 +210,8 @@ save.addEventListener('click', () => {
       data : from.serialize(),
       success : function(data) {
 
-        if(data.form.length == 0){
-          alert(data.msg)
+        if (data.form.length == 0) {
+          alert(data.msg);
         } else {
           formError(data.form);
         } 
@@ -216,6 +219,9 @@ save.addEventListener('click', () => {
     });          
   });
 
+  searchBtn.addEventListener('click', () => {
+    window.open("{% url 'docSearchList' %}",'searchPop','width=700,height=700')
+  });
 
 $('#uploadBtn').click(function(){
 
@@ -242,33 +248,14 @@ $('#uploadBtn').click(function(){
    });
 });
 
-  var start = moment();
-  var end = moment().subtract(-6, "days");
-  $('#start_date').val(start.format("YYYY.MM.DD"));
-  $('#end_date').val(end.format("YYYY.MM.DD"));
+// 날짜 기본값 넣기
+  start = moment();
+  end   = moment().subtract(-6, "days");
+  setDate('start_date','end_date');
 
-  function cb(start, end) {
-    let dtStart = start.format("YYYY.MM.DD");
-    let dtEnd   = end.format("YYYY.MM.DD");
-
-    $("#reportrange span").html(dtStart + " - " + dtEnd);
-    $('#start_date').val(dtStart);
-    $('#end_date').val(dtEnd);
-  }
-
-  $("#reportrange").daterangepicker({
-    startDate: start,
-    endDate: end,
-    "locale": daterangepickerLocalKr,
-    ranges: {
-      "14일간": [moment(),moment().subtract(-14, "days")],
-      "30일간": [moment(),moment().subtract(-29, "days")],
-      "60일간": [moment(),moment().subtract(-59, "days")],
-    }
-  }, cb);
-  cb(start, end);
-
+// 네비 좌표설정
   navFun('documentManage',1,0);
+
   if(id != '')  loadExcelData(id);
   const dropFile = new DropFile("drop-file", "files");
 

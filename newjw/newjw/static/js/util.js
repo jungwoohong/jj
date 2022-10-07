@@ -130,3 +130,21 @@ function DropFile(dropAreaId, fileListId) {
       $('#'+key).focus();
     });
   }
+
+
+  function setDate(input,input2){
+
+    let startDate = $('#'+input);
+    let endDate = $('#'+input2);
+  
+    if(startDate.val()=='') {
+      startDate.val(start.format("YYYY.MM.DD"));
+    } else {
+      start = moment(new Date(startDate.val()));
+    }
+    if(endDate.val()=='') {
+      endDate.val(end.format("YYYY.MM.DD"));
+    } else {
+      end = moment(new Date(endDate.val()));
+    }    
+}
