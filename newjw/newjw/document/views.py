@@ -9,6 +9,7 @@ from django.utils import timezone
 from .forms import postForm, dataCollectionForm, shareUserForm
 from .models import post, data_collection, share_user
 from datetime import datetime
+from core.views import DatatablesServerSideView
 
 class docReg(LoginRequiredMixin, View):
 
@@ -18,9 +19,8 @@ class docReg(LoginRequiredMixin, View):
         id = request.GET.get('id')
 
         if(id):
-            # data = get_object_or_404(post, id=id)
-            # context = {"data":data}
-            print('')
+             data = get_object_or_404(post, id=id)
+             context = {"data":data}
 
         return render(request, 'document/reg.html', context)
 
@@ -68,9 +68,11 @@ class docSave(LoginRequiredMixin, View):
 
         if form.is_valid():
             if id == '':
+
+                #post 저장
                 record = form.save()
                 
-
+                # 데이터 저장
                 jsonList = json.loads(json_data)
                 cell_row = 0
                 cell_line = 0
@@ -101,4 +103,33 @@ class docSave(LoginRequiredMixin, View):
                 msg = "수정하였습니다."                         
 
         retrunMsg = {"msg": msg, "form":form.errors}
-        return JsonResponse(retrunMsg)        
+        return JsonResponse(retrunMsg)
+
+class docLoadList(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'document/docList.html')
+
+class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
+
+    model = post
+    columns = ['id','title','email', 'start_date','end_date','create_date']
+    searchable_columns = ['title','email']
+
+    def get_initial_queryset(self):
+        qs = super(docLoadListData, self).get_initial_queryset()
+        return qs.filter(email__isnull=False)
+
+class docJsonData(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        data = ''
+        id          = request.POST.get('id')
+        rs          = get_object_or_404(post, id=id)
+        json_data   = rs.json_data
+        rep_data    = json_data.replace("'", "\"")
+        data        = json.loads(rep_data)
+            
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)            
