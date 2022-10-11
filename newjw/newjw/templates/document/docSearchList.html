@@ -22,7 +22,7 @@
 						<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
 							<thead >
 								<tr >
-									<th></th>
+									<th><input type="checkbox" name="checkall" class="" id="checkall"></th>
 									<th>번호</th>
 									<th>제목</th>
 									<th>작성자</th>
@@ -67,7 +67,7 @@
 	const container = document.querySelector('#excelGrid');
 	showExcelTable(container);
 
-  $('#datatables').DataTable({
+  var table = $('#datatables').DataTable({
       serverSide: true,
 	  processing: true,
       ordering:  true,
@@ -106,13 +106,34 @@
                     },               
                 ],
 	  columnDefs: [		
-	  				{ "orderable": false, "className": 'select-checkbox',"targets": 0},
+	  				{ "data": null, "orderable": false, "className": 'select-checkbox',"targets": 0},
 					{ "name": "id",   "targets": 1, "width": "10%"},
 					{ "name": "title",  "targets": 2, "className": "text-leftIm title" },
 					{ "name": "email", "targets": 3, "width": "15%"},
 					{ "name": "start_date", "targets": 4, "width": "20%" },					
 					{ "name": "create_date",  "targets": 5, "width": "15%" }
-	  ]				
+	  ],
+	  initComplete: function(settings, json) {
+        $("#checkall").prop("checked",false);
+        $("#checkall").click(function(){
+          if($(this).prop("checked")){
+              table.rows().select();
+          }
+          else {
+              table.rows().deselect();
+          }
+      	});
+      },
+	  dom: 'Bfrtip',
+        buttons: [
+            {
+                text: '탭으로 이동',
+                action: function ( e, dt, node, config ) {
+                    console.log(table.cell('.selected'));
+					console.log(table.cell());
+                }
+            }
+        ]				
     });
 
 	$("#datatables").on('click', 'tbody tr .title', function () {
