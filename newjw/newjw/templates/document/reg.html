@@ -105,6 +105,7 @@
 {% block inline_javascript %}
 
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonTable.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
     
@@ -112,6 +113,8 @@
   const save = document.querySelector('#save');
   const id = $('#id').val();
 
+  showExcelTable(container);
+  
   function loadExcelData(id){
     $.ajax({        
       type : 'POST',
@@ -123,61 +126,6 @@
       }
     }); 
   }
-
-const hot = new Handsontable(container, {
-  startRows: 20,
-  startCols: 20,  
-  width: 'auto',
-  height: 'auto',
-  rowHeaders: true,
-  colHeaders: true,
-  contextMenu: true,
-  dropdownMenu: true,
-  multiColumnSorting: true,
-  filters: true,
-  manualRowMove: true,  
-  comments: true,
-  language: 'ko-KR',
-  mergeCells:[],
-  fillHandle: true,
-  cells(row) {
-    return {
-    	className: row % 2 === 0 ? 'even' : 'odd',
-    };
-  },
-  afterChange: (changes) => {
-    changes?.forEach(([row, prop, oldValue, newValue]) => {
-    });
-  }, 
-  // columns: [
-  //   {
-  //     type: 'autocomplete',
-  //     source(query, process) {
-  //       $.ajax({        
-  //         type : 'POST',
-  //         url : "",        
-  //         dataType : 'json',        
-  //         data : {query:query},
-  //         success : function(data) {
-  //           process(data.data) 
-  //         }
-  //       });         
-  //     },
-  //     strict: false
-  //   },
-  //   {
-  //     type: 'autocomplete',
-  //     source(query, process) {
-  //       fetch('https://handsontable.com/docs/scripts/json/autocomplete.json')
-  //         .then(response => response.json())
-  //         .then(response => process(response.data));
-  //     },
-  //     strict: false
-  //   },    
-  // ],
-  licenseKey: 'non-commercial-and-evaluation'
-});
-
 
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
@@ -220,7 +168,7 @@ save.addEventListener('click', () => {
   });
 
   searchBtn.addEventListener('click', () => {
-    window.open("{% url 'docSearchList' %}",'searchPop','width=700,height=700')
+    window.open("{% url 'docSearchList' %}",'searchPop','resizable=yes,width=1000,height=800');
   });
 
 $('#uploadBtn').click(function(){
@@ -260,4 +208,6 @@ $('#uploadBtn').click(function(){
   const dropFile = new DropFile("drop-file", "files");
 
 </script>
+
+
 {% endblock inline_javascript %}

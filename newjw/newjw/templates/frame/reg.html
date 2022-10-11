@@ -54,6 +54,7 @@
 {% block inline_javascript %}
 
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonTable.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script>
     
@@ -61,6 +62,8 @@
   const save = document.querySelector('#save');
   const list = document.querySelector('#list');
   var     id = "{{data.id}}";
+
+  showExcelTable(container);
 
   function loadExcelData(id){
     $.ajax({        
@@ -74,27 +77,6 @@
       }
     }); 
   }
-
-const hot = new Handsontable(container, {
-  startRows: 20,
-  startCols: 20,  
-  width: 'auto',
-  height: 'auto',
-  rowHeaders: true,
-  colHeaders: true,
-  contextMenu: true,
-  comments: true,
-  language: 'ko-KR',
-  mergeCells:[],
-  cells(row) {
-    return {
-    	className: row % 2 === 0 ? 'even' : 'odd',
-    };
-  },
-  licenseKey: 'non-commercial-and-evaluation'
-});
-
-
 
 save.addEventListener('click', () => {
     $.ajax({        

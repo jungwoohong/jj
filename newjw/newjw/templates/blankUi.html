@@ -20,6 +20,7 @@
 
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="{% static 'css/light.css' %}" rel="stylesheet" class="js-stylesheet">
+	<link href="{% static 'css/util.css' %}" rel="stylesheet" >
 	{% block css %}
     {% endblock %}
 	<!-- END SETTINGS -->
@@ -30,7 +31,12 @@
 
 	{% endblock content %}
 
+	{% block layerHtml %}
+	{% endblock layerHtml %}
+	
 	<script src="{% static 'js/app.js' %}"></script>
+	<script src="{% static 'js/util.js' %}"></script>
+	<script src="{% static 'js/datatableUtil.js' %}"></script>
 
 	<script>
 		$.ajaxSetup({
@@ -42,7 +48,7 @@
 	
 	{% endblock inline_javascript %}
 	
-
+	<script src="{% static 'js/daterangepicker.js' %}"></script>
 </body>
 
 </html>

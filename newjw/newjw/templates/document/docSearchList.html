@@ -1,7 +1,13 @@
 
-{% extends "default.html" %}
+{% extends "blankUi.html" %}
 {% load static i18n %}
 {% block css %}
+<link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<style>
+	.offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl{
+		--bs-offcanvas-width:70%!important;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -16,6 +22,7 @@
 						<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
 							<thead >
 								<tr >
+									<th></th>
 									<th>번호</th>
 									<th>제목</th>
 									<th>작성자</th>
@@ -34,21 +41,53 @@
 	</div>
 {% endblock %}
 
+{% block layerHtml %}
+    
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasRightLabel">본문보기</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div>
+		<div id="excelGrid"></div>
+    </div>
+  </div>
+</div> 
+{% endblock layerHtml %}
+
 {% block inline_javascript %}
+<script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonTable.js' %}"></script>
+<script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script src="{% static 'js/dataTables.select.min.js' %}"></script>
 <script>
+
+	window.resizeTo(1100,800);
+	const container = document.querySelector('#excelGrid');
+	showExcelTable(container);
+
   $('#datatables').DataTable({
       serverSide: true,
 	  processing: true,
       ordering:  true,
       paging: true,
 	  language : lang_kor,
-	  order: [[0, 'desc']],
+	  select: {
+                style: 'multi',
+                selector: 'td:first-child'
+                },
+	  order: [[1, 'desc']],
       ajax: { 
               type: "GET",
               datatype : 'json',
               url: "{% url 'docSearchListData' %}", 
             },		
       columns: [
+	  				{"data": "id",
+					render: function (data, type, row, meta) {
+						return '';
+					}},
 					{"data": "id",
 					render: function (data, type, row, meta) {
 						return meta.row + meta.settings._iDisplayStart + 1;
@@ -67,21 +106,35 @@
                     },               
                 ],
 	  columnDefs: [		
-					{ "name": "id",   "targets": 0, "width": "5%"},
-					{ "name": "title",  "targets": 1, "className": "text-leftIm" },
-					{ "name": "email", "targets": 2, "width": "15%"},
-					{ "name": "start_date", "targets": 3, "width": "20%" },					
-					{ "name": "create_date",  "targets": 4, "width": "15%" }
+	  				{ "orderable": false, "className": 'select-checkbox',"targets": 0},
+					{ "name": "id",   "targets": 1, "width": "10%"},
+					{ "name": "title",  "targets": 2, "className": "text-leftIm title" },
+					{ "name": "email", "targets": 3, "width": "15%"},
+					{ "name": "start_date", "targets": 4, "width": "20%" },					
+					{ "name": "create_date",  "targets": 5, "width": "15%" }
 	  ]				
     });
 
-	$("#datatables").on('click', 'tbody tr', function () {
+	$("#datatables").on('click', 'tbody tr .title', function () {
 
-		let row = $("#datatables").DataTable().row($(this)).data();		
-		location.href="{% url 'docReg' %}?id="+row.id
+		let row = $("#datatables").DataTable().row($(this)).data();	
+		
+		loadExcelData(row.id);
+		$('#offcanvasRight').offcanvas('show');	
+
 	});
 	
-	navFun('documentManage',1,1);
-
+function loadExcelData(id){
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'docSearchJsonData' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        hot.loadData(data.data);
+      }
+    }); 
+}	
 </script>
+
 {% endblock inline_javascript %}

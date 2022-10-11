@@ -11,5 +11,6 @@ urlpatterns = [
     path('docJsonData/', docJsonData.as_view(),name="docJsonData" ),  
     path('docSearchList/', docSearchList.as_view(),name="docSearchList" ),
     path('docSearchListData/', docSearchListData.as_view(),name="docSearchListData" ),
+    path('docSearchJsonData/', docSearchJsonData.as_view(),name="docSearchJsonData" ),
     
 ]
