@@ -32,17 +32,20 @@
             </div>
             <div class="mb-3">
               <label class="form-label" for="title">제목</label>
-              <input type="text" class="form-control" id="title" placeholder="제목을 작성해주세요">
+              <input type="text" class="form-control" id="title" name="title" placeholder="제목을 작성해주세요">
+              <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
             </div>
             <div class="mb-3">
               <label class="form-label" for="content">내용</label>
-              <textarea id="content" class="form-control" rows="10" placeholder="내용을 작성해주세요"></textarea>
+              <textarea id="content" name="content" class="form-control" rows="10" placeholder="내용을 작성해주세요"></textarea>
+              <label id="content-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
             </div>
             <div class="mb-3">
               <label class="form-label w-100">파일 첨부</label>
               <input type="file" id="attachFile" name="attachFile">
             </div>
-            <input type="hidden" class="form-control" id="category" value="1">
+            <input type="hidden" class="form-control" id="category" name="category" value="1">
+            <input type="hidden" id="id" name="id" value="{{data.id}}">
           </form>
           <button id = "save" class="btn btn-primary">Submit</button>
         </div>
@@ -56,30 +59,27 @@
 {% block inline_javascript %}
 <script>
   const save = document.querySelector('#save');
-  var formData = new FormData();
-  formData.append('title',title);
-  formData.append('content',content);
-
-  // var form = $('#frm')[0];
-  // var formData = new FormData(form);
-  // formData.append('attachFile', $('#attachFile')[0].files[0]);
 
   save.addEventListener('click', () => {
-    $.ajax({
-      type : 'POST',
-      contentType: 'multipart/form-data',
-      url : "{% url 'postSave' %}",        
-      dataType : 'json',        
-      data : formData,
+    $("#frm").ajaxForm({
+      type : 'post',
+			url : "{% url 'postSave' %}",
+			enctype : "multipart/form-data",
+			dataType : "json",
       processData : false,
-      contentType : false,     
-      cache: false,           
-      timeout: 600000,  
-      success : function(data) {
-        alert(data.msg);
-        location.href="{% url 'indexPage' %}"
-      }
-    });
+			error : function(){
+				alert("에러") ;
+			},
+			success : function(data){
+        let formLen = data.form.length;
+        if(formLen == 0 || typeof(formLen) =='undefined'){
+          alert(data.msg);
+          location.href="{% url 'indexPage' %}"
+        }else{
+          formError(data.form);
+        }
+			}
+		}).submit();
   });
 </script>
 {% endblock inline_javascript %}
