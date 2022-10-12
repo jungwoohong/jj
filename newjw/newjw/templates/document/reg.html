@@ -21,6 +21,14 @@
   border:1px solid !important;
   border-color:#ddd !important;
 }
+
+.nav-item a {
+  
+  width: 100px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+}	
 </style>
 {% endblock %}
 
@@ -75,7 +83,7 @@
 								<div class="tab-content">
 									<div class="tab-pane active" id="tab-1" role="tabpanel">
                     <div id="excelGrid"> </div>
-									</div>                
+									</div>                              
 								</div>
 							</div>
 						</div>            
@@ -112,9 +120,45 @@
   const container = document.querySelector('#excelGrid');
   const save = document.querySelector('#save');
   const id = $('#id').val();
+  hotObj = Array();
 
   showExcelTable(container);
   
+  function tabOpen(obj,objTitle){
+    $.each(obj,function(idx,item){
+      if ($('#tab-'+item).length >=1) return;
+
+       let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'">'+objTitle[idx]+'</a></li>';
+       let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
+       tabContentHtml +='<div id="excelGrid'+item+'"> </div>';
+       tabContentHtml +='</div>';
+
+       $('.nav-tabs').append(tabTitleHtml);
+       $('.tab-content').append(tabContentHtml);
+
+       const containerNum = document.querySelector('#excelGrid'+item);
+       showExcelTableObj(containerNum,item);
+       
+      setTimeout(function(){
+          $.ajax({        
+            type : 'POST',
+            url : "{% url 'docJsonData' %}",        
+            dataType : 'json',        
+            data : {id:item},
+            success : function(data) {
+              hotObj[item].loadData(data.data);
+            }
+          });
+      }, 1000)
+   });
+  }
+
+  $(document).on("click", ".nav-tabs li a", function(){
+    let id = $(this).data('id');
+    if(id) hotObj[id].render();
+
+  });
+
   function loadExcelData(id){
     $.ajax({        
       type : 'POST',
