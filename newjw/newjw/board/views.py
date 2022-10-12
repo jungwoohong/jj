@@ -41,7 +41,10 @@ class postSave(LoginRequiredMixin, View):
 
         msg = "실패하였습니다."
 
-        myfile = request.FILES['attachFile']
+        # myfile = request.FILES['attachFile']
+        # fs = FileSystemStorage(location='media/screening_ab1', base_url='media/screening_ab1')
+        # filename = fs.save(myfile.name, myfile)
+        # uploaded_file_url = fs.url(filename)
 
         id          = request.POST.get('id')
         category    = request.POST.get('category')
