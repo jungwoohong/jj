@@ -5,12 +5,16 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.datastructures import MultiValueDictKeyError
 from django.db.models import Q
+from datetime import date
+from django.conf import settings
 import json
+import os
 from core.views import DatatablesServerSideView
 from django.core.files.storage import FileSystemStorage
 
-from .forms import postForm
+from .forms import *
 from .models import post
 
 
@@ -22,7 +26,7 @@ class index(LoginRequiredMixin, View):
 class getBoardListData(LoginRequiredMixin, DatatablesServerSideView):
 
     model = post
-    columns = ['id','title','user_id', 'registered_date', 'view_count']
+    columns = ['id', 'title', 'user_id', 'registered_date', 'view_count']
     searchable_columns = ['title']
     #foreign_fields = {'create': 'create__date'}
 
@@ -33,7 +37,16 @@ class getBoardListData(LoginRequiredMixin, DatatablesServerSideView):
 
 class postReg(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'board/reg.html')
+
+        context = {}
+        id = request.GET.get('id')
+        
+        if(id) :       
+            data = get_object_or_404(post, id=id)
+            context = {"data":data}
+                
+        return render(request, 'board/reg.html',context)
+
 
 class postSave(LoginRequiredMixin, View):
 
@@ -41,45 +54,74 @@ class postSave(LoginRequiredMixin, View):
 
         msg = "실패하였습니다."
 
-        myfile = request.FILES['attachFile']
+        folder_name = str(date.today().strftime("%Y%m%d"))
+        MEDIA_ROOT = getattr(settings, 'MEDIA_ROOT', None)
+        path = os.path.join(MEDIA_ROOT, folder_name)
 
-        id          = request.POST.get('id')
-        category    = request.POST.get('category')
-        title       = request.POST.get('title')
-        content     = request.POST.get('content')
-        loginId     = request.user.username   
+        id = request.POST.get('id')
+        category = request.POST.get('category')
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        loginId = request.user.username
 
-        arr = {"user_id": loginId, "category": category, "title": title,"content": content }
+        arr = {"user_id": loginId, "category": category, "title": title, "content": content}
         form = postForm(arr)
-
+        
         if form.is_valid():
             if id == '':
                 record = form.save()
+                try:
+                    myfile = request.FILES['attachFile']
+
+                    fileArr = {"upload": record.id,
+                                "file_path": path, 
+                                "file_name": myfile.name, 
+                                "file_real_name": myfile.name,
+                                "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
+                                "file_size": myfile.size}
+
+                    fileForm = uploadFileForm(fileArr)
+                    if fileForm.is_valid():
+                        if not os.path.isdir(path):
+                            os.makedirs(path)
+                        
+                        fs = FileSystemStorage(location=path)
+                        fs.save(myfile.name, myfile)
+
+                        fileForm.save()  
+
+                except MultiValueDictKeyError:
+                    myfile = False
+
+                         
+
                 msg = "저장하였습니다."
+
             else:
                 updateData = post.objects.get(id=id)
-                updateData.title        = title
-                updateData.content        = content
+                updateData.title = title
+                updateData.content = content
                 updateData.save()
-                msg = "수정하였습니다."                         
+                msg = "수정하였습니다."
 
-        retrunMsg = {"msg": msg}
-        
-        return JsonResponse(retrunMsg)   
+        retrunMsg = {"msg": msg, "form":form.errors}
+
+        return JsonResponse(retrunMsg)
+
 
 class postDetailView(LoginRequiredMixin, View):
     def get(self, request):
-        
+
         id = request.GET.get('id')
         if id != '':
             try:
                 rs = post.objects.get(id=id)
                 context = {
-                    'rs' : rs,
+                    'rs': rs,
                 }
                 return render(request, 'board/detail.html', context)
             except post.DoesNotExist:
-                return           
+                return
 
 
         return render(request, 'board/boardList.html')
