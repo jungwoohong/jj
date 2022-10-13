@@ -13,7 +13,7 @@ class post(models.Model):
     class Meta : 
          db_table = 'doc_post'
 
-# 문서 보관함
+# 데이터 보관함
 class data_collection(models.Model):
     post                = models.ForeignKey(post, on_delete=models.CASCADE)
     cell_row            = models.IntegerField(blank=True, null=True)
