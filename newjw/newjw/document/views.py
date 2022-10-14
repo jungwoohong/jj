@@ -1,15 +1,19 @@
 import json
-from pprint import pprint
+from turtle import pos
 from django.views import View
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, JsonResponse
 import pandas as pd
 from django.utils import timezone
+from django.db.models import Subquery
 from .forms import postForm, dataCollectionForm, shareUserForm
 from .models import post, data_collection, share_user
 from datetime import datetime
 from core.views import DatatablesServerSideView
+from django.http.response import HttpResponse, HttpResponseBadRequest
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator
 
 class docReg(LoginRequiredMixin, View):
 
@@ -144,11 +148,49 @@ class docSearchListData(LoginRequiredMixin, DatatablesServerSideView):
 
     model = post
     columns = ['id','title','email', 'start_date','end_date','create_date']
-    searchable_columns = ['title','email']
+    searchable_columns = []
 
-    def get_initial_queryset(self):
-        qs = super(docSearchListData, self).get_initial_queryset()
-        return qs.filter(email__isnull=False)
+    def get(self, request, *args, **kwargs):
+        if not request.is_ajax():            
+            return HttpResponseBadRequest()
+        try:
+            params = super(docSearchListData, self).read_parameters(request.GET)            
+        except ValueError:
+            return HttpResponseBadRequest()
+
+        qs = self.get_initial_queryset(params)
+
+        if len(params['orders']):            
+            qs = qs.order_by(
+                *[order.get_order_mode() for order in params['orders']])
+
+        # super(docSearchListData, self).
+        paginator = Paginator(qs, params['length'])
+        return HttpResponse(
+            json.dumps(
+                self.get_response_dict(paginator, params['draw'],
+                                       params['start']),
+                cls=DjangoJSONEncoder
+            ),
+            content_type="application/json")
+
+    def get_initial_queryset(self, *args, **kwargs):
+        qs = None
+        search_value = args[0].get('search_value')
+        extra_search = args[0].get('extra_search')
+        
+        if (search_value != None) :
+            dataCollectionRs = data_collection.objects.filter(data__contains=search_value)
+            if(extra_search != None ) :
+                if(extra_search != 'all' ) :
+                    dataCollectionRs = dataCollectionRs.filter(cell_type=extra_search)
+
+            qs = post.objects.filter(id__in=Subquery(dataCollectionRs.values('post')))
+
+        else :
+            qs = super(docSearchListData, self).get_initial_queryset()
+
+        return qs         
 
 class docSearchJsonData(LoginRequiredMixin, View):
 

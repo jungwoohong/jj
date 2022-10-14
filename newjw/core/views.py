@@ -117,6 +117,10 @@ class DatatablesServerSideView(View):
         if search_value:
             params['search_value'] = search_value
 
+        extra_search = query_dict.get('extra_search')
+        if extra_search:
+            params['extra_search'] = extra_search   
+
         params.update({'column_links': column_links, 'orders': orders})
         return params
 
