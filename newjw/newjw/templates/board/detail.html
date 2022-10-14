@@ -37,12 +37,16 @@
             <div class="mb-3">
               <label class="form-label" for="content">내용</label>
               <textarea id="content" class="form-control" rows="10" readonly >{{ rs.content|safe }}</textarea>
+            </div>            
+            {% for file in fileRs %}
+            <label class="form-label" for="file">첨부파일</label>
+            <div class="form-control mb-3">
+              <a href="{% url 'fileDownload' id=file.id %}">{{ file.file_name }}</a>
             </div>
-            <div class="mb-3">
-              첨부파일 넣을거얌
-            </div>
+            {% endfor %}
           </form>
-          <button id="list" class="btn btn-primary">돌아가기</button>
+          <button id="list" class="btn btn-primary">수정</button>
+          <button id="list" class="btn btn-primary">목록</button>
         </div>
       </div>
     </div>

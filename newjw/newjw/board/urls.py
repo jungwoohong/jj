@@ -7,5 +7,7 @@ urlpatterns = [
     path('getBoardListData/',getBoardListData.as_view(), name="getBoardListData"),
     path('postReg/',postReg.as_view(), name="postReg"),
     path('postSave/',postSave.as_view(), name="postSave"),
-    path('postDetailView/',postDetailView.as_view(), name="postDetailView")
+    path('postDetailView/',postDetailView.as_view(), name="postDetailView"),
+    path('fileDownload/<int:id>',fileDownload.as_view(), name="fileDownload" )
+    
 ]

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers.json import DjangoJSONEncoder
@@ -16,6 +16,9 @@ from django.core.files.storage import FileSystemStorage
 
 from .forms import *
 from .models import post
+import mimetypes
+
+#from newjw.models import *
 
 
 class index(LoginRequiredMixin, View):
@@ -116,8 +119,10 @@ class postDetailView(LoginRequiredMixin, View):
         if id != '':
             try:
                 rs = post.objects.get(id=id)
+                fileRs = upload_file.objects.filter(upload=id)
                 context = {
                     'rs': rs,
+                    'fileRs':fileRs
                 }
                 return render(request, 'board/detail.html', context)
             except post.DoesNotExist:
@@ -125,3 +130,16 @@ class postDetailView(LoginRequiredMixin, View):
 
 
         return render(request, 'board/boardList.html')
+
+class fileDownload(LoginRequiredMixin, View):
+    def get(self, request,id):
+     
+        rs = upload_file.objects.get(id=id)
+
+        filename = rs.file_name
+        filepath = os.path.join(rs.file_path, filename)
+        mime_type, _ = mimetypes.guess_type(filepath)
+        response = HttpResponse(open(filepath, 'r', encoding='UTF8'), content_type=mime_type)
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+        return response
