@@ -45,7 +45,9 @@
             </div>
             {% endfor %}
           </form>
-          <button id="list" class="btn btn-primary">수정</button>
+          {% if rs.user_id == request.user.username %}
+          <button id="update" class="btn btn-primary">수정</button>
+          {% endif %}
           <button id="list" class="btn btn-primary">목록</button>
         </div>
       </div>
@@ -58,9 +60,14 @@
 {% block inline_javascript %}
 <script>
 const list = document.querySelector('#list');
+const update = document.querySelector('#update');
 
 list.addEventListener('click',() => {
-  location.href = "{% url 'indexPage' %}"
+  location.href = "{% url 'indexPage' %}?page={{request.GET.page}}&pageLen={{request.GET.pageLen}}"
+})
+
+update.addEventListener('click', () => {
+  location.href = "{% url 'postReg' %}?id={{rs.id}}"
 })
 </script>
 {% endblock inline_javascript %}

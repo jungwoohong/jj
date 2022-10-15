@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, FileResponse
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, JsonResponse, FileResponse, Http404
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers.json import DjangoJSONEncoder
@@ -16,6 +16,7 @@ from django.core.files.storage import FileSystemStorage
 
 from .forms import *
 from .models import post
+from .models import upload_file
 import mimetypes
 
 #from newjw.models import *
@@ -43,12 +44,19 @@ class postReg(LoginRequiredMixin, View):
 
         context = {}
         id = request.GET.get('id')
-        
         if(id) :       
             data = get_object_or_404(post, id=id)
-            context = {"data":data}
+            fileRs = upload_file.objects.filter(upload=id)
+
+            if data.user_id != request.user.username:                
+                raise Http404("권한이 없습니다.")
                 
-        return render(request, 'board/reg.html',context)
+            context = {
+                "data":data,
+                'fileRs':fileRs
+            }
+                
+        return render(request, 'board/reg.html', context)
 
 
 class postSave(LoginRequiredMixin, View):
@@ -66,6 +74,7 @@ class postSave(LoginRequiredMixin, View):
         title = request.POST.get('title')
         content = request.POST.get('content')
         loginId = request.user.username
+        returnId = None
 
         arr = {"user_id": loginId, "category": category, "title": title, "content": content}
         form = postForm(arr)
@@ -73,6 +82,7 @@ class postSave(LoginRequiredMixin, View):
         if form.is_valid():
             if id == '':
                 record = form.save()
+                returnId = record.id
                 try:
                     myfile = request.FILES['attachFile']
 
@@ -94,9 +104,7 @@ class postSave(LoginRequiredMixin, View):
                         fileForm.save()  
 
                 except MultiValueDictKeyError:
-                    myfile = False
-
-                         
+                    myfile = False                         
 
                 msg = "저장하였습니다."
 
@@ -105,9 +113,33 @@ class postSave(LoginRequiredMixin, View):
                 updateData.title = title
                 updateData.content = content
                 updateData.save()
+                try:
+                    myfile = request.FILES['attachFile']
+
+                    fileArr = {"upload": id,
+                                "file_path": path, 
+                                "file_name": myfile.name, 
+                                "file_real_name": myfile.name,
+                                "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
+                                "file_size": myfile.size}
+
+                    fileForm = uploadFileForm(fileArr)
+                    if fileForm.is_valid():
+                        if not os.path.isdir(path):
+                            os.makedirs(path)
+                        
+                        fs = FileSystemStorage(location=path)
+                        fs.save(myfile.name, myfile)
+
+                        fileForm.save()  
+
+                except MultiValueDictKeyError:
+                    myfile = False
+
+                returnId = id
                 msg = "수정하였습니다."
 
-        retrunMsg = {"msg": msg, "form":form.errors}
+        retrunMsg = {"msg": msg, "form":form.errors, "returnId":returnId}
 
         return JsonResponse(retrunMsg)
 
@@ -143,3 +175,19 @@ class fileDownload(LoginRequiredMixin, View):
         response['Content-Disposition'] = "attachment; filename=%s" % filename
 
         return response
+
+class fileDelete(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+
+        result = ""
+        id = request.POST.get('id')
+
+        try:
+            upload_file.objects.filter(id=id).delete()
+            result = 1
+        except Exception():
+            result = 0
+     
+        returnVal = { 'result': result }
+
+        return JsonResponse(returnVal)

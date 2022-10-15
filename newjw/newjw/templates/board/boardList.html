@@ -28,7 +28,7 @@
 									</table>
 								</div>
 							</div>
-              <a href="{% url 'postReg' %}" class="btn btn-primary float-end mt-n1"><i class="fas fa-plus"></i> 작성 </a>
+              				<a href="{% url 'postReg' %}" class="btn btn-primary float-end mt-n1"><i class="fas fa-plus"></i> 작성 </a>
 						</div>
 					</div>
 
@@ -37,13 +37,25 @@
 
 {% block inline_javascript %}
 <script>
-  $('#datatables').DataTable({
+	let page = 0;
+	let pageParam = "{{request.GET.page}}";
+	let pageLen = 10;
+	let pageLenParam = "{{request.GET.pageLen}}";
+	if (pageParam != ''){
+		if(pageLenParam != ''){
+			pageLen = pageLenParam;
+		}
+		page = parseInt(pageParam)*pageLen;
+	}
+   var table = $('#datatables').DataTable({
       serverSide: true,
-	    processing: true,
+	  processing: true,
       ordering:  true,
       paging: true,
-	    language : lang_kor,
-	    order: [[0, 'desc']],
+	  pageLength: pageLen,
+	  displayStart:page,
+	  language : lang_kor,
+	  order: [[0, 'desc']],
       ajax: { 
               type: "GET",
               datatype : 'json',
@@ -72,10 +84,15 @@
 
 	$("#datatables").on('click', 'tbody tr', function () {
 
-		let row = $("#datatables").DataTable().row($(this)).data();		
-		location.href="{% url 'postDetailView' %}?id="+row.id
+		let row = $("#datatables").DataTable().row($(this)).data();	
+		let page = table.page();	
+		let pageLen = table.page.info().length;
+		location.href="{% url 'postDetailView' %}?id="+row.id+"&page="+page+"&pageLen="+pageLen;
 	});
 	
 	navFun('bbs',2,0)
+
+
+	
 </script>
 {% endblock inline_javascript %}

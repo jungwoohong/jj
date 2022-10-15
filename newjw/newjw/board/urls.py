@@ -8,6 +8,6 @@ urlpatterns = [
     path('postReg/',postReg.as_view(), name="postReg"),
     path('postSave/',postSave.as_view(), name="postSave"),
     path('postDetailView/',postDetailView.as_view(), name="postDetailView"),
-    path('fileDownload/<int:id>',fileDownload.as_view(), name="fileDownload" )
-    
+    path('fileDownload/<int:id>',fileDownload.as_view(), name="fileDownload" ),
+    path('fileDelete/', fileDelete.as_view(), name="fileDelete")
 ]
