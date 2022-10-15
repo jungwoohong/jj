@@ -32,17 +32,26 @@
             </div>
             <div class="mb-3">
               <label class="form-label" for="title">제목</label>
-              <input type="text" class="form-control" id="title" name="title" placeholder="제목을 작성해주세요">
+              <input type="text" class="form-control" id="title" name="title" placeholder="제목을 작성해주세요" value="{{ data.title }}">
               <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
             </div>
             <div class="mb-3">
               <label class="form-label" for="content">내용</label>
-              <textarea id="content" name="content" class="form-control" rows="10" placeholder="내용을 작성해주세요"></textarea>
+              <textarea id="content" name="content" class="form-control" rows="10" placeholder="내용을 작성해주세요" >{{ data.content|safe }}</textarea>
               <label id="content-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
             </div>
             <div class="mb-3">
               <label class="form-label w-100">파일 첨부</label>
               <input type="file" id="attachFile" name="attachFile">
+              {% if fileRs %}
+                  <ul class="list-group">
+                  {% for file in fileRs %}
+                    <li class="list-group-item">
+                      <span>{{ file.file_name }} </span> <i data-id = "{{file.id}}" class="align-middle me-2 fas fa-fw fa-times deleteFileBtn"></i>
+                    </li>                
+                  {% endfor %}
+                  </ul>
+              {% endif %}
             </div>
             <input type="hidden" class="form-control" id="category" name="category" value="1">
             <input type="hidden" id="id" name="id" value="{{data.id}}">
@@ -59,7 +68,7 @@
 {% block inline_javascript %}
 <script>
   const save = document.querySelector('#save');
-
+  
   save.addEventListener('click', () => {
     $("#frm").ajaxForm({
       type : 'post',
@@ -74,12 +83,35 @@
         let formLen = data.form.length;
         if(formLen == 0 || typeof(formLen) =='undefined'){
           alert(data.msg);
-          location.href="{% url 'indexPage' %}"
+          location.href="{% url 'postDetailView' %}?id="+data.returnId;
         }else{
           formError(data.form);
         }
 			}
 		}).submit();
   });
+
+  $('.deleteFileBtn').click(function(){
+    let boolean = confirm("삭제하시겠습니까?");
+    if(boolean == false){
+      return 
+    }
+    let th = $(this);
+    let id = th.data('id');
+
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'fileDelete' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        if (data.result == 1) {          
+          th.closest('li').empty();
+        } else {
+          alert("실패");
+        } 
+      }
+    });         
+  })
 </script>
 {% endblock inline_javascript %}
