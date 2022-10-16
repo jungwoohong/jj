@@ -10,6 +10,12 @@
 .handsontable .even {
   background: #eee
 }
+.list-group-custom{
+  border : 1px solid rgba(0,0,0,.125)
+}
+.list-group-item-custom {
+   border : 0px solid!important;
+}
 </style>
 {% endblock %}
 
@@ -42,21 +48,23 @@
             </div>
             <div class="mb-3">
               <label class="form-label w-100">파일 첨부</label>
-              <input type="file" id="attachFile" name="attachFile">
+              <input type="file" id="attachFile" name="attachFile" multiple onchange="handleFiles(this.files)" style="margin-bottom: 10px;">
+              <div class="attachList">
               {% if fileRs %}
-                  <ul class="list-group">
+                  <ul class="list-group list-group-custom">
                   {% for file in fileRs %}
-                    <li class="list-group-item">
+                    <li class="list-group-item list-group-item-custom">
                       <span>{{ file.file_name }} </span> <i data-id = "{{file.id}}" class="align-middle me-2 fas fa-fw fa-times deleteFileBtn"></i>
                     </li>                
                   {% endfor %}
                   </ul>
               {% endif %}
+              </div>
             </div>
             <input type="hidden" class="form-control" id="category" name="category" value="1">
             <input type="hidden" id="id" name="id" value="{{data.id}}">
           </form>
-          <button id = "save" class="btn btn-primary">Submit</button>
+          <button id = "save" class="btn btn-primary" style="margin-top:10px">Submit</button>
         </div>
       </div>
     </div>
@@ -67,9 +75,20 @@
 
 {% block inline_javascript %}
 <script>
+
   const save = document.querySelector('#save');
+  filekey = 0;
+  dataTransfer = new DataTransfer(); //Array를 FileList로 처리하기 위해 선언
+  objContent = new Object();
   
   save.addEventListener('click', () => {
+
+    // 여기서 objContent를 FileList(array-like) 형태로 바꿔줘야함
+    $.each(objContent,function(idx,item){
+        dataTransfer.items.add(objContent[idx]);        
+        $('#attachFile')[0].files = dataTransfer.files;
+    })
+
     $("#frm").ajaxForm({
       type : 'post',
 			url : "{% url 'postSave' %}",
@@ -91,13 +110,23 @@
 		}).submit();
   });
 
-  $('.deleteFileBtn').click(function(){
+  $(document).on('click','.deleteFileBtn',function(){
     let boolean = confirm("삭제하시겠습니까?");
     if(boolean == false){
-      return 
+      return;
     }
     let th = $(this);
     let id = th.data('id');
+    let odjid = th.closest('li').data('odjid');
+
+    //<li> 태그의 data-id 가져다가 object의 filekey 찾아서 object에서 삭제하기
+
+    if(!id) {
+      th.closest('li').remove();
+      th.unwrap();
+      delete objContent[odjid]; 
+      return;
+    }
 
     $.ajax({        
       type : 'POST',
@@ -112,6 +141,28 @@
         } 
       }
     });         
-  })
+  });
+ 
+  function handleFiles(file){    
+
+    let appendDiv = $('.attachList');
+    let ul = appendDiv.find('ul');
+    if( ul.length < 1){
+      ul = $("<ul />",{"class":"list-group list-group-custom"}).appendTo(appendDiv);
+    }
+    
+    $.each(file,function(idx,item){
+
+      objContent[filekey] = item;      
+
+      let textContent = item.name + '<i class="align-middle me-2 fas fa-fw fa-times deleteFileBtn"></i>'; 
+      $("<li />",{html:textContent, "data-odjid":filekey, "class":"list-group-item list-group-item-custom"}).appendTo(ul);   
+
+      filekey += 1;
+    });
+
+    $("#attachFile").val("");
+  }
+
 </script>
 {% endblock inline_javascript %}
