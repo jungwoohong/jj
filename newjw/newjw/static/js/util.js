@@ -41,7 +41,6 @@ function DropFile(dropAreaId, fileListId) {
     }
   
     function handleFiles(files) {
-        console.log(files.length)
       if (files.length != 1) {
         alert("하나 이상은 안됩니다.");
         return;
