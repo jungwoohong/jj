@@ -8,7 +8,7 @@ import pandas as pd
 from django.utils import timezone
 from django.db.models import Subquery
 from .forms import postForm, dataCollectionForm, shareUserForm
-from .models import post, data_collection, share_user
+from .models import post, data_collection, share_user, excel_json_data
 from datetime import datetime
 from core.views import DatatablesServerSideView
 from django.http.response import HttpResponse, HttpResponseBadRequest
@@ -67,36 +67,52 @@ class docSave(LoginRequiredMixin, View):
         end_date    = datetime.strptime(request.POST.get('end_date'), "%Y.%m.%d")
         end_date    = timezone.make_aware(end_date)
                     
-        arr = {"email": loginId,"json_data": json_data, "title": title,"start_date":start_date,"end_date": end_date}            
+        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date}            
         form = postForm(arr)
 
         if form.is_valid():
             if id == '':
+                listJsonData = list(json_data)
+                # print(type(listJsonData))
+                # print(json_data)
 
-                #post 저장
-                record = form.save()
+                jsonLoad = json.loads(json_data)
+
+                for val in jsonLoad:
+                    key     = ''.join(list(val.keys()));
+                    value   = list(val.values());
+                    print(key,value)    
+
+               # for jsonList in listJsonData :
+                    #forJosn = json.loads(jsonList)
+                #    print(jsonList)
+                #     print(forJosn['data'])
+
+
+                # #post 저장
+                # record = form.save()
                 
-                # 데이터 저장
-                jsonList = json.loads(json_data)
-                cell_row = 0
-                cell_line = 0
+                # # 데이터 저장
+                # jsonList = json.loads(json_data)
+                # cell_row = 0
+                # cell_line = 0
 
-                for forData in jsonList :
-                    cell_row = cell_row+1
-                    cell_line = 0
-                    for rs in forData :
-                        cell_line = cell_line+1
-                        cell_type = "cell"
-                        if cell_row == 1 or cell_row == 2 :
-                            cell_type = "header"
+                # for forData in jsonList :
+                #     cell_row = cell_row+1
+                #     cell_line = 0
+                #     for rs in forData :
+                #         cell_line = cell_line+1
+                #         cell_type = "cell"
+                #         if cell_row == 1 or cell_row == 2 :
+                #             cell_type = "header"
 
-                        arrDataCollection = {"post":record.id,"cell_row":cell_row,"cell_line":cell_line,"data":rs,"cell_type":cell_type} 
-                        formDataCollection = dataCollectionForm(arrDataCollection)
+                #         arrDataCollection = {"post":record.id,"cell_row":cell_row,"cell_line":cell_line,"data":rs,"cell_type":cell_type} 
+                #         formDataCollection = dataCollectionForm(arrDataCollection)
 
-                        if formDataCollection.is_valid():
-                            formDataCollection.save()
+                #         if formDataCollection.is_valid():
+                #             formDataCollection.save()
 
-                msg = "저장하였습니다."                    
+                # msg = "저장하였습니다."                    
             else :
                 updateData = post.objects.get(id=id)
                 updateData.json_data    = json_data
