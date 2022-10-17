@@ -124,7 +124,7 @@ class docSave(LoginRequiredMixin, View):
     @background(schedule=1)
     def dataCellSave(*args, **kwargs):
 
-        getId = args[0]
+        id = args[0]
         excelJsonData = args[1]
 
         #데이터 셀 저장
@@ -135,6 +135,7 @@ class docSave(LoginRequiredMixin, View):
         for forData in listexcelJsonData[0] :
             cell_row = cell_row+1
             cell_line = 0
+            print('aaa')
             for rs in forData :
                 
                 cell_line = cell_line+1
