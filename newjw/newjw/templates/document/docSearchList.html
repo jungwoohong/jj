@@ -7,7 +7,15 @@
 .offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl{
 	--bs-offcanvas-width:70%!important;
 }
+.tab .nav-tabs .nav-link.active {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
 
+.tab .tab-content {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
 </style>
 {% endblock %}
 
@@ -50,9 +58,16 @@
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
-    <div>
-		<div id="excelGrid"></div>
-    </div>
+		<div class="tab" id="myTab">
+			<ul class="nav nav-tabs" role="tablist">
+				<li class="nav-item"><a class="nav-link active" href="#tab-1" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
+				<li class="nav-item"><a class="nav-link" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="tab-1" role="tabpanel">
+					<div id="excelGrid" class="excelGridClass"> </div>
+				</div>                              
+			</div> 
   </div>
 </div> 
 {% endblock layerHtml %}
@@ -61,6 +76,7 @@
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
 <script src="{% static 'js/handsonTable.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script src="{% static 'js/tabExcel.js' %}"></script>
 <script src="{% static 'js/dataTables.select.min.js' %}"></script>
 <script>
 
@@ -150,7 +166,7 @@
 						//return;
 					}
 					
-					opener.tabOpen(obj,objTitle);	
+					opener.tabOpen(obj,objTitle,'ajax');
                 }
             }
         ]				

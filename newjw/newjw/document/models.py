@@ -4,7 +4,6 @@ from django.db import models
 class post(models.Model):
     email               = models.CharField(max_length=50)
     title               = models.CharField(max_length=200)
-    json_data           = models.TextField(null=True,default='empty')
     start_date          = models.DateTimeField()
     end_date            = models.DateTimeField()
     create_date         = models.DateTimeField(auto_now_add=True)
@@ -32,4 +31,13 @@ class share_user(models.Model):
     email               = models.CharField(max_length=50)   
 
     class Meta : 
-         db_table = 'doc_share_user'      
+         db_table = 'doc_share_user'
+
+# 엑셀시트 저장
+class excel_json_data(models.Model):
+    post                = models.ForeignKey(post, on_delete=models.CASCADE)
+    title               = models.CharField(max_length=200,null=True,default='empty')
+    json_data           = models.TextField(null=True,default='empty')
+
+    class Meta : 
+         db_table = 'doc_excel_json_data'         

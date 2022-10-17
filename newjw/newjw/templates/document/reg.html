@@ -22,13 +22,13 @@
   border-color:#ddd !important;
 }
 
-.nav-item a {
+/* .nav-item a {
   
-  width: 100px;
+  max-width: 120px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; 
-}	
+}	 */
 </style>
 {% endblock %}
 
@@ -76,15 +76,16 @@
               </div>                                        
             </form>
             <div class="col-12">
-							<div class="tab">
+							<div class="tab" id="myTab">
 								<ul class="nav nav-tabs" role="tablist">
-									<li class="nav-item"><a class="nav-link active" href="#tab-1" data-bs-toggle="tab" role="tab">Sheet1</a></li>
+                  <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i class="align-middle me-2 fas fa-plus"></i></a></li>
+									<li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
 								</ul>
 								<div class="tab-content">
-									<div class="tab-pane active" id="tab-1" role="tabpanel">
-                    <div id="excelGrid"> </div>
+									<div class="tab-pane active" id="tab-2" role="tabpanel">
+                    <div id="excelGrid" class="excelGridClass"> </div>
 									</div>                              
-								</div>
+								</div>                
 							</div>
 						</div>            
           </div>
@@ -115,6 +116,7 @@
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
 <script src="{% static 'js/handsonTable.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script src="{% static 'js/tabExcel.js' %}"></script>
 <script>
     
   const container = document.querySelector('#excelGrid');
@@ -123,53 +125,32 @@
   hotObj = Array();
 
   showExcelTable(container);
-  
-  function tabOpen(obj,objTitle){
-    $.each(obj,function(idx,item){
-      if ($('#tab-'+item).length >=1) return;
-
-       let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'">'+objTitle[idx]+'</a></li>';
-       let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
-       tabContentHtml +='<div id="excelGrid'+item+'"> </div>';
-       tabContentHtml +='</div>';
-
-       $('.nav-tabs').append(tabTitleHtml);
-       $('.tab-content').append(tabContentHtml);
-
-       const containerNum = document.querySelector('#excelGrid'+item);
-       showExcelTableObj(containerNum,item);
-       
-      setTimeout(function(){
-          $.ajax({        
-            type : 'POST',
-            url : "{% url 'docJsonData' %}",        
-            dataType : 'json',        
-            data : {id:item},
-            success : function(data) {
-              hotObj[item].loadData(data.data);
-            }
-          });
-      }, 1000)
-   });
-  }
 
   $(document).on("click", ".nav-tabs li a", function(){
     let id = $(this).data('id');
+
+    if(!id) return; 
+    let deleteBtn = '<i class="align-middle me-2 fas fa-fw fa-times position-absolute" style="margin-top:-5px!important;color:#e7adc5;"></i>';
+    $('.fa-times').remove();
+    $(this).append(deleteBtn);
     if(id) hotObj[id].render();
 
   });
 
-  function loadExcelData(id){
-    $.ajax({        
-      type : 'POST',
-      url : "{% url 'docJsonData' %}",        
-      dataType : 'json',        
-      data : {id:id},
-      success : function(data) {
-        hot.loadData(data.data);
-      }
-    }); 
-  }
+  $(document).on("dblclick", ".nav-tabs li a", function(){
+    let getText = $.trim($(this).text());
+    let getHtml = '<input type="text" class="form-control" value="'+getText+'" />';
+    $(this).html(getHtml);
+    $(this).find('input').focus();
+
+  });
+
+  $(document).on("focusout", ".nav-tabs li a input", function(){
+    let getText = $.trim($(this).val());
+    $(this).closest('a').html(getText);
+
+  });
+
 
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
@@ -193,7 +174,7 @@ button.addEventListener('click', () => {
 save.addEventListener('click', () => {
 
   let from = $('#frm');
-  $('#json_data').val(JSON.stringify(hot.getData()));
+  $('#json_data').val(excelDataMake());
 
     $.ajax({        
       type : 'POST',
@@ -201,8 +182,8 @@ save.addEventListener('click', () => {
       dataType : 'json',        
       data : from.serialize(),
       success : function(data) {
-
-        if (data.form.length == 0) {
+        
+        if (!data.form.length) {
           alert(data.msg);
         } else {
           formError(data.form);
@@ -239,6 +220,39 @@ $('#uploadBtn').click(function(){
        }
    });
 });
+
+$('.plusBtn').click(function(){
+  let len = $('.nav-tabs li').length;
+  let name = 'New'+len;
+  let obj = [name];
+  let title = ['sheet'+len];
+
+  tabOpen(obj,title);
+
+  setTimeout(function(){
+    let tabEl = document.querySelector('#myTab li:last-child a')
+    let tab = new bootstrap.Tab(tabEl)
+    tab.show();
+    tabEl.click();
+      }, 100)  
+});
+
+$(document).on("click", ".fa-times", function(){
+    let con = confirm('시트를 지울까요?');
+    if(con == false) return;
+
+    let navActive = $('.nav-item > .active');
+    let navActiveAdd = navActive.closest('li').prev().find('a')
+    navActive.unwrap();
+    navActive.remove();
+    $('.tab-content .active').remove();
+
+    console.log(navActiveAdd);
+    let tab = new bootstrap.Tab(navActiveAdd);
+    tab.show();
+  });
+
+
 
 // 날짜 기본값 넣기
   start = moment();
