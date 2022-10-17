@@ -91,7 +91,7 @@ class docSave(LoginRequiredMixin, View):
                         excelForm.save()
 
                     print(record.id)
-                    self.dataCellSave(record.id,jsonLoad)
+                    self.dataCellSave(record.id,excelJsonData)
 
                 msg = "저장하였습니다."                    
             else :
@@ -123,40 +123,30 @@ class docSave(LoginRequiredMixin, View):
 
     @background(schedule=1)
     def dataCellSave(*args, **kwargs):
-        print('=========================================================================')
-        
-        getId = args[0]
-        data = args[1]
-        print(getId)
-        print('=========================================================================')
-        print(data)
-        print('=========================================================================')
-        # data = excel_json_data.objects.filter(post=id)
-        # print(data)
-        
 
+        getId = args[0]
+        excelJsonData = args[1]
 
         #데이터 셀 저장
-        # listexcelJsonData = list(excelJsonData)
-        # cell_row = 0
-        # cell_line = 0
+        listexcelJsonData = list(excelJsonData)
+        cell_row = 0
+        cell_line = 0
 
-        # for forData in listexcelJsonData[0] :
-        #     cell_row = cell_row+1
-        #     cell_line = 0
-        #     for rs in forData :
+        for forData in listexcelJsonData[0] :
+            cell_row = cell_row+1
+            cell_line = 0
+            for rs in forData :
                 
-        #         cell_line = cell_line+1
-        #         cell_type = "cell"
-        #         if cell_row == 1 or cell_row == 2 :
-        #             cell_type = "header"
+                cell_line = cell_line+1
+                cell_type = "cell"
+                if cell_row == 1 or cell_row == 2 :
+                    cell_type = "header"
 
-        #         arrDataCollection = {"post":id,"cell_row":cell_row,"cell_line":cell_line,"data":rs,"cell_type":cell_type} 
-        #         formDataCollection = dataCollectionForm(arrDataCollection)
+                arrDataCollection = {"post":id,"cell_row":cell_row,"cell_line":cell_line,"data":rs,"cell_type":cell_type} 
+                formDataCollection = dataCollectionForm(arrDataCollection)
 
-        #         if formDataCollection.is_valid():
-                    
-        #             #formDataCollection.save()            
+                if formDataCollection.is_valid():
+                    formDataCollection.save()            
 
         
 
