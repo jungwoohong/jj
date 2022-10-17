@@ -124,7 +124,12 @@ class docSave(LoginRequiredMixin, View):
     @background(schedule=1)
     def dataCellSave(*args, **kwargs):
         print('=========================================================================')
-        print(args)
+        
+        getId = args[0]
+        data = args[1]
+        print(getId)
+        print('=========================================================================')
+        print(data)
         print('=========================================================================')
         # data = excel_json_data.objects.filter(post=id)
         # print(data)
