@@ -82,13 +82,12 @@
   objContent = new Object();
   
   save.addEventListener('click', () => {
-
     // 여기서 objContent를 FileList(array-like) 형태로 바꿔줘야함
     $.each(objContent,function(idx,item){
         dataTransfer.items.add(objContent[idx]);        
         $('#attachFile')[0].files = dataTransfer.files;
-    })
-
+    });
+    console.log($('#attachFile')[0].files);
     $("#frm").ajaxForm({
       type : 'post',
 			url : "{% url 'postSave' %}",
@@ -144,6 +143,7 @@
   });
  
   function handleFiles(file){    
+    console.log(file);
 
     let appendDiv = $('.attachList');
     let ul = appendDiv.find('ul');

@@ -84,24 +84,24 @@ class postSave(LoginRequiredMixin, View):
                 record = form.save()
                 returnId = record.id
                 try:
-                    myfile = request.FILES['attachFile']
+                    for myfile in request.FILES.getlist('attachFile'):   
 
-                    fileArr = {"upload": record.id,
-                                "file_path": path, 
-                                "file_name": myfile.name, 
-                                "file_real_name": myfile.name,
-                                "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
-                                "file_size": myfile.size}
+                        fileArr = {"upload": record.id,
+                                    "file_path": path, 
+                                    "file_name": myfile.name, 
+                                    "file_real_name": myfile.name,
+                                    "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
+                                    "file_size": myfile.size}
 
-                    fileForm = uploadFileForm(fileArr)
-                    if fileForm.is_valid():
-                        if not os.path.isdir(path):
-                            os.makedirs(path)
-                        
-                        fs = FileSystemStorage(location=path)
-                        fs.save(myfile.name, myfile)
+                        fileForm = uploadFileForm(fileArr)
+                        if fileForm.is_valid():
+                            if not os.path.isdir(path):
+                                os.makedirs(path)
+                            
+                            fs = FileSystemStorage(location=path)
+                            fs.save(myfile.name, myfile)
 
-                        fileForm.save()  
+                            fileForm.save()  
 
                 except MultiValueDictKeyError:
                     myfile = False                         
@@ -114,24 +114,24 @@ class postSave(LoginRequiredMixin, View):
                 updateData.content = content
                 updateData.save()
                 try:
-                    myfile = request.FILES['attachFile']
+                    
+                    for myfile in request.FILES.getlist('attachFile'):                   
+                        fileArr = {"upload": id,
+                                    "file_path": path, 
+                                    "file_name": myfile.name, 
+                                    "file_real_name": myfile.name,
+                                    "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
+                                    "file_size": myfile.size}
 
-                    fileArr = {"upload": id,
-                                "file_path": path, 
-                                "file_name": myfile.name, 
-                                "file_real_name": myfile.name,
-                                "file_ext": os.path.splitext(myfile.name)[-1].replace(".", ""), 
-                                "file_size": myfile.size}
+                        fileForm = uploadFileForm(fileArr)
+                        if fileForm.is_valid():
+                            if not os.path.isdir(path):
+                                os.makedirs(path)
+                            
+                            fs = FileSystemStorage(location=path)
+                            fs.save(myfile.name, myfile)
 
-                    fileForm = uploadFileForm(fileArr)
-                    if fileForm.is_valid():
-                        if not os.path.isdir(path):
-                            os.makedirs(path)
-                        
-                        fs = FileSystemStorage(location=path)
-                        fs.save(myfile.name, myfile)
-
-                        fileForm.save()  
+                            fileForm.save()  
 
                 except MultiValueDictKeyError:
                     myfile = False
@@ -171,8 +171,14 @@ class fileDownload(LoginRequiredMixin, View):
         filename = rs.file_name
         filepath = os.path.join(rs.file_path, filename)
         mime_type, _ = mimetypes.guess_type(filepath)
+        # with open(filepath, "r") as f:
+        #     encode = f.encoding
+        #     print(type(encode))
+
+        # print("================[encode]=================>",encode)
         response = HttpResponse(open(filepath, 'r', encoding='UTF8'), content_type=mime_type)
         response['Content-Disposition'] = "attachment; filename=%s" % filename
+        # response['Content-Disposition'] = "attachment; filename*=UTF-8''{}".format(quote(filename.encode('utf-8')))
 
         return response
 
