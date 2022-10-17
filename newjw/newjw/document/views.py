@@ -89,10 +89,9 @@ class docSave(LoginRequiredMixin, View):
                     excelForm = excelJsonDataForm(arrJsonLoad) 
                     if excelForm.is_valid():
                         excelForm.save()
-  
-                    # self.dataCellSave(excelJsonData,record.id)
-                    
-                self.dataCellSave(record.id,record.id)
+
+                    print(record.id)
+                    self.dataCellSave('',record.id,jsonLoad)
 
                 msg = "저장하였습니다."                    
             else :
@@ -123,8 +122,10 @@ class docSave(LoginRequiredMixin, View):
         return JsonResponse(retrunMsg)
 
     @background(schedule=1)
-    def dataCellSave(self, *args, **kwargs):
-        print(args)
+    def dataCellSave(id):
+        print('=========================================================================')
+        print(type(id))
+        print('=========================================================================')
         # data = excel_json_data.objects.filter(post=id)
         # print(data)
         
