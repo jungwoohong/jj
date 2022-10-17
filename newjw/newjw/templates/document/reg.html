@@ -79,9 +79,7 @@
 							<div class="tab" id="myTab">
 								<ul class="nav nav-tabs" role="tablist">
                   <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i class="align-middle me-2 fas fa-plus"></i></a></li>
-									<li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab" role="tab">
-                     <span>Sheet1</span>
-                    </a></li>
+									<li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
 								</ul>
 								<div class="tab-content">
 									<div class="tab-pane active" id="tab-2" role="tabpanel">
@@ -118,6 +116,7 @@
 <script src="{% static 'js/handsonTable.min.js' %}"></script>
 <script src="{% static 'js/handsonTable.js' %}"></script>
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script src="{% static 'js/tabExcel.js' %}"></script>
 <script>
     
   const container = document.querySelector('#excelGrid');
@@ -126,100 +125,6 @@
   hotObj = Array();
 
   showExcelTable(container);
-  
-  function tabOpen(obj,objTitle,type,excelJson){
-
-    $.each(obj,function(idx,item) {
-      if ($('#tab-'+item).length >=1) return;
-
-       let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'"><span>'+objTitle[idx]+'</span></a></li>';
-       let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
-       tabContentHtml +='<div id="excelGrid'+item+'" class="excelGridClass"> </div>';
-       tabContentHtml +='</div>';
-
-       $('.nav-tabs').append(tabTitleHtml);
-       $('.tab-content').append(tabContentHtml);
-
-       const containerNum = document.querySelector('#excelGrid'+item);
-       showExcelTableObj(containerNum,item);
-      
-      if(type == 'ajax') {
-        setTimeout(function(){
-          $.ajax({        
-            type : 'POST',
-            url : "{% url 'docJsonData' %}",        
-            dataType : 'json',        
-            data : {id:item},
-            success : function(data) {
-              hotObj[item].loadData(data.data);
-            }
-          });
-      }, 1000)
-      } else if (type == 'local'){
-        hotObj[item].loadData(excelJson);
-      }
-
-   });
-  }
-  function loadExcelData(id){
-    $.ajax({        
-      type : 'POST',
-      url : "{% url 'docJsonData' %}",        
-      dataType : 'json',        
-      data : {id:id},
-      success : function(data) {
-        $.each(data.data,function(idx,item){
-          let title     = [item.fields.title];
-          let excelJson = item.fields.json_data.replace(/None/gi, "null");
-          
-          excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
-
-          if( idx == 0 ) {
-            $('.nav-item > .active > span').text(title);
-            hot.loadData(excelJson[0]);
-
-          } else {
-            let len = $('.nav-tabs li').length;
-            let name = 'New'+len;
-            let obj = [name];
-            tabOpen(obj,title,'local',excelJson[0]);
-
-          }
-
-        })
-      }
-    }); 
-  }
-
-  function excelDataMake(){
-
-    let arr = new Array();
-
-    let sheet = $('#myTab .nav-tabs .nav-item');
-    let data  = $('.excelGridClass');
-    delete sheet[0];
-    sheet.splice(0, 1);
-
-    $.each(sheet,function(idx,item){
-      
-      let name    = $.trim($(item).text());
-      let hotData = "";
-      let rs = new Object();
-
-      if(idx == 0) {
-        hotData = hot;
-      } else {
-        hotData = hotObj[Object.keys(hotObj)[idx-1]];
-      }
-
-      rs[name] = hotData.getData();
-
-      arr.push(rs);
-    });
-
-    return JSON.stringify(arr);
-
-  }
 
   $(document).on("click", ".nav-tabs li a", function(){
     let id = $(this).data('id');
