@@ -19,9 +19,6 @@ from .models import post
 from .models import upload_file
 import mimetypes
 
-#from newjw.models import *
-
-
 class index(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'board/boardList.html')
@@ -171,14 +168,11 @@ class fileDownload(LoginRequiredMixin, View):
         filename = rs.file_name
         filepath = os.path.join(rs.file_path, filename)
         mime_type, _ = mimetypes.guess_type(filepath)
-        # with open(filepath, "r") as f:
-        #     encode = f.encoding
-        #     print(type(encode))
+        
+        fs = FileSystemStorage(rs.file_path)
+        response = FileResponse(fs.open(filepath, 'rb'),content_type=mime_type)
 
-        # print("================[encode]=================>",encode)
-        response = HttpResponse(open(filepath, 'r', encoding='UTF8'), content_type=mime_type)
-        response['Content-Disposition'] = "attachment; filename=%s" % filename
-        # response['Content-Disposition'] = "attachment; filename*=UTF-8''{}".format(quote(filename.encode('utf-8')))
+        response['Content-Disposition'] = 'attachment; filename='+filename                            
 
         return response
 
