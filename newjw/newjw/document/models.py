@@ -36,7 +36,7 @@ class share_user(models.Model):
 # 엑셀시트 저장
 class excel_json_data(models.Model):
     post                = models.ForeignKey(post, on_delete=models.CASCADE)
-    title               = models.CharField(max_length=200)
+    title               = models.CharField(max_length=200,null=True,default='empty')
     json_data           = models.TextField(null=True,default='empty')
 
     class Meta : 

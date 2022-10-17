@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+import os
 from pathlib import Path
 
 import environ
@@ -9,6 +10,8 @@ ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # newjw/
 APPS_DIR = ROOT_DIR / "newjw"
 env = environ.Env()
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
@@ -81,6 +84,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    'background_task',
 ]
 
 LOCAL_APPS = [

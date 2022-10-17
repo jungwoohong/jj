@@ -127,7 +127,7 @@
 
   showExcelTable(container);
   
-  function tabOpen(obj,objTitle,type){
+  function tabOpen(obj,objTitle,type,excelJson){
 
     $.each(obj,function(idx,item) {
       if ($('#tab-'+item).length >=1) return;
@@ -155,9 +155,70 @@
             }
           });
       }, 1000)
+      } else if (type == 'local'){
+        hotObj[item].loadData(excelJson);
       }
 
    });
+  }
+  function loadExcelData(id){
+    $.ajax({        
+      type : 'POST',
+      url : "{% url 'docJsonData' %}",        
+      dataType : 'json',        
+      data : {id:id},
+      success : function(data) {
+        $.each(data.data,function(idx,item){
+          let title     = [item.fields.title];
+          let excelJson = item.fields.json_data.replace(/None/gi, "null");
+          
+          excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
+
+          if( idx == 0 ) {
+            $('.nav-item > .active > span').text(title);
+            hot.loadData(excelJson[0]);
+
+          } else {
+            let len = $('.nav-tabs li').length;
+            let name = 'New'+len;
+            let obj = [name];
+            tabOpen(obj,title,'local',excelJson[0]);
+
+          }
+
+        })
+      }
+    }); 
+  }
+
+  function excelDataMake(){
+
+    let arr = new Array();
+
+    let sheet = $('#myTab .nav-tabs .nav-item');
+    let data  = $('.excelGridClass');
+    delete sheet[0];
+    sheet.splice(0, 1);
+
+    $.each(sheet,function(idx,item){
+      
+      let name    = $.trim($(item).text());
+      let hotData = "";
+      let rs = new Object();
+
+      if(idx == 0) {
+        hotData = hot;
+      } else {
+        hotData = hotObj[Object.keys(hotObj)[idx-1]];
+      }
+
+      rs[name] = hotData.getData();
+
+      arr.push(rs);
+    });
+
+    return JSON.stringify(arr);
+
   }
 
   $(document).on("click", ".nav-tabs li a", function(){
@@ -185,17 +246,6 @@
 
   });
 
-  function loadExcelData(id){
-    $.ajax({        
-      type : 'POST',
-      url : "{% url 'docJsonData' %}",        
-      dataType : 'json',        
-      data : {id:id},
-      success : function(data) {
-        hot.loadData(data.data);
-      }
-    }); 
-  }
 
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
@@ -227,8 +277,8 @@ save.addEventListener('click', () => {
       dataType : 'json',        
       data : from.serialize(),
       success : function(data) {
-
-        if (data.form.length == 0) {
+        
+        if (!data.form.length) {
           alert(data.msg);
         } else {
           formError(data.form);
@@ -297,36 +347,7 @@ $(document).on("click", ".fa-times", function(){
     tab.show();
   });
 
-function excelDataMake(){
 
-  let arr = new Array();
-
-  let sheet = $('#myTab .nav-tabs .nav-item');
-  let data  = $('.excelGridClass');
-  delete sheet[0];
-  sheet.splice(0, 1);
-
-  $.each(sheet,function(idx,item){
-    
-    let name    = $.trim($(item).text());
-    let hotData = "";
-    let rs = new Object();
-
-    if(idx == 0) {
-      hotData = hot;
-    } else {
-      hotData = hotObj[Object.keys(hotObj)[idx-1]];
-    }
-
-    rs[name] = hotData.getData();
-
-    arr.push(rs);
-  });
-  console.log(arr)
-
-  return JSON.stringify(arr);
-
-}
 
 // 날짜 기본값 넣기
   start = moment();
