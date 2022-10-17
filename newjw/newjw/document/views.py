@@ -17,7 +17,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
 from django.core import serializers
 from background_task import background
-from task import dataCellSave
+from .task import dataCellSave
 
 class docReg(LoginRequiredMixin, View):
 
