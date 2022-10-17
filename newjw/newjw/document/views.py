@@ -91,7 +91,7 @@ class docSave(LoginRequiredMixin, View):
                         excelForm.save()
 
                     print(record.id)
-                    self.dataCellSave('',record.id,jsonLoad)
+                    self.dataCellSave(record.id,jsonLoad)
 
                 msg = "저장하였습니다."                    
             else :
@@ -122,7 +122,7 @@ class docSave(LoginRequiredMixin, View):
         return JsonResponse(retrunMsg)
 
     @background(schedule=1)
-    def dataCellSave(id):
+    def dataCellSave(*args, **kwargs):
         print('=========================================================================')
         print(type(id))
         print('=========================================================================')
