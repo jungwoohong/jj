@@ -87,6 +87,36 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
     }); 
   }
 
+  function tabOpenCallingTempl(obj,objTitle,loadId){
+
+    $.each(obj,function(idx,item) {
+      if ($('#tab-'+item).length >=1) return;
+
+        let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'" data-loadid="'+loadId+'"><span>'+objTitle[idx]+'</span></a></li>';
+        let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
+        tabContentHtml +='<div id="excelGrid'+item+'" class="excelGridClass"> </div>';
+        tabContentHtml +='</div>';
+
+        $('.nav-tabs').append(tabTitleHtml);
+        $('.tab-content').append(tabContentHtml);
+
+        const containerNum = document.querySelector('#excelGrid'+item);
+        showExcelTableObj(containerNum,item);
+
+        setTimeout(function(){
+          $.ajax({        
+            type : 'POST',
+            url : "/frame/frameJsonData/",        
+            dataType : 'json',        
+            data : {id:item},
+            success : function(data) {
+              hotObj[item].loadData(data.data);
+            }
+          })
+        }, 1000)
+    })
+  }
+
   function excelDataMake(){
 
     let arr = new Array();

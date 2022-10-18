@@ -25,13 +25,6 @@ class data_collection(models.Model):
     class Meta : 
          db_table = 'doc_data_collection'
 
-# 공유자
-class share_user(models.Model):
-    post                = models.ForeignKey(post, on_delete=models.CASCADE)
-    email               = models.CharField(max_length=50)   
-
-    class Meta : 
-         db_table = 'doc_share_user'
 
 # 엑셀시트 저장
 class excel_json_data(models.Model):

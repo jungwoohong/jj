@@ -1,6 +1,6 @@
 from background_task import background
-from .forms import postForm, dataCollectionForm, shareUserForm, excelJsonDataForm
-from .models import post, data_collection, share_user, excel_json_data
+from .forms import postForm, dataCollectionForm, excelJsonDataForm
+from .models import post, data_collection, excel_json_data
     
 @background(schedule=1)
 def dataCellSave(*args, **kwargs):

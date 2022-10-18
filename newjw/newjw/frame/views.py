@@ -87,3 +87,15 @@ class frameJsonData(LoginRequiredMixin, View):
             
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)    
+
+class docToSearchList(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'frame/docToSearchList.html')
+
+
+class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
+
+    model = post
+    columns = ['id','title','email', 'create_date']
+    searchable_columns = ['title','email']        

@@ -8,15 +8,14 @@ from django.http import Http404, JsonResponse
 import pandas as pd
 from django.utils import timezone
 from django.db.models import Subquery
-from .forms import postForm, dataCollectionForm, shareUserForm, excelJsonDataForm
-from .models import post, data_collection, share_user, excel_json_data
+from .forms import postForm, dataCollectionForm, excelJsonDataForm
+from .models import post, data_collection, excel_json_data
 from datetime import datetime
 from core.views import DatatablesServerSideView
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
 from django.core import serializers
-from background_task import background
 from .task import dataCellSave
 
 class docReg(LoginRequiredMixin, View):
@@ -226,8 +225,8 @@ class docDelete(LoginRequiredMixin, View):
 
         data    = ""
         id      = request.POST.get('id')
-        a = post.objects.get(id=id)
-        a.delete()
+        rs = post.objects.get(id=id)
+        rs.delete()
             
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)                 

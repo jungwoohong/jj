@@ -52,8 +52,11 @@
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
                 <button class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
-                <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 찾아보기</button>
+                <button id="templBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
+                <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
+                {% if data.id %}
                 <button id="deleteBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-trash-alt"></i> 삭제</button>
+                {% endif %}
                             
             </div>               
             <form id="frm">
@@ -124,10 +127,12 @@
   const save = document.querySelector('#save');
   const id = $('#id').val();
   hotObj = Array();
-  
 
   showExcelTable(container);
 
+  /**
+   * 탭 관련 시크립트
+   **/
   $(document).on("click", ".nav-tabs li a", function(){
     let id = $(this).data('id');
 
@@ -139,7 +144,13 @@
 
   });
 
-  $(document).on("dblclick", ".nav-tabs li a", function(){
+  $(document).on("keydown", ".nav-tabs li a", function(e){
+    var key = e.keyCode;
+    alert(key);
+  });
+
+  $(document).on("dblclick", ".nav-tabs li a", function(e){
+    
     let getText = $.trim($(this).text());
     let getHtml = '<input type="text" class="form-control" value="'+getText+'" />';
     $(this).html(getHtml);
@@ -148,98 +159,72 @@
   });
 
   $(document).on("focusout", ".nav-tabs li a input", function(){
-    let getText = $.trim($(this).val());
-    $(this).closest('a').html(getText);
+     let getText = $.trim($(this).val());
+     $(this).closest('a').html(getText);
 
   });
 
+  
 
+  /**
+   * 버튼 관련 시크립트
+   **/
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
-const searchBtn = document.querySelector('#searchBtn');
 
-button.addEventListener('click', () => {
-  exportPlugin.downloadFile('csv', {
-    bom: false,
-    columnDelimiter: ',',
-    columnHeaders: false,
-    exportHiddenColumns: true,
-    exportHiddenRows: true,
-    fileExtension: 'csv',
-    filename: 'Handsontable-CSV-file_[YYYY]-[MM]-[DD]',
-    mimeType: 'text/csv',
-    rowDelimiter: '\r\n',
-    rowHeaders: true
-  });
-});
+  save.addEventListener('click', () => {
 
-save.addEventListener('click', () => {
+    let from = $('#frm');
+    $('#json_data').val(excelDataMake());
 
-  let from = $('#frm');
-  $('#json_data').val(excelDataMake());
+      $.ajax({        
+        type : 'POST',
+        url : "{% url 'docSave' %}",        
+        dataType : 'json',        
+        data : from.serialize(),
+        success : function(data) {
+          
+          if (!data.form.length) {
+            alert(data.msg);
+          } else {
+            formError(data.form);
+          } 
+        }
+      });          
+    });
 
-    $.ajax({        
-      type : 'POST',
-      url : "{% url 'docSave' %}",        
-      dataType : 'json',        
-      data : from.serialize(),
-      success : function(data) {
-        
-        if (!data.form.length) {
-          alert(data.msg);
-        } else {
-          formError(data.form);
-        } 
-      }
-    });          
-  });
-
-  searchBtn.addEventListener('click', () => {
-    window.open("{% url 'docSearchList' %}",'searchPop','resizable=yes,width=1000,height=800');
+  button.addEventListener('click', () => {
+    exportPlugin.downloadFile('csv', {
+      bom: false,
+      columnDelimiter: ',',
+      columnHeaders: false,
+      exportHiddenColumns: true,
+      exportHiddenRows: true,
+      fileExtension: 'csv',
+      filename: 'Handsontable-CSV-file_[YYYY]-[MM]-[DD]',
+      mimeType: 'text/csv',
+      rowDelimiter: '\r\n',
+      rowHeaders: true
+    });
   });
 
-$('#uploadBtn').click(function(){
+  $('.plusBtn').click(function(){
+    let len = $('.nav-tabs li').length;
+    let name = 'New'+len;
+    let obj = [name];
+    let title = ['sheet'+len];
 
-    var form = new FormData();    
-    form.append( "file1", filesVal[0],filesVal[0].name );
-  
-     $.ajax({
-         url : "{% url 'docUpload' %}"
-       , type : "POST"
-       , processData : false
-       , contentType : false
-       , data : form
-       , success:function(data) {
-          hot.loadData(data.data);
-          uploadFiles = [];
-          $('#files > .fileDiv').remove();
-          $('#offcanvasRight').offcanvas('hide');
-           
-       }
-       ,error: function (jqXHR) 
-       { 
-           alert(jqXHR.responseText); 
-       }
-   });
-});
+    tabOpen(obj,title);
 
-$('.plusBtn').click(function(){
-  let len = $('.nav-tabs li').length;
-  let name = 'New'+len;
-  let obj = [name];
-  let title = ['sheet'+len];
+    setTimeout(function(){
+      let tabEl = document.querySelector('#myTab li:last-child a')
+      let tab = new bootstrap.Tab(tabEl)
+      tab.show();
+      tabEl.click();
+        }, 100)  
+  });
 
-  tabOpen(obj,title);
-
-  setTimeout(function(){
-    let tabEl = document.querySelector('#myTab li:last-child a')
-    let tab = new bootstrap.Tab(tabEl)
-    tab.show();
-    tabEl.click();
-      }, 100)  
-});
-
-$(document).on("click", ".fa-times", function(){
+  $(document).on("click", ".fa-times", function(){
     let con = confirm('시트를 지울까요?');
     if(con == false) return;
 
@@ -254,6 +239,39 @@ $(document).on("click", ".fa-times", function(){
     tab.show();
   });
 
+  $('#uploadBtn').click(function(){
+
+    var form = new FormData();    
+    form.append( "file1", filesVal[0],filesVal[0].name );
+
+    $.ajax({
+        url : "{% url 'docUpload' %}"
+      , type : "POST"
+      , processData : false
+      , contentType : false
+      , data : form
+      , success:function(data) {
+        hot.loadData(data.data);
+        uploadFiles = [];
+        $('#files > .fileDiv').remove();
+        $('#offcanvasRight').offcanvas('hide');
+          
+      }
+      ,error: function (jqXHR) 
+      { 
+          alert(jqXHR.responseText); 
+      }
+    });
+  });
+
+  $(document).on("click", "#templBtn", function(){
+    window.open("{% url 'docToSearchList' %}",'templPop','resizable=yes,width=1000,height=800');
+  });
+
+  $(document).on("click", "#searchBtn", function(){
+    window.open("{% url 'docSearchList' %}",'searchPop','resizable=yes,width=1000,height=800');
+  });
+
   $(document).on("click", "#deleteBtn", function(){
     let con = confirm('삭제 할까요?');
     if(con == false) return;
@@ -266,16 +284,13 @@ $(document).on("click", ".fa-times", function(){
           alert('삭제되었습니다.');
           location.href="{% url 'docLoadList' %}";
            
-       }
-       ,error: function (jqXHR) 
+       },
+       error: function (jqXHR) 
        { 
            alert(jqXHR.responseText); 
        }
+    });
    });
-
-  });
-  
-
 
 // 날짜 기본값 넣기
   start = moment();

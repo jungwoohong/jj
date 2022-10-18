@@ -8,4 +8,7 @@ urlpatterns = [
     path('frameLoadList/', frameLoadList.as_view(),name="frameLoadList" ),
     path('frameLoadListData/', frameLoadListData.as_view(),name="frameLoadListData" ),
     path('frameJsonData/', frameJsonData.as_view(),name="frameJsonData" ),
+    path('docToSearchList/', docToSearchList.as_view(),name="docToSearchList" ),
+    path('docToSearchListData/', docToSearchListData.as_view(),name="docToSearchListData" ),
+    
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import post, data_collection, share_user, excel_json_data
+from .models import post, data_collection, excel_json_data
 
 class postForm(forms.ModelForm):
     class Meta:
@@ -11,10 +11,6 @@ class dataCollectionForm(forms.ModelForm):
         model = data_collection
         fields = '__all__'   
 
-class shareUserForm(forms.ModelForm):
-    class Meta:
-        model = share_user
-        fields = '__all__'
 
 class excelJsonDataForm(forms.ModelForm):
     class Meta:
