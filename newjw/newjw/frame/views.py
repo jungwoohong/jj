@@ -71,11 +71,6 @@ class frameLoadListData(LoginRequiredMixin, DatatablesServerSideView):
     model = post
     columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
-    #foreign_fields = {'create': 'create__date'}
-
-    def get_initial_queryset(self):
-        qs = super(frameLoadListData, self).get_initial_queryset()
-        return qs.filter(email__isnull=False)
     
 class frameJsonData(LoginRequiredMixin, View):
 
