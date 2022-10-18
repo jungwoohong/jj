@@ -18,6 +18,7 @@ urlpatterns = [
     path("board/", include("newjw.board.urls")),
     path("frame/", include("newjw.frame.urls")),
     path("document/", include("newjw.document.urls")),
+    path("sharedoc/", include("newjw.sharedoc.urls")),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
