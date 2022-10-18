@@ -1,20 +1,31 @@
-function tabOpen(obj,objTitle,type,excelJson){
+popupListMemory = Array();
+
+function tabOpen(obj,objTitle,type,excelJson,loadId){
 
     $.each(obj,function(idx,item) {
       if ($('#tab-'+item).length >=1) return;
 
-       let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'"><span>'+objTitle[idx]+'</span></a></li>';
-       let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
-       tabContentHtml +='<div id="excelGrid'+item+'" class="excelGridClass"> </div>';
-       tabContentHtml +='</div>';
+      if(type != 'ajax') { 
+        let tabTitleHtml = '<li class="nav-item"><a class="nav-link" href="#tab-'+item+'" data-bs-toggle="tab" role="tab" data-id="'+item+'" data-loadid="'+loadId+'"><span>'+objTitle[idx]+'</span></a></li>';
+        let tabContentHtml = '<div class="tab-pane" id="tab-'+item+'" role="tabpanel">';
+        tabContentHtml +='<div id="excelGrid'+item+'" class="excelGridClass"> </div>';
+        tabContentHtml +='</div>';
 
-       $('.nav-tabs').append(tabTitleHtml);
-       $('.tab-content').append(tabContentHtml);
+        $('.nav-tabs').append(tabTitleHtml);
+        $('.tab-content').append(tabContentHtml);
 
-       const containerNum = document.querySelector('#excelGrid'+item);
-       showExcelTableObj(containerNum,item);
+        const containerNum = document.querySelector('#excelGrid'+item);
+        showExcelTableObj(containerNum,item);
+      }
       
       if(type == 'ajax') {
+        // 이미 추가된 탭은 제외
+        if($.inArray(item,popupListMemory) ==-1) {
+            popupListMemory.push(item);
+        } else {
+            return;
+        }
+        
         setTimeout(function(){
           $.ajax({        
             type : 'POST',
@@ -25,6 +36,7 @@ function tabOpen(obj,objTitle,type,excelJson){
 
                 $.each(data.data,function(idx,item){
                     let title     = [item.fields.title];
+                    let loadId    = 'add';
                     let excelJson = item.fields.json_data.replace(/None/gi, "null");
                     
                     excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
@@ -32,10 +44,9 @@ function tabOpen(obj,objTitle,type,excelJson){
                       let len = $('.nav-tabs li').length;
                       let name = 'New'+len;
                       let obj = [name];
-                      tabOpen(obj,title,'local',excelJson[0]);
+                      tabOpen(obj,title,'local',excelJson[0],loadId);
 
                 });               
-              hotObj[item].loadData(data.data);
             }
           });
       }, 1000)
@@ -54,6 +65,7 @@ function tabOpen(obj,objTitle,type,excelJson){
       success : function(data) {
         $.each(data.data,function(idx,item){
           let title     = [item.fields.title];
+          let loadId    = [item.pk];
           let excelJson = item.fields.json_data.replace(/None/gi, "null");
           
           excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
@@ -66,7 +78,7 @@ function tabOpen(obj,objTitle,type,excelJson){
             let len = $('.nav-tabs li').length;
             let name = 'New'+len;
             let obj = [name];
-            tabOpen(obj,title,'local',excelJson[0]);
+            tabOpen(obj,title,'local',excelJson[0],loadId);
 
           }
 

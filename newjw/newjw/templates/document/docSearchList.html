@@ -61,11 +61,10 @@
 		<div class="tab" id="myTab">
 			<ul class="nav nav-tabs" role="tablist">
 				<li class="nav-item"><a class="nav-link active" href="#tab-1" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
-				<li class="nav-item"><a class="nav-link" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="tab-1" role="tabpanel">
-					<div id="excelGrid" class="excelGridClass"> </div>
+					<div id="excelGrid" class="excelGridClass"></div>
 				</div>                              
 			</div> 
   </div>
@@ -83,6 +82,7 @@
 	window.resizeTo(1100,800);
 	const container = document.querySelector('#excelGrid');
 	showExcelTable(container);
+	hotObj = Array();
 
   var table = $('#datatables').DataTable({
       serverSide: true,
@@ -175,28 +175,30 @@
 	$("#datatables").on('click', 'tbody tr .title', function () {
 
 		let row = $("#datatables").DataTable().row($(this)).data();	
+		// 기존 데이터 초기화
+		hotObj = Array();
+		$('#myTab > .nav-tabs > li:gt(0)').remove();
+		$('.tab-content > .tab-pane:gt(0)').remove();
 		
+		// 데이터 그리기
 		loadExcelData(row.id);
+		
 		$('#offcanvasRight').offcanvas('show');	
 
 	});
-	
-function loadExcelData(id){
-    $.ajax({        
-      type : 'POST',
-      url : "{% url 'docSearchJsonData' %}",        
-      dataType : 'json',        
-      data : {id:id},
-      success : function(data) {
-        hot.loadData(data.data);
-      }
-    }); 
-}
 
-// search selectBox만들기
-$('#datatables_filter').prepend('<select id="select" class="form-control" style="display:inline;width:15%!important"></select> 에서 ');
-$('#select').append('<option value="all" selected>전체</option>');
-$('#select').append('<option value="header">컬럼</option>');
+	$(document).on("click", ".nav-tabs li a", function(){
+		let id = $(this).data('id');
+
+		if(!id) return; 
+		if(id) hotObj[id].render();
+
+	});
+
+	// search selectBox만들기
+	$('#datatables_filter').prepend('<select id="select" class="form-control" style="display:inline;width:15%!important"></select> 에서 ');
+	$('#select').append('<option value="all" selected>전체</option>');
+	$('#select').append('<option value="header">컬럼</option>');	
 </script>
 
 {% endblock inline_javascript %}

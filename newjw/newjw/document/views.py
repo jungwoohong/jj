@@ -102,19 +102,19 @@ class docSave(LoginRequiredMixin, View):
                 updateData.end_date     = end_date
                 updateData.save()
 
-                # 엑셀데이터 저장
+                # 데이터 셀 저장
                 jsonLoad = json.loads(json_data)
+                # 해당 데이터 삭제
+                excel_json_data.objects.filter(post=id).delete()
+                
+                for idx,val in enumerate(jsonLoad):
+                    excelTitle     = ''.join(list(val.keys()));
+                    excelJsonData   = list(val.values());
 
-                updateDataExcelPostIds = excel_json_data.objects.filter(post=id)
-
-                for idx, updateDataExcelPostId in enumerate(updateDataExcelPostIds) :
-                    excelTitle     = ''.join(list(jsonLoad[idx].keys()))
-                    excelJsonData   = list(jsonLoad[idx].values())
-
-                    updateDataExcel             =  excel_json_data.objects.get(id=updateDataExcelPostId.id)
-                    updateDataExcel.title       = excelTitle
-                    updateDataExcel.json_data   = excelJsonData
-                    updateDataExcel.save()
+                    arrJsonLoad = {"post": id, "title": excelTitle,"json_data":excelJsonData}
+                    excelForm = excelJsonDataForm(arrJsonLoad) 
+                    if excelForm.is_valid():
+                        excelForm.save()
 
                 msg = "수정하였습니다."                         
 
@@ -218,4 +218,16 @@ class docSearchJsonData(LoginRequiredMixin, View):
         data        = json.loads(rep_data)
             
         retrunMsg = {"data": data}
-        return JsonResponse(retrunMsg)          
+        return JsonResponse(retrunMsg)   
+
+class docDelete(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        data    = ""
+        id      = request.POST.get('id')
+        a = post.objects.get(id=id)
+        a.delete()
+            
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)                 
