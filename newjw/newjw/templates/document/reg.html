@@ -127,6 +127,7 @@
   const save = document.querySelector('#save');
   const id = $('#id').val();
   hotObj = Array();
+  navAtag = '';
 
   showExcelTable(container);
 
@@ -144,27 +145,30 @@
 
   });
 
-  $(document).on("keydown", ".nav-tabs li a", function(e){
-    var key = e.keyCode;
-    alert(key);
-  });
-
-  $(document).on("dblclick", ".nav-tabs li a", function(e){
-    
-    let getText = $.trim($(this).text());
+  $(document).on("dblclick", ".nav-tabs li", function(){
+    navAtag = $(this).html();
+    let getText = $.trim($(this).find('a').text());
     let getHtml = '<input type="text" class="form-control" value="'+getText+'" />';
     $(this).html(getHtml);
     $(this).find('input').focus();
 
   });
 
-  $(document).on("focusout", ".nav-tabs li a input", function(){
-     let getText = $.trim($(this).val());
-     $(this).closest('a').html(getText);
-
+  $(document).on("focusout", ".nav-tabs li input", function(){
+    
+    let getText = $.trim($(this).val());
+    console.log(getText)
+    $(this).parent().html(navAtag);
+    $('.nav-tabs li .active span').text(getText);
   });
 
-  
+  $(document).on("keydown", ".nav-tabs li input", function(e){
+    let keycode = e.keyCode;
+    if(keycode == 13) {
+      $(this).trigger('focusout');
+    }
+
+  });
 
   /**
    * 버튼 관련 시크립트
@@ -234,7 +238,6 @@ const button = document.querySelector('#export-file');
     navActive.remove();
     $('.tab-content .active').remove();
 
-    console.log(navActiveAdd);
     let tab = new bootstrap.Tab(navActiveAdd);
     tab.show();
   });
