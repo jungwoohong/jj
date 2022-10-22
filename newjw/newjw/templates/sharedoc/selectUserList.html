@@ -12,20 +12,23 @@
 		<div class="col-md-4 text-center">
 			<div class="card bg-light py-2 py-md-3 border">
 				<div class="card-body">
-					<div id="jstree" style="margin-top:20px;" class="proton-demo"></div>
+					<div id="jstree" style="margin-top:20px;" class="proton-demo jstree-proton"></div>
 				</div>
 			</div>
 		</div>
 		<div class="col-md-4 text-center">
 			<div class="card-body">
-				<p><i class="align-middle me-2 fas fa-fw fa-arrow-right"></i></p>
-				<p><i class="align-middle me-2 fas fa-fw fa-arrow-left"></i></p>
+				<p><i id ="userAdd" class="align-middle me-2 fas fa-fw fa-arrow-right" style="cursor: pointer;"></i></p>
+				<p><i id ="userDel" class="align-middle me-2 fas fa-fw fa-arrow-left"></i></p>
 			</div>
 		</div>
 		<div class="col-md-4 text-center">
 			<div class="card bg-light py-2 py-md-3 border">
 				<div class="card-body">
-					.col-md-4
+					<div>
+
+
+					</div>
 				</div>
 			</div>
 		</div>
@@ -40,18 +43,22 @@
 
 <script src="{% static 'js/jstree.min.js' %}"></script>
 <script>
+
+	$('#userAdd').click(function(){
+		console.log($("#jstree").jstree(true).get_selected('full',true));   
+	});
+
 	$(document).ready(function(){
 		// getTree();
 		fn_Common.jstree();
 	});
-
 	var fn_Common = {
 		jstree: function () {
 			$('#jstree')
 				.jstree({
 					core: {
 						check_callback: true,
-						data: { id: "1", text: "원전사업처" }	/* 최초에 보여지 최상위 Root Tree */
+						data: { id: "1", text: "원전사업처", icon: "fas fa-fw fa-folder"}	/* 최초에 보여지 최상위 Root Tree */
 					},
 					types: {
 						"default": {
@@ -70,6 +77,9 @@
 					]
 				})
 				.on("select_node.jstree", function (event, data) { // 노드가 선택된 뒤 처리할 이벤트
+					if(data.node.original.class == 'user'){
+						return;
+					};
 					fn_Common.jstreeDynamic(data.node.id);
 				});
 		},
@@ -86,7 +96,8 @@
 						let jsonData = {  
 							"id": obj.fields.dept_code,  
 							"text": obj.fields.dept_name,
-							"icon": "fas fa-fw fa-folder-open"
+							"icon": "fas fa-fw fa-folder-open",
+							"class":"group"
 						};
 						console.log(selectedNode)
 						console.log(jsonData)
@@ -101,7 +112,8 @@
 						let jsonData = {  
 							"id": obj.fields.email,  
 							"text": obj.fields.email,
-							"icon": "fas fa-fw fa-user"
+							"icon": "fas fa-fw fa-user",
+							"class":"user"
 						 };
 						console.log(selectedNode)
 						console.log(jsonData)
@@ -123,6 +135,8 @@
 			});
 		}
 	}
+
+	
 	
 </script>
 
