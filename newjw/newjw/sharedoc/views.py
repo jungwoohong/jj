@@ -21,11 +21,11 @@ class selectUserListData(LoginRequiredMixin, View):
         id = request.GET.get('id')
         context = {}
     
-        groupset = group_test_table.objects.filter(parent_code=id)
+        groupset = group_test_table.objects.all()
         group        = serializers.serialize("json", groupset)
         group        = json.loads(group)
 
-        userset = user_test_table.objects.filter(dept_code__in=Subquery(groupset.values('dept_code')))
+        userset = user_test_table.objects.all()
         user        = serializers.serialize("json", userset)
         user        = json.loads(user)
 

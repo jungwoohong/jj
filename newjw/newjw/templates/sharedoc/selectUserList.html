@@ -18,11 +18,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="ontainer-fluid p-0 ">
+<div class="container-fluid p-0 " style="width: 1000; ">
 
 	<h1 class="h3 mb-3">공유자 선택</h1>
-	<div class="row fisrtay" style="" >
-		<div class="col-md-4">
+	<div class="row" style="width: 950px; margin: 0 auto;">
+		<div class="col-md-4" style="width: 45%;">
 			<div class="card bg-light py-2 py-md-3 border" >
 				<div class="card-body" style="padding:0px 0px 0px 20px;">
 					<div id="jstree" style="margin-top:20px;" class="proton-demo jstree-proton"></div>
@@ -33,19 +33,23 @@
 		<div class="col-md-4 text-center arrow">
 			<div class="card-body ">
 				<p><i id ="userAdd" class="align-middle me-2 fas fa-fw fa-arrow-right" style="cursor: pointer;"></i></p>
-				<p><i id ="userDel" class="align-middle me-2 fas fa-fw fa-arrow-left"></i></p>
+				<p><i id ="userDel" class="align-middle me-2 fas fa-fw fa-arrow-left" style="cursor: pointer;"></i></p>
 			</div>
 		</div>
-		<div class="col-md-4 text-center">
-			<div class="card bg-light py-2 py-md-3 border">
+		<div class="col-md-4 text-center" style="width: 45%;">
+			<div class="card bg-light py-2 py-md-3 border" style="overflow: hidden;">
 				<div class="card-body">
-					<div>
-
-
+					<div id="selectUserDiv">
+						<select id="selectRs"class="form-control" name="validation-multiselect" multiple style="height: 460px;">
+						</select>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="text-lg-end">
+			<button id ="save" class="btn btn-outline-success">저장하기</button>
+			<button id ="exit" class="btn btn-outline-success">닫기</button>
+		</div> 
 	</div>
 </div>
 
@@ -58,43 +62,102 @@
 <script src="{% static 'js/jstree.min.js' %}"></script>
 <script>
 
+	window.resizeTo('1000','650');
+
 	$('#userAdd').click(function(){
-		console.log($("#jstree").jstree(true).get_selected('full',true));   
+		var selectData = $("#jstree").jstree(true).get_selected('full',true);
+
+		let appendSelect = $('#selectUserDiv').find('select');
+		let searchOpt = appendSelect.find('option');
+		let leftOptVal = new Array();
+
+		$.each(searchOpt, function(idx, searchData){
+			
+			let dataid = $(this).attr('value');
+			leftOptVal[idx] = dataid;
+		})
+
+		$.each(selectData, function(idx,data){
+
+			if($.inArray(data.id,leftOptVal)>=0) return;
+
+			if(data.original.class=='user'){
+				$("<option />",{html:data.text, "value":data.id}).appendTo(appendSelect);
+			} 
+		})
+	});
+
+	$('#userDel').click(function(){
+		let delNode = new Array();
+		delNodes = $('#selectRs').val();
+
+		
+		$('#selectRs option:selected').remove();
+		
+		let optLen = $('#selectRs').find('option').length;
+		if(optLen == 0)  $('#jstree').jstree().uncheck_all();
+		
+		$.each(delNodes, function(idx, delNode){
+			$('#jstree').jstree().uncheck_node(delNode);
+		})
+			
 	});
 
 	$(document).ready(function(){
 		// getTree();
-		fn_Common.jstree();
+		$.ajax({
+			url: "{% url 'selectUserListData' %}"
+				, type: "GET"
+				, dataType: "json"
+				, success: function (data) {
+					let jsonArr = new Array();
+					$.each(data.group, function(idx, obj) {
+						let jsonData = {  
+							"id": obj.fields.dept_code,
+							"parent": obj.fields.parent_code,
+							"text": obj.fields.dept_name,
+							"icon": "fas fa-fw fa-folder-open",
+							"class":"group"
+						};
+						jsonArr.push(jsonData);
+					});
+					$.each(data.user, function(idx, obj) {
+						let jsonData = {  
+							"id": obj.fields.email,  
+							"parent": obj.fields.dept_code,  
+							"text": obj.fields.email,
+							"icon": "fas fa-fw fa-user",
+							"class":"user"
+						 };	
+						jsonArr.push(jsonData);
+					});
+					fn_Common.jstree(jsonArr);
+				}
+		})
 	});
 	var fn_Common = {
-		jstree: function () {
+		jstree: function (data) {
 			$('#jstree')
 				.jstree({
 					core: {
 						check_callback: true,
-						data: { id: "1", text: "원전사업처", icon: "fas fa-fw fa-folder"}	/* 최초에 보여지 최상위 Root Tree */
-					},
-					types: {
-						"default": {
-							"icon": "fas fa-fw fa-folder"
-						},
-						file: {
-							icon: "fas fa-fw fa-folder"
-						}
+						data: data	/* 최초에 보여지 최상위 Root Tree */
 					},
 					plugins: [
 						"wholerow",
 						"checkbox",
 						"unique", 
 						"conditionalselect" ,
-						"state"
-					]
-				})
-				.on("select_node.jstree", function (event, data) { // 노드가 선택된 뒤 처리할 이벤트
-					if(data.node.original.class == 'user'){
-						return;
-					};
-					fn_Common.jstreeDynamic(data.node.id);
+						"state",
+						"sort"
+					],
+					sort: function(a){
+						let first = this.get_node(a);
+						if(first.original.class == 'user'){
+							return -1;
+						} 
+
+					}
 				})
 				.on("ready.jstree", function (event, data) { // 완료되면
 					let firstVal = $("#jstree").jstree(true).get_selected('full',true);
@@ -105,60 +168,22 @@
 					
 					$('#jstree').jstree("deselect_all");
 				});				
-		},
-		jstreeDynamic: function (selectedNode) {
-			$.ajax({
-				url: "{% url 'selectUserListData' %}"
-				, type: "GET"
-				, dataType: "json"
-				, async: false
-				, data: { id: selectedNode }
-				, success: function (data) {
-					//console.log(data);
-					$.each(data.group, function(idx, obj) {
-						let jsonData = {  
-							"id": obj.fields.dept_code,  
-							"text": obj.fields.dept_name,
-							"icon": "fas fa-fw fa-folder-open",
-							"class":"group"
-						};
-						console.log(selectedNode)
-						console.log(jsonData)
-						$('#jstree').jstree(
-							"create_node",
-							selectedNode, 
-							jsonData, 
-							"last"
-						);	
-					});
-					$.each(data.user, function(idx, obj) {
-						let jsonData = {  
-							"id": obj.fields.email,  
-							"text": obj.fields.email,
-							"icon": "fas fa-fw fa-user",
-							"class":"user"
-						 };
-						console.log(selectedNode)
-						console.log(jsonData)
-						$('#jstree').jstree(
-							"create_node",
-							obj.fields.dept_code, 
-							jsonData, 
-							"last"
-						);	
-					});
-					setTimeout(function(){						
-						$('#jstree').jstree('open_node', selectedNode); 
-						}, 500) 
-					
-				}
-				, error: function () { }
-				, beforeSend: function () { }
-				, complete: function () { }
-			});
 		}
 	}
 
+	$('#save').click(function(){
+		let userList = new Array();
+		let optVals = $('#selectRs option');
+		$.each(optVals, function(idx, optVal){
+			userList.push($(optVal).val());
+		})
+		opener.$('#shareUser').val(userList);
+		alert('저장되었습니다.');		
+	})
+
+	$('#exit').click(function(){	
+		window.close();
+	})
 	
 	
 </script>
