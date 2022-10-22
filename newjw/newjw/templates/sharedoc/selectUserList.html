@@ -2,22 +2,36 @@
 {% load static i18n %}
 {% block css %}
 <link href="{% static 'css/jstree.css' %}" rel="stylesheet" />
+<style>
+	.card {
+		padding-top:0px!important;
+		height: 500px!important;
+		overflow:auto;
+	}
+
+	@media(min-width: 768px) {
+		.arrow {margin-top:25%;width:10%!important;}
+		.fisrtay{ margin-left:10%!important;}
+		
+	}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="ontainer-fluid p-0">
+<div class="ontainer-fluid p-0 ">
 
 	<h1 class="h3 mb-3">공유자 선택</h1>
-	<div class="row">
-		<div class="col-md-4 text-center">
-			<div class="card bg-light py-2 py-md-3 border">
-				<div class="card-body">
+	<div class="row fisrtay" style="" >
+		<div class="col-md-4">
+			<div class="card bg-light py-2 py-md-3 border" >
+				<div class="card-body" style="padding:0px 0px 0px 20px;">
 					<div id="jstree" style="margin-top:20px;" class="proton-demo jstree-proton"></div>
+					
 				</div>
 			</div>
 		</div>
-		<div class="col-md-4 text-center">
-			<div class="card-body">
+		<div class="col-md-4 text-center arrow">
+			<div class="card-body ">
 				<p><i id ="userAdd" class="align-middle me-2 fas fa-fw fa-arrow-right" style="cursor: pointer;"></i></p>
 				<p><i id ="userDel" class="align-middle me-2 fas fa-fw fa-arrow-left"></i></p>
 			</div>
@@ -81,7 +95,16 @@
 						return;
 					};
 					fn_Common.jstreeDynamic(data.node.id);
-				});
+				})
+				.on("ready.jstree", function (event, data) { // 완료되면
+					let firstVal = $("#jstree").jstree(true).get_selected('full',true);
+					
+					if(firstVal.length == 0) {
+						$("#jstree").jstree(true).check_node(1);
+					}
+					
+					$('#jstree').jstree("deselect_all");
+				});				
 		},
 		jstreeDynamic: function (selectedNode) {
 			$.ajax({

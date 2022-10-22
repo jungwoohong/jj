@@ -411,9 +411,9 @@
 }
 
 .jstree-proton>.jstree-wholerow-ul .jstree-hovered,.jstree-proton>.jstree-wholerow-ul .jstree-clicked {
-    background: 0 0;
+    /* background: 0 0;
     box-shadow: none;
-    border-radius: 0
+    border-radius: 0 */
 }
 
 .jstree-proton .jstree-wholerow {
@@ -423,10 +423,10 @@
 }
 
 .jstree-proton .jstree-wholerow-hovered {
-    background: #76b6ec
+    /* background: #76b6ec */
 }
 
-.jstree-proton .jstree-wholerow-clicked {
+/* .jstree-proton .jstree-wholerow-clicked {
     background: #3392e3;
     background: -moz-linear-gradient(top,#3392e3 0%,#3392e3 100%);
     background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#3392e3),color-stop(100%,#3392e3));
@@ -434,7 +434,7 @@
     background: -o-linear-gradient(top,#3392e3 0%,#3392e3 100%);
     background: -ms-linear-gradient(top,#3392e3 0%,#3392e3 100%);
     background: linear-gradient(to bottom,#3392e3 0%,#3392e3 100%)
-}
+} */
 
 .jstree-proton .jstree-node {
     min-height: 22px;
