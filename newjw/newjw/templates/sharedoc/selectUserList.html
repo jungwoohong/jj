@@ -1,7 +1,7 @@
 {% extends "blankUi.html" %}
 {% load static i18n %}
 {% block css %}
-<link href="{% static 'css/style.css' %}" rel="stylesheet" />
+<link href="{% static 'css/jstree.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
@@ -55,15 +55,18 @@
 					},
 					types: {
 						"default": {
-							"icon": "glyphicon glyphicon-flash"
+							"icon": "fas fa-fw fa-folder"
 						},
 						file: {
-							icon: "fa fa-file text-inverse fa-lg"
+							icon: "fas fa-fw fa-folder"
 						}
 					},
 					plugins: [
 						"wholerow",
-						"checkbox"
+						"checkbox",
+						"unique", 
+						"conditionalselect" ,
+						"state"
 					]
 				})
 				.on("select_node.jstree", function (event, data) { // 노드가 선택된 뒤 처리할 이벤트
@@ -80,21 +83,39 @@
 				, success: function (data) {
 					//console.log(data);
 					$.each(data.group, function(idx, obj) {
-						let jsonData = {  "id": obj.fields.dept_code,  "text": obj.fields.dept_name };
-						console.log(selectedNode,jsonData)
+						let jsonData = {  
+							"id": obj.fields.dept_code,  
+							"text": obj.fields.dept_name,
+							"icon": "fas fa-fw fa-folder-open"
+						};
+						console.log(selectedNode)
+						console.log(jsonData)
 						$('#jstree').jstree(
-								'create_node'
-								, selectedNode
-								, jsonData
-							, "last"
-							, false
-							, true
+							"create_node",
+							selectedNode, 
+							jsonData, 
+							"last"
 						);	
-
-
 					});
-						//모두열기
-						$('#jstree').jstree('oepn_all');
+					$.each(data.user, function(idx, obj) {
+						let jsonData = {  
+							"id": obj.fields.email,  
+							"text": obj.fields.email,
+							"icon": "fas fa-fw fa-user"
+						 };
+						console.log(selectedNode)
+						console.log(jsonData)
+						$('#jstree').jstree(
+							"create_node",
+							obj.fields.dept_code, 
+							jsonData, 
+							"last"
+						);	
+					});
+					setTimeout(function(){						
+						$('#jstree').jstree('open_node', selectedNode); 
+						}, 500) 
+					
 				}
 				, error: function () { }
 				, beforeSend: function () { }
