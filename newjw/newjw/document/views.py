@@ -229,4 +229,4 @@ class docDelete(LoginRequiredMixin, View):
         rs.delete()
             
         retrunMsg = {"data": data}
-        return JsonResponse(retrunMsg)                 
+        return JsonResponse(retrunMsg)
