@@ -50,7 +50,7 @@ class postReg(LoginRequiredMixin, View):
                 
             context = {
                 "data":data,
-                'fileRs':fileRs
+                "fileRs":fileRs
             }
                 
         return render(request, 'board/reg.html', context)

@@ -49,6 +49,7 @@
           </div>
           <div class="card-body" >
             <div class="text-lg-end">
+                <button id ="shareBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-paper-plane"></i>공유</button>
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
                 <button class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
@@ -270,6 +271,10 @@ const button = document.querySelector('#export-file');
 
   $(document).on("click", "#searchBtn", function(){
     window.open("{% url 'docSearchList' %}",'searchPop','resizable=yes,width=1000,height=800');
+  });
+
+  $(document).on("click", "#shareBtn", function(){
+    window.open("{% url 'selectUserList' %}",'selectUserPop','resizable=yes,width=1100,height=800');
   });
 
   $(document).on("click", "#deleteBtn", function(){

@@ -1,0 +1,109 @@
+{% extends "blankUi.html" %}
+{% load static i18n %}
+{% block css %}
+<link href="{% static 'css/style.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="ontainer-fluid p-0">
+
+	<h1 class="h3 mb-3">공유자 선택</h1>
+	<div class="row">
+		<div class="col-md-4 text-center">
+			<div class="card bg-light py-2 py-md-3 border">
+				<div class="card-body">
+					<div id="jstree" style="margin-top:20px;" class="proton-demo"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 text-center">
+			<div class="card-body">
+				<p><i class="align-middle me-2 fas fa-fw fa-arrow-right"></i></p>
+				<p><i class="align-middle me-2 fas fa-fw fa-arrow-left"></i></p>
+			</div>
+		</div>
+		<div class="col-md-4 text-center">
+			<div class="card bg-light py-2 py-md-3 border">
+				<div class="card-body">
+					.col-md-4
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block inline_javascript %}
+
+<script src="{% static 'js/jstree.min.js' %}"></script>
+<script>
+	$(document).ready(function(){
+		// getTree();
+		fn_Common.jstree();
+	});
+
+	var fn_Common = {
+		jstree: function () {
+			$('#jstree')
+				.jstree({
+					core: {
+						check_callback: true,
+						data: { id: "1", text: "원전사업처" }	/* 최초에 보여지 최상위 Root Tree */
+					},
+					types: {
+						"default": {
+							"icon": "glyphicon glyphicon-flash"
+						},
+						file: {
+							icon: "fa fa-file text-inverse fa-lg"
+						}
+					},
+					plugins: [
+						"wholerow",
+						"checkbox"
+					]
+				})
+				.on("select_node.jstree", function (event, data) { // 노드가 선택된 뒤 처리할 이벤트
+					fn_Common.jstreeDynamic(data.node.id);
+				});
+		},
+		jstreeDynamic: function (selectedNode) {
+			$.ajax({
+				url: "{% url 'selectUserListData' %}"
+				, type: "GET"
+				, dataType: "json"
+				, async: false
+				, data: { id: selectedNode }
+				, success: function (data) {
+					//console.log(data);
+					$.each(data.group, function(idx, obj) {
+						let jsonData = {  "id": obj.fields.dept_code,  "text": obj.fields.dept_name };
+						console.log(selectedNode,jsonData)
+						$('#jstree').jstree(
+								'create_node'
+								, selectedNode
+								, jsonData
+							, "last"
+							, false
+							, true
+						);	
+
+
+					});
+						//모두열기
+						$('#jstree').jstree('oepn_all');
+				}
+				, error: function () { }
+				, beforeSend: function () { }
+				, complete: function () { }
+			});
+		}
+	}
+	
+</script>
+
+
+{% endblock inline_javascript %}

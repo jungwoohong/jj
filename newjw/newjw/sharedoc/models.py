@@ -24,4 +24,14 @@ class excel_json_data(models.Model):
     post                = models.ForeignKey(post, on_delete=models.CASCADE)
     title               = models.CharField(max_length=200,null=True,default='empty')
     json_data           = models.TextField(null=True,default='empty')
-       
+
+class group_test_table(models.Model):
+    dept_code           = models.CharField(max_length=150 ,null=True)
+    dept_name           = models.CharField(max_length=150 ,null=True)
+    parent_code         = models.CharField(max_length=150 ,null=True)
+    depth               = models.CharField(max_length=50)   
+
+class user_test_table(models.Model):
+    email               = models.CharField(max_length=50)   
+    dept_code            = models.ForeignKey('group_test_table', on_delete=models.SET_NULL, null=True , db_column='dept_code')
+
