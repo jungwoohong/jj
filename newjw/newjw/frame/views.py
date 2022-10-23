@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.http import Http404, JsonResponse
 from sqlalchemy import null
 from core.views import DatatablesServerSideView
-from newjw.lib.mail import mailSend
+from newjw.libs.mail import mailSend
 
 import json
 from .models import post
