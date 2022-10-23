@@ -10,7 +10,7 @@ class post(models.Model):
     end_date            = models.DateTimeField()
     create_date         = models.DateTimeField(auto_now_add=True)
     last_update_date    = models.DateTimeField(auto_now=True)
-    status              = models.CharField(max_length=10)
+    status              = models.CharField(max_length=10,blank=True, null=True, default='R')
 
 
 # 공유자
@@ -18,6 +18,16 @@ class user(models.Model):
     post                = models.ForeignKey(post, on_delete=models.CASCADE)
     doc_post            = models.ForeignKey(doc_post, on_delete=models.CASCADE)
     email               = models.CharField(max_length=50)   
+
+# 데이터 보관함
+class data_collection(models.Model):
+    post                = models.ForeignKey(post, on_delete=models.CASCADE)
+    cell_row            = models.IntegerField(blank=True, null=True)
+    cell_line           = models.IntegerField(blank=True, null=True)  
+    data                = models.CharField(max_length=300)
+    cell_type           = models.CharField(max_length=10)
+    create_date         = models.DateTimeField(auto_now_add=True)
+    last_update_date    = models.DateTimeField(auto_now=True)   
 
 # 공유 엑셀시트 저장
 class excel_json_data(models.Model):
