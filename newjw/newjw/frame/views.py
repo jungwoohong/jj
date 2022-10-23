@@ -7,10 +7,12 @@ from django.utils.decorators import method_decorator
 from django.http import Http404, JsonResponse
 from sqlalchemy import null
 from core.views import DatatablesServerSideView
+from newjw.lib.mail import mailSend
 
 import json
 from .models import post
 from .forms import postForm
+
 
 
 class frameViewReg(LoginRequiredMixin, View):
@@ -98,4 +100,16 @@ class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
 
     model = post
     columns = ['id','title','email', 'create_date']
-    searchable_columns = ['title','email']        
+    searchable_columns = ['title','email']
+
+class mailtest(LoginRequiredMixin, View):
+
+    def get(self, request):
+        frm ="jungwoo02@gmail.com"
+        to = "eunju9832@naver.com"
+        subject = "테스트입니다."
+        content = "테스트입니다."
+        mailSend(frm,to,subject,content)
+
+        retrunMsg = {"data": "abc"}
+        return JsonResponse(retrunMsg)                
