@@ -12,8 +12,8 @@ def sendMail(recvEmail,title,content) :
 
     env = environ.Env(DEBUG=(bool, True))
 
-    smtpName = "smtp.naver.com"                  
-    smtpPort = "587"                             
+    smtpName = env('MAIL_URL')
+    smtpPort = env('MAIL_PORT')
 
     sendEmail = env('MAIL_ID')
     password = env('MAIL_PW') 
