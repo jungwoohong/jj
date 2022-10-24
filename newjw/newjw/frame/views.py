@@ -1,10 +1,11 @@
+from django.core.mail import EmailMessage
 from pprint import pprint
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from sqlalchemy import null
 from core.views import DatatablesServerSideView
 
@@ -100,4 +101,10 @@ class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
     model = post
     columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
-             
+
+class mailtest(LoginRequiredMixin, View):
+
+    def get(self,request) : 
+        email = EmailMessage('test','test',to=['jungwoo02@gmail.com'])  
+        rs = email.send()
+        return HttpResponse()          

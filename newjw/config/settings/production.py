@@ -5,6 +5,15 @@ env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
 )
+
+ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+
+environ.Env.read_env(
+env_file=os.path.join(ROOT_DIR, '.env')
+)
+
+envFile = environ.Env(DEBUG=(bool, True))
+
 # reading .env file
 environ.Env.read_env()
 # GENERAL
@@ -18,6 +27,15 @@ ALLOWED_HOSTS = ["54.180.103.152"]
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
 )
+
+EMAIL_HOST=envFile('MAIL_URL')
+EMAIL_PORT=envFile('MAIL_PORT')
+EMAIL_HOST_USER=envFile('MAIL_ID')
+EMAIL_HOST_PASSWORD=envFile('MAIL_PW')
+EMAIL_USE_TLS=True
+DEFAULT_FORM_EMAIL=EMAIL_HOST_USER
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS=1
+ACCOUNT_EMAIL_SUBJECT_PREFIX= '인증'
 
 # DATABASES
 # ------------------------------------------------------------------------------
