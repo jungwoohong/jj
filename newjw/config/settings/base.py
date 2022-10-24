@@ -7,6 +7,13 @@ from pathlib import Path
 import environ
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+
+environ.Env.read_env(
+env_file=os.path.join(ROOT_DIR, '.env')
+)
+
+envFile = environ.Env(DEBUG=(bool, True))
+
 # newjw/
 APPS_DIR = ROOT_DIR / "newjw"
 env = environ.Env()
@@ -46,12 +53,12 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 
 DATABASES = { 
     'default': { 
-        'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'jj', 
-        'USER': 'jj', 
-        'PASSWORD': 'dkakwhs1!', 
-        'HOST': '54.180.103.152', 
-        'PORT': '3306', 
+        'ENGINE': envFile('DB_ENGINE'), 
+        'NAME': envFile('DB_NAME'), 
+        'USER': envFile('DB_USER'), 
+        'PASSWORD': envFile('DB_PASSWORD'), 
+        'HOST': envFile('DB_HOST'), 
+        'PORT': envFile('DB_PORT'), 
      } 
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
