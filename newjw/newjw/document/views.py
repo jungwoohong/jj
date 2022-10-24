@@ -17,6 +17,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
 from django.core import serializers
 from .task import dataCellSave
+from .share import *
 
 class docReg(LoginRequiredMixin, View):
 
@@ -69,8 +70,11 @@ class docSave(LoginRequiredMixin, View):
         start_date  = timezone.make_aware(start_date)
         end_date    = datetime.strptime(request.POST.get('end_date'), "%Y.%m.%d")
         end_date    = timezone.make_aware(end_date)
+        share_user  = request.POST.get('shareUser')
+        share_user_list = share_user.split(',')
+
                     
-        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date}            
+        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date}           
         form = postForm(arr)
 
         if form.is_valid():
@@ -80,19 +84,33 @@ class docSave(LoginRequiredMixin, View):
                 record = form.save()
                 jsonLoad = json.loads(json_data)
 
+                share_post_list = []
+                # sharedoc post에 값 저장
+                for user in share_user_list:
+                    share_arr = {"doc_post" : record.id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
+                    share_post_id = sharePostSave(share_arr)
+                    share_post_list.append(share_post_id)
+            
                 # 데이터 셀 저장
                 for idx,val in enumerate(jsonLoad):
-                    excelTitle     = ''.join(list(val.keys()));
-                    excelJsonData   = list(val.values());
+                    excelTitle     = ''.join(list(val.keys()))
+                    excelJsonData   = list(val.values())
 
                     arrJsonLoad = {"post": record.id, "title": excelTitle,"json_data":excelJsonData}
                     excelForm = excelJsonDataForm(arrJsonLoad) 
                     if excelForm.is_valid():
                         excelForm.save()
-                    
+
                     dataCellSave(record.id,excelJsonData)
 
-                msg = "저장하였습니다."                    
+                    for share_id in share_post_list:
+                        shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
+                        shareExcelJsonDataSave(shareArrJsonLoad)
+                        shareDataCellSave(share_id,excelJsonData)
+                    
+
+                msg = "저장하였습니다."    
+
             else :
                 #post 데이터 저장
                 updateData = post.objects.get(id=id)
@@ -107,8 +125,8 @@ class docSave(LoginRequiredMixin, View):
                 excel_json_data.objects.filter(post=id).delete()
                 
                 for idx,val in enumerate(jsonLoad):
-                    excelTitle     = ''.join(list(val.keys()));
-                    excelJsonData   = list(val.values());
+                    excelTitle     = ''.join(list(val.keys()))
+                    excelJsonData   = list(val.values())
 
                     arrJsonLoad = {"post": id, "title": excelTitle,"json_data":excelJsonData}
                     excelForm = excelJsonDataForm(arrJsonLoad) 

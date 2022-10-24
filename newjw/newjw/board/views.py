@@ -66,6 +66,9 @@ class postSave(LoginRequiredMixin, View):
         MEDIA_ROOT = getattr(settings, 'MEDIA_ROOT', None)
         path = os.path.join(MEDIA_ROOT, folder_name)
 
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
         id = request.POST.get('id')
         category = request.POST.get('category')
         title = request.POST.get('title')
@@ -92,9 +95,7 @@ class postSave(LoginRequiredMixin, View):
 
                         fileForm = uploadFileForm(fileArr)
                         if fileForm.is_valid():
-                            if not os.path.isdir(path):
-                                os.makedirs(path)
-                            
+                          
                             fs = FileSystemStorage(location=path)
                             fs.save(myfile.name, myfile)
 
@@ -121,10 +122,7 @@ class postSave(LoginRequiredMixin, View):
                                     "file_size": myfile.size}
 
                         fileForm = uploadFileForm(fileArr)
-                        if fileForm.is_valid():
-                            if not os.path.isdir(path):
-                                os.makedirs(path)
-                            
+                        if fileForm.is_valid():                          
                             fs = FileSystemStorage(location=path)
                             fs.save(myfile.name, myfile)
 
