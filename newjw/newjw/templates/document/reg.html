@@ -256,7 +256,12 @@ const button = document.querySelector('#export-file');
       , contentType : false
       , data : form
       , success:function(data) {
-        hot.loadData(data.data);
+        let len = $('.nav-tabs li').length;
+        let name = 'New'+len;
+        let obj = [name];
+        let title = [filesVal[0].name]
+        tabOpen(obj,title,'local',data.data,'uploadFile');
+
         uploadFiles = [];
         $('#files > .fileDiv').remove();
         $('#offcanvasRight').offcanvas('hide');
