@@ -5,8 +5,6 @@ class sharePostForm(forms.ModelForm):
     class Meta:
         model = post
         fields = '__all__'
-        exclude = ('doc_post','start_date','end_date',)
-
 
 class shareUserForm(forms.ModelForm):
     class Meta:
