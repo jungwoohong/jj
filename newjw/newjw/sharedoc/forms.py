@@ -4,7 +4,9 @@ from .models import post, user, data_collection, excel_json_data
 class sharePostForm(forms.ModelForm):
     class Meta:
         model = post
-        fields = '__all__'    
+        fields = '__all__'
+        exclude = ('doc_post','start_date','end_date',)
+
 
 class shareUserForm(forms.ModelForm):
     class Meta:

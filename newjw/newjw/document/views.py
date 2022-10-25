@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.db.models import Subquery
 from .forms import postForm, dataCollectionForm, excelJsonDataForm
 from .models import post, data_collection, excel_json_data
+from newjw.sharedoc.models import post as share_post
 from datetime import datetime
 from core.views import DatatablesServerSideView
 from django.http.response import HttpResponse, HttpResponseBadRequest
@@ -149,7 +150,7 @@ class docLoadList(LoginRequiredMixin, View):
 
 class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
 
-    model = post
+    model = share_post
     columns = ['id','title','email', 'start_date','end_date','create_date']
     searchable_columns = ['title','email']
 

@@ -1,0 +1,95 @@
+
+{% extends "default.html" %}
+{% load static i18n %}
+{% block css %}
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid p-0">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title">문서 조회</h5>
+					</div>
+					<div class="card-body">
+						<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
+							<thead >
+								<tr >
+									<th>번호</th>
+									<th>제목</th>
+									<th>작성자</th>
+									<th>기간</th>
+									<th>작성상태</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block inline_javascript %}
+<script>
+  $('#datatables').DataTable({
+      serverSide: true,
+	  processing: true,
+      ordering:  true,
+      paging: true,
+	  language : lang_kor,
+	  order: [[3, 'desc']],
+      ajax: { 
+              type: "GET",
+              datatype : 'json',
+              url: "{% url 'myWriteListData' %}", 
+            },		
+      columns: [
+					{"data": "id",
+					render: function (data, type, row, meta) {
+						return meta.row + meta.settings._iDisplayStart + 1;
+					}},
+					{ data: "title"},
+                    { data: "email"},
+                    {'data': "start_date",    
+                      "render": function (data, type, row, meta) { 
+						let start 	= dateFormat(row.start_date);
+						let end 	= dateFormat(row.end_date);
+
+						return start+' ~ '+end}
+                    },
+                    {'data': "status",    
+                      "render": function (data, type, row, meta) { 
+						let statusKor 	= "";
+						if(row.status == 'R'){
+							statusKor = "대기";
+						}else{
+							statusKor = "aa";
+						}
+
+						return statusKor}
+					},               
+                ],
+	  columnDefs: [		
+					{ "name": "id",   "targets": 0, "width": "5%"},
+					{ "name": "title",  "targets": 1, "className": "text-leftIm" },
+					{ "name": "email", "targets": 2, "width": "15%"},
+					{ "name": "start_date", "targets": 3, "width": "20%" },					
+					{ "name": "status",  "targets": 4, "width": "15%" }
+	  ]				
+    });
+
+	$("#datatables").on('click', 'tbody tr', function () {
+
+		let row = $("#datatables").DataTable().row($(this)).data();		
+		location.href="{% url 'shareDocDetail' %}?id="+row.id
+	});
+	
+	navFun('share',3,0);
+
+</script>
+{% endblock inline_javascript %}

@@ -83,7 +83,7 @@
 	const container = document.querySelector('#excelGrid');
 	showExcelTable(container);
 	hotObj = Array();
-
+  const opt = '{{request.GET.data}}';
   var table = $('#datatables').DataTable({
       serverSide: true,
 	  processing: true,
