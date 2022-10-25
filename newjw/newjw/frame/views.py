@@ -73,6 +73,11 @@ class frameLoadListData(LoginRequiredMixin, DatatablesServerSideView):
     model = post
     columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
+
+    def get_initial_queryset(self):
+        loginId     = self.request.user.username
+        qs = super(frameLoadListData, self).get_initial_queryset()
+        return qs.filter(email=loginId)    
     
 class frameJsonData(LoginRequiredMixin, View):
 
@@ -102,9 +107,7 @@ class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
     columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
 
-class mailtest(LoginRequiredMixin, View):
-
-    def get(self,request) : 
-        email = EmailMessage('test','test','jungwoo0205@naver.com',to=['jungwoo5127@daum.net'])  
-        rs = email.send()
-        return HttpResponse()
+    def get_initial_queryset(self):
+        loginId     = self.request.user.username
+        qs = super(docToSearchListData, self).get_initial_queryset()
+        return qs.filter(email=loginId)
