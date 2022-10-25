@@ -105,6 +105,6 @@ class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
 class mailtest(LoginRequiredMixin, View):
 
     def get(self,request) : 
-        email = EmailMessage('test','test',to=['jungwoo02@gmail.com'])  
+        email = EmailMessage('test','test','jungwoo0205@naver.com',to=['jungwoo5127@daum.net'])  
         rs = email.send()
-        return HttpResponse()          
+        return HttpResponse()
