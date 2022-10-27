@@ -259,7 +259,8 @@ const button = document.querySelector('#export-file');
 // 네비 좌표설정
   navFun('share',3,0);
 
-  if(id != '')  loadExcelData(id);
+  const dataUrl = '/sharedoc/shareDocJsonData/'
+  if(id != '')  loadExcelData(id, dataUrl);
   const dropFile = new DropFile("drop-file", "files");
 
 </script>

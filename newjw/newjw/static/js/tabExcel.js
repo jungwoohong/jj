@@ -100,10 +100,10 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
    });
   }
 
-  function loadExcelData(id){
+  function loadExcelData(id, dataUrl){
     $.ajax({        
       type : 'POST',
-      url : "/document/docJsonData/",        
+      url : dataUrl,        
       dataType : 'json',        
       data : {id:id},
       success : function(data) {

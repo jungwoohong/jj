@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.db.models import Subquery
 from .forms import postForm, dataCollectionForm, excelJsonDataForm
 from .models import post, data_collection, excel_json_data
-from newjw.sharedoc.models import post as share_post
 from datetime import datetime
 from core.views import DatatablesServerSideView
 from django.http.response import HttpResponse, HttpResponseBadRequest
@@ -18,6 +17,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
 from django.core import serializers
 from .task import dataCellSave
+from .share import sharePostSave, shareExcelJsonDataSave, shareDataCellSave
 
 class docReg(LoginRequiredMixin, View):
 
@@ -136,11 +136,8 @@ class docSave(LoginRequiredMixin, View):
                 msg = "수정하였습니다."                         
 
         retrunMsg = {"msg": msg, "form":form.errors}
-        return JsonResponse(retrunMsg)
+        return JsonResponse(retrunMsg)      
 
-          
-
-        
 
 class docLoadList(LoginRequiredMixin, View):
 
@@ -156,6 +153,7 @@ class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
     def get_initial_queryset(self):
         loginId     = self.request.user.username
         qs = super(docLoadListData, self).get_initial_queryset()
+        qs.filter(email=loginId)
         return qs.filter(email=loginId)
 
 class docJsonData(LoginRequiredMixin, View):

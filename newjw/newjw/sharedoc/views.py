@@ -14,7 +14,7 @@ import json
 from django.core.paginator import Paginator
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.core.serializers.json import DjangoJSONEncoder
-from newjw.document.share import shareDataCellSave
+from newjw.document.share import shareExcelJsonDataSave, shareDataCellSave
 from django.forms.models import model_to_dict
 
 
@@ -109,6 +109,7 @@ class shareDocDetail(LoginRequiredMixin, View):
             data = get_object_or_404(post, id=id)
             context = {"data": data}
 
+        print(context)
         return render(request, 'sharedoc/reg.html', context)
 
 
@@ -135,24 +136,20 @@ class shareDocSave(LoginRequiredMixin, View):
             updateData.save()
 
             
-            # 해당 데이터 삭제
-            excel_json_data.objects.filter(id=id).delete()
-
             # 데이터 셀 저장
-            jsonLoad = json.loads(json_data) 
+            jsonLoad = json.loads(json_data)
+            # 해당 데이터 삭제
+            excel_json_data.objects.filter(post=id).delete()
+            data_collection.objects.filter(post=id).delete()
 
             for idx, val in enumerate(jsonLoad):
-                excelTitle = ''.join(list(val.keys()))
-                excelJsonData = list(val.values())
+                excelTitle     = ''.join(list(val.keys()))
+                excelJsonData   = list(val.values())
 
-                arrJsonLoad = {"post": id, "title": excelTitle, "json_data": excelJsonData}
-                excelForm = shareExcelJsonDataForm(arrJsonLoad)
-                if excelForm.is_valid():
-                    excelForm.save()
-
-            # 해당 데이터 삭제
-            data_collection.objects.filter(post=id).delete()
-            shareDataCellSave(id, excelJsonData)
+                shareArrJsonLoad = {"post": id, "title": excelTitle,"json_data":excelJsonData}
+                
+                shareExcelJsonDataSave(shareArrJsonLoad)
+                shareDataCellSave(id, excelJsonData)
 
             msg = "저장하였습니다."
 
@@ -210,3 +207,15 @@ class shareDocSearchListData(LoginRequiredMixin, DatatablesServerSideView):
             qs = super(shareDocSearchListData, self).get_initial_queryset()
 
         return qs         
+
+class shareDocJsonData(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        id          = request.POST.get('id')
+        rss         = excel_json_data.objects.filter(post=id)
+        data        = serializers.serialize("json", rss)
+        data        = json.loads(data)
+
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)            

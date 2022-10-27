@@ -356,8 +356,8 @@ if (id) {
 } else {
   navFun('documentManage',1,0);
 }
-
-  if(id != '')  loadExcelData(id);
+  const dataUrl = '/document/docJsonData/'  ;
+  if(id != '')  loadExcelData(id, dataUrl);
   const dropFile = new DropFile("drop-file", "files");
 
 </script>

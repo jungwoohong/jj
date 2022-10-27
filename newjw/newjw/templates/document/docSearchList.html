@@ -182,7 +182,8 @@
 		$('.tab-content > .tab-pane:gt(0)').remove();
 		
 		// 데이터 그리기
-		loadExcelData(row.id);
+		const dataUrl = '/document/docJsonData/';
+		loadExcelData(row.id, dataUrl);
 		
 		$('#offcanvasRight').offcanvas('show');	
 

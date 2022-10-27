@@ -10,6 +10,6 @@ urlpatterns = [
     path('shareDocDetail/', shareDocDetail.as_view(), name="shareDocDetail"),
     path('shareDocSave/', shareDocSave.as_view(), name="shareDocSave"),
     path('shareDocSearchList/', shareDocSearchList.as_view(), name="shareDocSearchList"),
-    path('shareDocSearchListData/', shareDocSearchListData.as_view(), name="shareDocSearchListData")         
-
+    path('shareDocSearchListData/', shareDocSearchListData.as_view(), name="shareDocSearchListData"),     
+    path('shareDocJsonData/', shareDocJsonData.as_view(), name="shareDocJsonData")   
 ]
