@@ -96,15 +96,7 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
       }, 1000)
       } else if (type == 'local'){
         hotObj[item].loadData(excelJson);
-
-        if (typeof(hotReadOnly)!='undefined') {
-          if (hotReadOnly) {
-            hotReadOnlyFun()
-          }
-        }
-
       }
-
    });
   }
 
@@ -133,7 +125,12 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
             tabOpen(obj,title,'local',excelJson[0],loadId);
 
           }
-
+          
+          if (typeof(hotReadOnly)!='undefined') {
+            if (hotReadOnly) {
+              hotReadOnlyFun()
+            }
+          }
         })
       }
     }); 

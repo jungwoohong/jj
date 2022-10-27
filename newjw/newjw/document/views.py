@@ -154,8 +154,9 @@ class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
     searchable_columns = ['title','email']
 
     def get_initial_queryset(self):
+        loginId     = self.request.user.username
         qs = super(docLoadListData, self).get_initial_queryset()
-        return qs.filter(email__isnull=False)
+        return qs.filter(email=loginId)
 
 class docJsonData(LoginRequiredMixin, View):
 

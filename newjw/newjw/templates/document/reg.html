@@ -41,7 +41,7 @@
           <div class="card-header" style="padding:20px 0px 0px 22px">
             <h5 class="card-title">
               {% if data.id %}
-                문서 수정
+                문서 내용보기
               {% else %}
                 문서 작성 
               {% endif %}
@@ -188,7 +188,7 @@ const button = document.querySelector('#export-file');
   save.addEventListener('click', () => {
 
     if(updateCheck == 2) {
-
+      $('.card-title').html('문서 수정');
       $('#save').html('저장하기');
       updateCheck = 1;
 
