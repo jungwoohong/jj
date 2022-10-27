@@ -8,5 +8,8 @@ urlpatterns = [
     path('myWriteList/', myWriteList.as_view(), name="myWriteList"),
     path('myWriteListData/', myWriteListData.as_view(), name="myWriteListData"),    
     path('shareDocDetail/', shareDocDetail.as_view(), name="shareDocDetail"),
-    path('shareDocSave/', shareDocSave.as_view(), name="shareDocSave")    
+    path('shareDocSave/', shareDocSave.as_view(), name="shareDocSave"),
+    path('shareDocSearchList/', shareDocSearchList.as_view(), name="shareDocSearchList"),
+    path('shareDocSearchListData/', shareDocSearchListData.as_view(), name="shareDocSearchListData")         
+
 ]

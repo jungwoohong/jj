@@ -5,7 +5,7 @@ class sharePostForm(forms.ModelForm):
     class Meta:
         model = post
         fields = '__all__'
-
+        
 class shareUserForm(forms.ModelForm):
     class Meta:
         model = user

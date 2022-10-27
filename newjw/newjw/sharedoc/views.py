@@ -15,6 +15,7 @@ from django.core.paginator import Paginator
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from django.core.serializers.json import DjangoJSONEncoder
 from newjw.document.share import shareDataCellSave
+from django.forms.models import model_to_dict
 
 
 class selectUserList(LoginRequiredMixin, View):
@@ -122,20 +123,23 @@ class shareDocSave(LoginRequiredMixin, View):
         title = request.POST.get('title')
         loginId = request.user.username
 
-        arr = {"email": loginId, "title": title}
+        updateData = post.objects.get(id=id)
+        arr = model_to_dict(updateData)
+
         form = sharePostForm(arr)
 
         if form.is_valid():
 
             # post 데이터 저장
-            updateData = post.objects.get(id=id)
             updateData.title = title
             updateData.save()
 
+            
+            # 해당 데이터 삭제
+            excel_json_data.objects.filter(id=id).delete()
+
             # 데이터 셀 저장
             jsonLoad = json.loads(json_data)
-            # 해당 데이터 삭제
-            excel_json_data.objects.filter(post=id).delete()
 
             for idx, val in enumerate(jsonLoad):
                 excelTitle = ''.join(list(val.keys()))
@@ -154,3 +158,55 @@ class shareDocSave(LoginRequiredMixin, View):
 
         retrunMsg = {"msg": msg, "form": form.errors}
         return JsonResponse(retrunMsg)
+
+class shareDocSearchList(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'sharedoc/docSearchList.html')
+
+class shareDocSearchListData(LoginRequiredMixin, DatatablesServerSideView):
+
+    model = post
+    columns = ['id','title','email', 'start_date','end_date','create_date']
+    searchable_columns = []
+
+    def get(self, request, *args, **kwargs):
+        if not request.is_ajax():            
+            return HttpResponseBadRequest()
+        try:
+            params = super(shareDocSearchListData, self).read_parameters(request.GET)            
+        except ValueError:
+            return HttpResponseBadRequest()
+
+        qs = self.get_initial_queryset(params)
+
+        if len(params['orders']):            
+            qs = qs.order_by(
+                *[order.get_order_mode() for order in params['orders']])
+
+        paginator = Paginator(qs, params['length'])
+        return HttpResponse(
+            json.dumps(
+                self.get_response_dict(paginator, params['draw'],
+                                       params['start']),
+                cls=DjangoJSONEncoder
+            ),
+            content_type="application/json")
+
+    def get_initial_queryset(self, *args, **kwargs):
+        qs = None
+        search_value = args[0].get('search_value')
+        extra_search = args[0].get('extra_search')
+        
+        if (search_value != None) :
+            dataCollectionRs = data_collection.objects.filter(data__contains=search_value)
+            if(extra_search != None ) :
+                if(extra_search != 'all' ) :
+                    dataCollectionRs = dataCollectionRs.filter(cell_type=extra_search)
+
+            qs = post.objects.filter(id__in=Subquery(dataCollectionRs.values('post')))
+
+        else :
+            qs = super(shareDocSearchListData, self).get_initial_queryset()
+
+        return qs         
