@@ -49,17 +49,49 @@
           </div>
           <div class="card-body" >
             <div class="text-lg-end">
-                <button id ="shareBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-paper-plane"></i>공유</button>
-                <button id ="save" class="btn btn-outline-success">저장하기</button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-instagram dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="align-middle me-2 fas fa-fw fa-paper-plane"></i>공유
+                </button>
+                  <div class="dropdown-menu" >
+                    <a id ="shareBtn" class="dropdown-item" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-address-book"></i>
+                      공유자선택
+                    </a>
+                    <a class="dropdown-item" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-address-card"></i>
+                      공유자목록보기
+                    </a>
+                  </div>
+                </div>                
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    저장하기
+                </button>
+                  <div class="dropdown-menu" >
+                    <a id ="save" class="dropdown-item" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-toggle-on"></i>
+                      저장
+                    </a>
+                    <a class="dropdown-item" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-toggle-off"></i>
+                      임시저장
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-save"></i>
+                      완료
+                    </a>
+                  </div>
+                </div>
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
                 <button id ="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
                 <button id="templBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
                 <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
                 {% if data.id %}
                 <button id="deleteBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-trash-alt"></i> 삭제</button>
-                {% endif %}
-                            
-            </div>               
+                {% endif %}                
+            </div>                
             <form id="frm">
               <input type="hidden" id="shareUser" name="shareUser" value="" />
               <input type="hidden" id="id" name="id" value="{{ data.id }}" />

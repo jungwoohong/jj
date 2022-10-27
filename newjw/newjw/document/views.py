@@ -1,10 +1,9 @@
 from ast import Try
 import json
-from turtle import pos
 from django.views import View
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, JsonResponse
+from django.http import JsonResponse
 import pandas as pd
 from django.utils import timezone
 from django.db.models import Subquery
@@ -18,6 +17,7 @@ from django.core.paginator import Paginator
 from django.core import serializers
 from .task import dataCellSave
 from .share import sharePostSave, shareExcelJsonDataSave, shareDataCellSave
+from newjw.sharedoc.models import post as share_post
 
 class docReg(LoginRequiredMixin, View):
 
@@ -28,7 +28,8 @@ class docReg(LoginRequiredMixin, View):
 
         if(id):
              data = get_object_or_404(post, id=id)
-             context = {"data":data}
+             shareUser = share_post.objects.filter(doc_post=id)
+             context = {"data":data,"shareUser":shareUser}
 
         return render(request, 'document/reg.html', context)
 

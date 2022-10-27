@@ -64,6 +64,56 @@
 
 	window.resizeTo('1000','650');
 
+	function loadData(){
+		let getUserList = opener.$('#shareUser').val();		
+		let arrUserList = getUserList.split(',');
+		let appendSelect = $('#selectUserDiv').find('select');
+		let searchOpt = appendSelect.find('option');
+
+		$.each(arrUserList,function(idx,item){
+			$("<option />",{html:item, "value":item}).appendTo(appendSelect);
+			$('#jstree').jstree().check_node(item);
+		});
+		
+	}
+
+	var fn_Common = {
+		jstree: function (data) {
+			$('#jstree')
+				.jstree({
+					core: {
+						check_callback: true,
+						data: data	/* 최초에 보여지 최상위 Root Tree */
+					},
+					plugins: [
+						"wholerow",
+						"checkbox",
+						"unique", 
+						"conditionalselect" ,
+						"state",
+						"sort"
+					],
+					sort: function(a){
+						let first = this.get_node(a);
+						if(first.original.class == 'user'){
+							return -1;
+						} 
+
+					}
+				})
+				.on("ready.jstree", function (event, data) { // 완료되면
+					let firstVal = $("#jstree").jstree(true).get_selected('full',true);
+					
+					if(firstVal.length == 0) {
+						$("#jstree").jstree(true).check_node(1);
+					}
+					
+					$('#jstree').jstree("deselect_all");
+
+					loadData();
+				});				
+		}
+	}
 	$('#userAdd').click(function(){
 		var selectData = $("#jstree").jstree(true).get_selected('full',true);
 
@@ -103,6 +153,20 @@
 			
 	});
 
+	$('#save').click(function(){
+		let userList = new Array();
+		let optVals = $('#selectRs option');
+		$.each(optVals, function(idx, optVal){
+			userList.push($(optVal).val());
+		})
+		opener.$('#shareUser').val(userList);
+		alert('저장되었습니다.');		
+	})
+
+	$('#exit').click(function(){	
+		window.close();
+	})
+
 	$(document).ready(function(){
 		// getTree();
 		$.ajax({
@@ -135,56 +199,6 @@
 				}
 		})
 	});
-	var fn_Common = {
-		jstree: function (data) {
-			$('#jstree')
-				.jstree({
-					core: {
-						check_callback: true,
-						data: data	/* 최초에 보여지 최상위 Root Tree */
-					},
-					plugins: [
-						"wholerow",
-						"checkbox",
-						"unique", 
-						"conditionalselect" ,
-						"state",
-						"sort"
-					],
-					sort: function(a){
-						let first = this.get_node(a);
-						if(first.original.class == 'user'){
-							return -1;
-						} 
-
-					}
-				})
-				.on("ready.jstree", function (event, data) { // 완료되면
-					let firstVal = $("#jstree").jstree(true).get_selected('full',true);
-					
-					if(firstVal.length == 0) {
-						$("#jstree").jstree(true).check_node(1);
-					}
-					
-					$('#jstree').jstree("deselect_all");
-				});				
-		}
-	}
-
-	$('#save').click(function(){
-		let userList = new Array();
-		let optVals = $('#selectRs option');
-		$.each(optVals, function(idx, optVal){
-			userList.push($(optVal).val());
-		})
-		opener.$('#shareUser').val(userList);
-		alert('저장되었습니다.');		
-	})
-
-	$('#exit').click(function(){	
-		window.close();
-	})
-	
 	
 </script>
 
