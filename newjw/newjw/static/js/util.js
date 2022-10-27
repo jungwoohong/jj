@@ -102,19 +102,7 @@ function DropFile(dropAreaId, fileListId) {
     };
   }
 
-  var daterangepickerLocalKr = {
-    "format": "YYYY-MM-DD",
-    "separator": " ~ ",
-    "applyLabel": "확인",
-    "cancelLabel": "취소",
-    "fromLabel": "From",
-    "toLabel": "To",
-    "customRangeLabel": "Custom",
-    "weekLabel": "W",
-    "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
-    "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-    "firstDay": 1
-  }; 
+
 
   function formError(obj){
     
@@ -129,8 +117,6 @@ function DropFile(dropAreaId, fileListId) {
       $('#'+key).focus();
     });
   }
-
-
   function setDate(input,input2){
 
     let startDate = $('#'+input);
@@ -146,4 +132,19 @@ function DropFile(dropAreaId, fileListId) {
     } else {
       end = moment(new Date(endDate.val()));
     }    
-}
+  }
+
+var daterangepickerLocalKr = {
+  "format": "YYYY-MM-DD",
+  "separator": " ~ ",
+  "applyLabel": "확인",
+  "cancelLabel": "취소",
+  "fromLabel": "From",
+  "toLabel": "To",
+  "customRangeLabel": "Custom",
+  "weekLabel": "W",
+  "daysOfWeek": ["월", "화", "수", "목", "금", "토", "일"],
+  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+  "firstDay": 1
+};
+

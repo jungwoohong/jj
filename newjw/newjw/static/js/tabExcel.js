@@ -1,5 +1,49 @@
 popupListMemory = Array();
 
+function hotReadOnlyFun(){
+  hot.updateSettings({
+    readOnly: true, 
+    contextMenu: false, 
+    disableVisualSelection: true, 
+    manualColumnResize: false, 
+    manualRowResize: false, 
+    comments: false 
+  });
+
+  for (var key in hotObj) {
+    hotObj[key].updateSettings({
+      readOnly: true, 
+      contextMenu: false, 
+      disableVisualSelection: true, 
+      manualColumnResize: false, 
+      manualRowResize: false, 
+      comments: false 
+    });
+  }
+}
+
+function hotWrite(){
+  hot.updateSettings({
+    readOnly: false, 
+    contextMenu: true, 
+    disableVisualSelection: false, 
+    manualColumnResize: true, 
+    manualRowResize: true, 
+    comments: true 
+  });
+
+  for (var key in hotObj) {
+    hotObj[key].updateSettings({
+      readOnly: false, 
+      contextMenu: true, 
+      disableVisualSelection: false, 
+      manualColumnResize: true, 
+      manualRowResize: true, 
+      comments: true 
+    });
+  }
+} 
+
 function tabOpen(obj,objTitle,type,excelJson,loadId){
 
     $.each(obj,function(idx,item) {
@@ -52,10 +96,18 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
       }, 1000)
       } else if (type == 'local'){
         hotObj[item].loadData(excelJson);
+
+        if (typeof(hotReadOnly)!='undefined') {
+          if (hotReadOnly) {
+            hotReadOnlyFun()
+          }
+        }
+
       }
 
    });
   }
+
   function loadExcelData(id){
     $.ajax({        
       type : 'POST',
@@ -146,3 +198,4 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
     return JSON.stringify(arr);
 
   }
+ 

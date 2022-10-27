@@ -130,6 +130,8 @@
   const id = $('#id').val();
   hotObj = Array();
   navAtag = '';
+  newTabNum = 1;
+  updateCheck = 1;
 
   showExcelTable(container);
 
@@ -137,17 +139,23 @@
    * 탭 관련 시크립트
    **/
   $(document).on("click", ".nav-tabs li a", function(){
-    let id = $(this).data('id');
 
-    if(!id) return; 
+    let id = $(this).data('id');
+    let len = $('.nav-tabs li').length;
+
+    if(len <= 2) return; 
     let deleteBtn = '<i class="align-middle me-2 fas fa-fw fa-times position-absolute" style="margin-top:-5px!important;color:#e7adc5;"></i>';
     $('.fa-times').remove();
-    $(this).append(deleteBtn);
+    if(updateCheck == 1) $(this).append(deleteBtn);
+    
     if(id) hotObj[id].render();
 
   });
 
   $(document).on("dblclick", ".nav-tabs li", function(){
+
+    if(updateCheck == 2) return;
+
     navAtag = $(this).html();
     let getText = $.trim($(this).find('a').text());
     let getHtml = '<input type="text" class="form-control" value="'+getText+'" />';
@@ -159,7 +167,6 @@
   $(document).on("focusout", ".nav-tabs li input", function(){
     
     let getText = $.trim($(this).val());
-    console.log(getText)
     $(this).parent().html(navAtag);
     $('.nav-tabs li .active span').text(getText);
   });
@@ -179,6 +186,21 @@ const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
 
   save.addEventListener('click', () => {
+
+    if(updateCheck == 2) {
+
+      $('#save').html('저장하기');
+      updateCheck = 1;
+
+      $('#title').attr('disabled',false);
+      daterangepickerHide = false;
+      daterangepickerShow('dateShow');
+      hotReadOnly = false;
+      
+      hotWrite();
+      $('.plusBtn').removeClass('disabled');      
+      return;
+    }
 
     let from = $('#frm');
     $('#json_data').val(excelDataMake());
@@ -215,7 +237,11 @@ const button = document.querySelector('#export-file');
   });
 
   $('.plusBtn').click(function(){
-    let len = $('.nav-tabs li').length;
+
+    if(updateCheck == 2) return;
+
+    newTabNum = newTabNum +1;
+    let len = newTabNum
     let name = 'New'+len;
     let obj = [name];
     let title = ['sheet'+len];
@@ -235,7 +261,9 @@ const button = document.querySelector('#export-file');
     if(con == false) return;
 
     let navActive = $('.nav-item > .active');
-    let navActiveAdd = navActive.closest('li').prev().find('a')
+    let navActiveAdd = navActive.closest('li').next().find('a')
+    if(navActiveAdd.length == 0 ) navActiveAdd = navActive.closest('li').prev().find('a')
+    
     navActive.unwrap();
     navActive.remove();
     $('.tab-content .active').remove();
@@ -312,7 +340,20 @@ const button = document.querySelector('#export-file');
   setDate('start_date','end_date');
 
 // 네비 좌표설정
+if (id) {
+  //수정일때
+  $('#save').html('수정하기');
+  updateCheck = 2;
+
+  $('#title').attr('disabled',true);
+  daterangepickerHide = true;
+  hotReadOnly = true;
+  $('.plusBtn').addClass('disabled');
+
+  navFun('documentManage',1,1);
+} else {
   navFun('documentManage',1,0);
+}
 
   if(id != '')  loadExcelData(id);
   const dropFile = new DropFile("drop-file", "files");
