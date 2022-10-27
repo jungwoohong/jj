@@ -52,7 +52,7 @@
                 <button id ="shareBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-paper-plane"></i>공유</button>
                 <button id ="save" class="btn btn-outline-success">저장하기</button>
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
-                <button class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
+                <button id ="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
                 <button id="templBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
                 <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
                 {% if data.id %}
@@ -184,6 +184,7 @@
    **/
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
+const updateText = '수정모드에서 사용하실수 있습니다.';
 
   save.addEventListener('click', () => {
 
@@ -198,7 +199,8 @@ const button = document.querySelector('#export-file');
       hotReadOnly = false;
       
       hotWrite();
-      $('.plusBtn').removeClass('disabled');      
+      
+      $('.plusBtn, #shareBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');      
       return;
     }
 
@@ -348,7 +350,7 @@ if (id) {
   $('#title').attr('disabled',true);
   daterangepickerHide = true;
   hotReadOnly = true;
-  $('.plusBtn').addClass('disabled');
+  $('.plusBtn, #shareBtn, #searchBtn, #templBtn, #fileUploadBtn').addClass('disabled');
 
   navFun('documentManage',1,1);
 } else {
