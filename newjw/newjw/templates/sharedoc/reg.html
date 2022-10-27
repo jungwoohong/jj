@@ -1,28 +1,28 @@
-
 {% extends "default.html" %}
 {% load static i18n %}
 {% block css %}
 <link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
-<link href="{% static 'css/upload.css' %}" rel="stylesheet" > 
+<link href="{% static 'css/upload.css' %}" rel="stylesheet">
 <style>
   .handsontable .odd {
- background: #fff 
-}
-.handsontable .even {
-  background: #eee
-}
+    background: #fff
+  }
 
-.tab .nav-tabs .nav-link.active {
-  border:1px solid !important;
-  border-color:#ddd !important;
-}
+  .handsontable .even {
+    background: #eee
+  }
 
-.tab .tab-content {
-  border:1px solid !important;
-  border-color:#ddd !important;
-}
+  .tab .nav-tabs .nav-link.active {
+    border: 1px solid !important;
+    border-color: #ddd !important;
+  }
 
-/* .nav-item a {
+  .tab .tab-content {
+    border: 1px solid !important;
+    border-color: #ddd !important;
+  }
+
+  /* .nav-item a {
   
   max-width: 120px;
   white-space: nowrap;
@@ -34,55 +34,76 @@
 
 {% block content %}
 
-  <div class="container-fluid p-0">
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header" style="padding:20px 0px 0px 22px">
-            <h5 class="card-title"> 문서 수정 </h5>
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header" style="padding:20px 0px 0px 22px">
+          <h5 class="card-title"> 공유 문서 </h5>
+        </div>
+        <div class="card-body">
+          <div class="text-lg-end">
+            <div class="btn-group">
+              <button type="button" id="write" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                작성하기
+              </button>
+              <div class="dropdown-menu">
+                <a id="tempSave" class="save dropdown-item" href="#" data-value="T">
+                  <i class="align-middle me-2 fas fa-fw fa-toggle-off" ></i>
+                  임시저장
+                </a>
+                <a id="comSave" class="save dropdown-item" href="#" data-value="C"> 
+                  <i class="align-middle me-2 fas fa-fw fa-toggle-on" ></i>
+                  최종제출
+                </a>
+              </div>
+            </div>
+            <button id="export-file" class="btn btn-outline-success">엑셀내보내기</button>
+            <button id="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
+            <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i
+                class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
           </div>
-          <div class="card-body" >
-            <div class="text-lg-end">
-                <button id ="save" class="btn btn-outline-success">저장하기</button>
-                <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
-                <button class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
-                <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>                            
-            </div>               
-            <form id="frm">
-              <input type="hidden" id="shareUser" name="shareUser" value="" />
-              <input type="hidden" id="id" name="id" value="{{ data.id }}" />
-              <input type="hidden" id="json_data" name="json_data" value="" />
-              <div class="mb-3 row">
-                <label class="col-form-label col-sm-2 text-sm-right">제목</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="title" name ="title" placeholder="" value="{{ data.title }}">
-                  <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
+          <form id="frm">
+            <input type="hidden" id="shareUser" name="shareUser" value="" />
+            <input type="hidden" id="id" name="id" value="{{ data.id }}" />
+            <input type="hidden" id="json_data" name="json_data" value="" />
+            <input type="hidden" id="status" name="status" value="" />
+            <div class="mb-3 row">
+              <label class="col-form-label col-sm-2 text-sm-right">제목</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="title" name="title" placeholder="" value="{{ data.title }}">
+                <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback"
+                  for="validation-required"></label>
+              </div>
+            </div>
+          </form>
+          <div class="col-12">
+            <div class="tab" id="myTab">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i
+                      class="align-middle me-2 fas fa-plus"></i></a></li>
+                <li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab"
+                    role="tab"><span>Sheet1</span></a></li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane active" id="tab-2" role="tabpanel">
+                  <div id="excelGrid" class="excelGridClass"> </div>
                 </div>
-              </div>                                     
-            </form>
-            <div class="col-12">
-							<div class="tab" id="myTab">
-								<ul class="nav nav-tabs" role="tablist">
-                  <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i class="align-middle me-2 fas fa-plus"></i></a></li>
-									<li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
-								</ul>
-								<div class="tab-content">
-									<div class="tab-pane active" id="tab-2" role="tabpanel">
-                    <div id="excelGrid" class="excelGridClass"> </div>
-									</div>                              
-								</div>                
-							</div>
-						</div>            
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
 {% endblock %}
 
 {% block layerHtml %}
-    
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
   <div class="offcanvas-header">
     <h5 id="offcanvasRightLabel">Excel Upload</h5>
@@ -93,7 +114,7 @@
       {% include "document/uploadIn.html" %}
     </div>
   </div>
-</div> 
+</div>
 {% endblock layerHtml %}
 
 {% block inline_javascript %}
@@ -103,49 +124,51 @@
 <script src="{% static 'js/handsonLangKo.js' %}"></script>
 <script src="{% static 'js/tabExcel.js' %}"></script>
 <script>
-    
+
   const container = document.querySelector('#excelGrid');
-  const save = document.querySelector('#save');
+  const write = document.querySelector('#write');
   const id = $('#id').val();
   hotObj = Array();
   navAtag = '';
+  newTabNum = 1;
+  updateCheck = 1;
 
   showExcelTable(container);
 
   /**
    * 탭 관련 시크립트
    **/
-  $(document).on("click", ".nav-tabs li a", function(){
+  $(document).on("click", ".nav-tabs li a", function () {
     let id = $(this).data('id');
 
-    if(!id) return; 
+    if (!id) return;
     let deleteBtn = '<i class="align-middle me-2 fas fa-fw fa-times position-absolute" style="margin-top:-5px!important;color:#e7adc5;"></i>';
     $('.fa-times').remove();
     $(this).append(deleteBtn);
-    if(id) hotObj[id].render();
+    if (id) hotObj[id].render();
 
   });
 
-  $(document).on("dblclick", ".nav-tabs li", function(){
+  $(document).on("dblclick", ".nav-tabs li", function () {
     navAtag = $(this).html();
     let getText = $.trim($(this).find('a').text());
-    let getHtml = '<input type="text" class="form-control" value="'+getText+'" />';
+    let getHtml = '<input type="text" class="form-control" value="' + getText + '" />';
     $(this).html(getHtml);
     $(this).find('input').focus();
 
   });
 
-  $(document).on("focusout", ".nav-tabs li input", function(){
-    
+  $(document).on("focusout", ".nav-tabs li input", function () {
+
     let getText = $.trim($(this).val());
     console.log(getText)
     $(this).parent().html(navAtag);
     $('.nav-tabs li .active span').text(getText);
   });
 
-  $(document).on("keydown", ".nav-tabs li input", function(e){
+  $(document).on("keydown", ".nav-tabs li input", function (e) {
     let keycode = e.keyCode;
-    if(keycode == 13) {
+    if (keycode == 13) {
       $(this).trigger('focusout');
     }
 
@@ -154,29 +177,43 @@
   /**
    * 버튼 관련 스크립트
    **/
-const exportPlugin = hot.getPlugin('exportFile');
-const button = document.querySelector('#export-file');
+  const exportPlugin = hot.getPlugin('exportFile');
+  const button = document.querySelector('#export-file');
 
-  save.addEventListener('click', () => {
+  write.addEventListener('click', () => {
+    updateCheck = 2;
+    $('.card-title').html('문서 작성');
+    $('#title').attr('disabled',false);
+    hotReadOnly = false;      
+    hotWrite();
+    $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');      
+      return;
+
+  });
+
+  $(document).on("click", ".save", function () {
+    let dataVal = $(this).data("value");
+    $('#status').val(dataVal);
 
     let frm = $('#frm');
     $('#json_data').val(excelDataMake());
 
-      $.ajax({        
-        type : 'POST',
-        url : "{% url 'shareDocSave' %}",        
-        dataType : 'json',        
-        data : frm.serialize(),
-        success : function(data) {
-          
-          if (!data.form.length) {
-            alert(data.msg);
-          } else {
-            formError(data.form);
-          } 
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'shareDocSave' %}",
+      dataType: 'json',
+      data: frm.serialize(),
+      success: function (data) {
+
+        if (!data.form.length) {
+          alert(data.msg);
+        } else {
+          formError(data.form);
         }
-      });          
+      }
     });
+
+  });
 
   button.addEventListener('click', () => {
     exportPlugin.downloadFile('csv', {
@@ -193,25 +230,25 @@ const button = document.querySelector('#export-file');
     });
   });
 
-  $('.plusBtn').click(function(){
+  $('.plusBtn').click(function () {
     let len = $('.nav-tabs li').length;
-    let name = 'New'+len;
+    let name = 'New' + len;
     let obj = [name];
-    let title = ['sheet'+len];
+    let title = ['sheet' + len];
 
-    tabOpen(obj,title);
+    tabOpen(obj, title);
 
-    setTimeout(function(){
+    setTimeout(function () {
       let tabEl = document.querySelector('#myTab li:last-child a')
       let tab = new bootstrap.Tab(tabEl)
       tab.show();
       tabEl.click();
-        }, 100)  
+    }, 100)
   });
 
-  $(document).on("click", ".fa-times", function(){
+  $(document).on("click", ".fa-times", function () {
     let con = confirm('시트를 지울까요?');
-    if(con == false) return;
+    if (con == false) return;
 
     let navActive = $('.nav-item > .active');
     let navActiveAdd = navActive.closest('li').prev().find('a')
@@ -223,44 +260,51 @@ const button = document.querySelector('#export-file');
     tab.show();
   });
 
-  $('#uploadBtn').click(function(){
+  $('#uploadBtn').click(function () {
 
-    var form = new FormData();    
-    form.append( "file1", filesVal[0],filesVal[0].name );
+    var form = new FormData();
+    form.append("file1", filesVal[0], filesVal[0].name);
 
     $.ajax({
-        url : "{% url 'docUpload' %}"
-      , type : "POST"
-      , processData : false
-      , contentType : false
-      , data : form
-      , success:function(data) {
+      url: "{% url 'docUpload' %}"
+      , type: "POST"
+      , processData: false
+      , contentType: false
+      , data: form
+      , success: function (data) {
         hot.loadData(data.data);
         uploadFiles = [];
         $('#files > .fileDiv').remove();
         $('#offcanvasRight').offcanvas('hide');
-          
+
       }
-      ,error: function (jqXHR) 
-      { 
-          alert(jqXHR.responseText); 
+      , error: function (jqXHR) {
+        alert(jqXHR.responseText);
       }
     });
   });
 
-  $(document).on("click", "#templBtn", function(){
-    window.open("{% url 'docToSearchList' %}",'templPop','resizable=yes,width=1000,height=800');
+  $(document).on("click", "#templBtn", function () {
+    window.open("{% url 'docToSearchList' %}", 'templPop', 'resizable=yes,width=1000,height=800');
   });
 
-  $(document).on("click", "#searchBtn", function(){
-    window.open("{% url 'shareDocSearchList' %}",'searchPop','resizable=yes,width=1000,height=800');
+  $(document).on("click", "#searchBtn", function () {
+    window.open("{% url 'shareDocSearchList' %}", 'searchPop', 'resizable=yes,width=1000,height=800');
   });
 
-// 네비 좌표설정
-  navFun('share',3,0);
+
+  if (updateCheck == 1) {
+    $('#title').attr('disabled', true);
+    $('#write').html('작성하기');
+    hotReadOnly = true;
+    $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').addClass('disabled');
+  }
+
+  // 네비 좌표설정
+  navFun('share', 3, 0);
 
   const dataUrl = '/sharedoc/shareDocJsonData/'
-  if(id != '')  loadExcelData(id, dataUrl);
+  if (id != '') loadExcelData(id, dataUrl);
   const dropFile = new DropFile("drop-file", "files");
 
 </script>
