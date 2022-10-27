@@ -139,7 +139,7 @@ class shareDocSave(LoginRequiredMixin, View):
             excel_json_data.objects.filter(id=id).delete()
 
             # 데이터 셀 저장
-            jsonLoad = json.loads(json_data)
+            jsonLoad = json.loads(json_data) 
 
             for idx, val in enumerate(jsonLoad):
                 excelTitle = ''.join(list(val.keys()))
