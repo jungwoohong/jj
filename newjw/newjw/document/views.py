@@ -18,7 +18,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
 from django.core import serializers
 from .task import dataCellSave
-from .share import *
 
 class docReg(LoginRequiredMixin, View):
 
@@ -150,7 +149,7 @@ class docLoadList(LoginRequiredMixin, View):
 
 class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
 
-    model = share_post
+    model = post
     columns = ['id','title','email', 'start_date','end_date','create_date']
     searchable_columns = ['title','email']
 
