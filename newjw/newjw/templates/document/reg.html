@@ -58,14 +58,18 @@
                       <i class="align-middle me-2 fas fa-fw fa-address-book"></i>
                       공유자선택
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <a id ="shareViewBtn" class="dropdown-item" href="#">
                       <i class="align-middle me-2 fas fa-fw fa-address-card"></i>
                       공유자목록보기
                     </a>
                   </div>
-                </div>                
+                </div>
+                {% if data.id %}
+                <button id ="save" class="btn btn-outline-success">수정하기</button>
+                {% else %}
+             
                 <div class="btn-group">
-                  <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button id="saveListBtn" type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     저장하기
                 </button>
                   <div class="dropdown-menu" >
@@ -83,7 +87,8 @@
                       완료
                     </a>
                   </div>
-                </div>
+                </div> 
+                {% endif %}   
                 <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
                 <button id ="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
                 <button id="templBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
@@ -93,7 +98,7 @@
                 {% endif %}                
             </div>                
             <form id="frm">
-              <input type="hidden" id="shareUser" name="shareUser" value="" />
+              <input type="hidden" id="shareUser" name="shareUser" value="{{shareUser}}" />
               <input type="hidden" id="id" name="id" value="{{ data.id }}" />
               <input type="hidden" id="start_date" name="start_date" value="{{ data.start_date|date:'Y.m.d' }}" />
               <input type="hidden" id="end_date" name="end_date" value="{{ data.end_date|date:'Y.m.d' }}" />
@@ -131,7 +136,7 @@
       </div>
     </div>
   </div>
-
+  
 {% endblock %}
 
 {% block layerHtml %}
@@ -147,6 +152,7 @@
     </div>
   </div>
 </div> 
+
 {% endblock layerHtml %}
 
 {% block inline_javascript %}
@@ -160,6 +166,7 @@
   const container = document.querySelector('#excelGrid');
   const save = document.querySelector('#save');
   const id = $('#id').val();
+
   hotObj = Array();
   navAtag = '';
   newTabNum = 1;
@@ -216,7 +223,6 @@
    **/
 const exportPlugin = hot.getPlugin('exportFile');
 const button = document.querySelector('#export-file');
-const updateText = '수정모드에서 사용하실수 있습니다.';
 
   save.addEventListener('click', () => {
 
@@ -347,6 +353,12 @@ const updateText = '수정모드에서 사용하실수 있습니다.';
   $(document).on("click", "#shareBtn", function(){
     window.open("{% url 'selectUserList' %}",'selectUserPop','resizable=yes,width=1100,height=800');
   });
+
+  $(document).on("click", "#shareViewBtn", function(){
+    window.open("{% url 'selectUserList' %}?v=v",'selectUserPop','resizable=yes,width=1100,height=800');
+  });
+
+  
 
   $(document).on("click", "#deleteBtn", function(){
     let con = confirm('삭제 할까요?');
