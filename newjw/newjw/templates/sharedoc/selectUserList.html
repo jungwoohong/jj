@@ -20,7 +20,7 @@
 {% block content %}
 <div class="container-fluid p-0 " style="width: 1000; ">
 
-	<h1 class="h3 mb-3">공유자 선택</h1>
+	<h1 class="h3 mb-3 shareTitle">공유자 선택</h1>
 	<div class="row" style="width: 950px; margin: 0 auto;">
 		<div class="col-md-4" style="width: 45%;">
 			<div class="card bg-light py-2 py-md-3 border" >
@@ -61,6 +61,13 @@
 
 <script src="{% static 'js/jstree.min.js' %}"></script>
 <script>
+
+	const view = '{{request.GET.v}}';
+	if (view !='') {
+		$('#save, #exit, #userAdd, #userDel').hide();
+		$('.shareTitle').html('공유자 리스트');
+
+	}
 
 	window.resizeTo('1000','650');
 

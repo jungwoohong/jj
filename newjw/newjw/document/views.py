@@ -28,8 +28,13 @@ class docReg(LoginRequiredMixin, View):
 
         if(id):
              data = get_object_or_404(post, id=id)
-             shareUser = share_post.objects.filter(doc_post=id)
-             context = {"data":data,"shareUser":shareUser}
+             shareUsers = share_post.objects.filter(doc_post=id).values('email')
+             shareRs = []
+             
+             for shareUser in shareUsers :
+                shareRs.append(shareUser['email'])
+
+             context = {"data":data,"shareUser":','.join(shareRs)}
 
         return render(request, 'document/reg.html', context)
 
@@ -73,8 +78,8 @@ class docSave(LoginRequiredMixin, View):
         end_date    = timezone.make_aware(end_date)
         share_user  = request.POST.get('shareUser')
         share_user_list = share_user.split(',')
-
-                    
+        share_post_list = []
+          
         arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date}           
         form = postForm(arr)
 
@@ -85,7 +90,7 @@ class docSave(LoginRequiredMixin, View):
                 record = form.save()
                 jsonLoad = json.loads(json_data)
 
-                share_post_list = []
+                
                 # sharedoc post에 값 저장
                 for user in share_user_list:
                     share_arr = {"doc_post" : record.id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
@@ -133,6 +138,19 @@ class docSave(LoginRequiredMixin, View):
                     excelForm = excelJsonDataForm(arrJsonLoad) 
                     if excelForm.is_valid():
                         excelForm.save()
+
+
+                share_post.objects.filter(doc_post=id).delete()
+
+                for user in share_user_list:
+                    share_arr = {"doc_post" : id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
+                    share_post_id = sharePostSave(share_arr)
+                    share_post_list.append(share_post_id)
+
+                for share_id in share_post_list:
+                    shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
+                    shareExcelJsonDataSave(shareArrJsonLoad)
+                    shareDataCellSave(share_id,excelJsonData)                 
 
                 msg = "수정하였습니다."                         
 
