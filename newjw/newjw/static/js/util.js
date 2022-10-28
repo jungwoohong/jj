@@ -148,3 +148,36 @@ var daterangepickerLocalKr = {
   "firstDay": 1
 };
 
+function ioAction(){
+
+  let typeCheck = updateCheck;
+  switch(typeCheck) {
+    case 1:  // 수정모드
+      hotReadOnly = false;
+      daterangepickerHide = false;
+      hotWrite();
+      daterangepickerShow('dateShow');
+
+      $('.card-title').html('문서 수정');
+      $('.io-inputAttr').attr('disabled',false);
+      $('.io-input').removeClass('disabled');
+      $('.io-inputShow ').hide();
+      $('.io-inputHide ').show();     
+    break;
+  
+    case 2:  // 읽기모드
+    console.log('asdfasdfasdf')
+      hotReadOnly = true;
+      daterangepickerHide = true;
+
+      $('.io-inputAttr').attr('disabled',true);
+      $('.io-input').addClass('disabled'); 
+      $('.io-inputShow ').show();
+      $('.io-inputHide ').hide();
+    break;
+  
+    default:
+      
+      break;
+  }
+}

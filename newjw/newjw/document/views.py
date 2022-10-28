@@ -71,6 +71,7 @@ class docSave(LoginRequiredMixin, View):
         id          = request.POST.get('id')
         json_data   = request.POST.get('json_data')
         title       = request.POST.get('title')
+        memo       = request.POST.get('memo')
         loginId     = request.user.username
         start_date  = datetime.strptime(request.POST.get('start_date'), "%Y.%m.%d")
         start_date  = timezone.make_aware(start_date)
@@ -80,7 +81,7 @@ class docSave(LoginRequiredMixin, View):
         share_user_list = share_user.split(',')
         share_post_list = []
           
-        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date}           
+        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date,"memo":memo}           
         form = postForm(arr)
 
         if form.is_valid():
@@ -123,6 +124,7 @@ class docSave(LoginRequiredMixin, View):
                 updateData.title        = title
                 updateData.start_date   = start_date
                 updateData.end_date     = end_date
+                updateData.memo         = memo
                 updateData.save()
 
                 # 데이터 셀 저장
