@@ -225,11 +225,14 @@ class oriDocStatusChk(LoginRequiredMixin, View):
 
         id          = request.POST.get('id')
 
-        rss         = doc_post.objects.filter(id=id)
+        post_rss = post.objects.filter(id=id)
+        rss = doc_post.objects.filter(id__in=Subquery(post_rss.values('doc_post')))
+
         data = serializers.serialize("json", rss, fields = ("status"))
 
-        abc = rss.values()
-        print(abc[0]['status'])
+        # abc = rss.values()
+        # print(abc[0]['status'])
 
-        resultMsg = {"data":data}
+        resultMsg = {"data": data}
+
         return JsonResponse(resultMsg)          

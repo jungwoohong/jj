@@ -67,11 +67,16 @@
 						let statusKor 	= "";
 						if(row.status == 'R'){
 							statusKor = "대기";
+						}else if(row.status == 'C'){
+							statusKor = "완료";
+						}else if(row.status == 'T'){
+							statusKor = "작성중";
 						}else{
-							statusKor = "aa";
+							statusKor = "작성자회수/완료";
 						}
 
-						return statusKor}
+						return statusKor;
+					  }
 					},               
                 ],
 	  columnDefs: [		
