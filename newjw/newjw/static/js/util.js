@@ -156,18 +156,18 @@ function ioAction(){
       hotReadOnly = false;
       daterangepickerHide = false;
       hotWrite();
-      daterangepickerShow('dateShow');
+      if ($('#dateShow').length != 0) daterangepickerShow('dateShow');
 
       $('.card-title').html('문서 수정');
       $('.io-inputAttr').attr('disabled',false);
       $('.io-input').removeClass('disabled');
-      $('.io-inputHide, .displayHide').show();  
+      $('.io-inputHide').show();  
+      $('.displayHide').css('display','block'); 
       $('.io-inputShow ').hide();
          
     break;
   
     case 2:  // 읽기모드
-    console.log('asdfasdfasdf')
       hotReadOnly = true;
       daterangepickerHide = true;
 
@@ -181,4 +181,14 @@ function ioAction(){
       
       break;
   }
+}
+
+function formCheck(form){
+
+  console.log(form);
+  // $.each(obj,function(){
+  //   $('')
+
+  // });
+
 }

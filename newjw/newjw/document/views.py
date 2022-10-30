@@ -71,7 +71,9 @@ class docSave(LoginRequiredMixin, View):
         id          = request.POST.get('id')
         json_data   = request.POST.get('json_data')
         title       = request.POST.get('title')
-        memo       = request.POST.get('memo')
+        memo        = request.POST.get('memo')
+        status      = request.POST.get('status')
+        statusAct   = status
         loginId     = request.user.username
         start_date  = datetime.strptime(request.POST.get('start_date'), "%Y.%m.%d")
         start_date  = timezone.make_aware(start_date)
@@ -80,8 +82,11 @@ class docSave(LoginRequiredMixin, View):
         share_user  = request.POST.get('shareUser')
         share_user_list = share_user.split(',')
         share_post_list = []
+
+        if(status == 'B') : 
+            status= 'P'
           
-        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date,"memo":memo}           
+        arr = {"email": loginId, "title": title,"start_date":start_date,"end_date": end_date,"memo":memo,"status":status}           
         form = postForm(arr)
 
         if form.is_valid():
@@ -125,8 +130,10 @@ class docSave(LoginRequiredMixin, View):
                 updateData.start_date   = start_date
                 updateData.end_date     = end_date
                 updateData.memo         = memo
+                updateData.status       = status
                 updateData.save()
 
+                
                 # 데이터 셀 저장
                 jsonLoad = json.loads(json_data)
                 # 해당 데이터 삭제
@@ -141,18 +148,18 @@ class docSave(LoginRequiredMixin, View):
                     if excelForm.is_valid():
                         excelForm.save()
 
+                if(statusAct=='B') : 
+                    share_post.objects.filter(doc_post=id).delete()
 
-                share_post.objects.filter(doc_post=id).delete()
+                    for user in share_user_list:
+                        share_arr = {"doc_post" : id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
+                        share_post_id = sharePostSave(share_arr)
+                        share_post_list.append(share_post_id)
 
-                for user in share_user_list:
-                    share_arr = {"doc_post" : id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
-                    share_post_id = sharePostSave(share_arr)
-                    share_post_list.append(share_post_id)
-
-                for share_id in share_post_list:
-                    shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
-                    shareExcelJsonDataSave(shareArrJsonLoad)
-                    shareDataCellSave(share_id,excelJsonData)                 
+                    for share_id in share_post_list:
+                        shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
+                        shareExcelJsonDataSave(shareArrJsonLoad)
+                        shareDataCellSave(share_id,excelJsonData)                 
 
                 msg = "수정하였습니다."                         
 
