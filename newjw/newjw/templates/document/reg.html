@@ -54,8 +54,8 @@
                     <i class="align-middle me-2 fas fa-fw fa-paper-plane"></i>공유
                   </button>
                   <div class="dropdown-menu" >
-                    <a id ="shareBtn" class="dropdown-item" href="#">
-                      <i class="align-middle me-2 fas fa-fw fa-address-book"></i>
+                    <a id ="shareBtn" class="dropdown-item io-input" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-address-book "></i>
                       공유자선택
                     </a>
                     <a id ="shareViewBtn" class="dropdown-item" href="#">
@@ -64,16 +64,14 @@
                     </a>
                   </div>
                 </div>
-                {% if data.id %}
-                <button id ="save" class="btn btn-outline-success">수정하기</button>
-                {% else %}
-             
-                <div class="btn-group">
+                
+                <button id ="save" class="btn btn-outline-success io-inputShow" >수정하기</button>
+                <div class="btn-group io-input io-inputHide">
                   <button id="saveListBtn" type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     저장하기
                   </button>
                   <div class="dropdown-menu" >
-                    <a id ="save" class="dropdown-item" href="#">
+                    <a id ="saveDropdown" class="dropdown-item" href="#">
                       <i class="align-middle me-2 fas fa-fw fa-toggle-on"></i>
                       저장
                     </a>
@@ -88,11 +86,11 @@
                     </a>
                   </div>
                 </div> 
-                {% endif %}   
-                <button id ="export-file" class="btn btn-outline-success">엑셀내보내기</button>
-                <button id ="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
-                <button id="templBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
-                <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
+                   
+                <button id ="export-file" class="btn btn-outline-success io-input">엑셀내보내기</button>
+                <button id ="fileUploadBtn" class="btn btn-outline-success my-1 io-input" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
+                <button id="templBtn" class="btn mb-1 btn-success io-input" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
+                <button id="searchBtn" class="btn mb-1 btn-success io-input" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
                 {% if data.id %}
                 <button id="deleteBtn" class="btn mb-1 btn-instagram" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-trash-alt"></i> 삭제</button>
                 {% endif %}                
@@ -103,10 +101,11 @@
               <input type="hidden" id="start_date" name="start_date" value="{{ data.start_date|date:'Y.m.d' }}" />
               <input type="hidden" id="end_date" name="end_date" value="{{ data.end_date|date:'Y.m.d' }}" />
               <input type="hidden" id="json_data" name="json_data" value="" />
+              <input type="hidden" id="status" name="status" value="P" />
               <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-right">제목</label>
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" id="title" name ="title" placeholder="" value="{{ data.title }}">
+                  <input type="text" class="form-control io-inputAttr" id="title" name ="title" placeholder="" value="{{ data.title }}">
                   <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
                 </div>
               </div>
@@ -116,12 +115,19 @@
                   <i class="far fa-calendar"></i>&nbsp;
                   <span></span> <i class="fas fa-caret-down"></i>
                 </div>
-              </div>                                        
+              </div>
+              <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-right">메모</label>
+                <div class="col-sm-10">
+                  <textarea class="form-control io-inputAttr" name ="memo" id="memo" style="height: 100px">{{ data.memo }}</textarea>
+                  <label id="memo-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
+                </div>
+              </div>                                                       
             </form>
             <div class="col-12">
 							<div class="tab" id="myTab">
 								<ul class="nav nav-tabs" role="tablist">
-                  <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i class="align-middle me-2 fas fa-plus"></i></a></li>
+                  <li class="nav-item"><a class="nav-link plusBtn io-input" href="#tab-1" data-bs-toggle="tab" role="tab"><i class="align-middle me-2 fas fa-plus"></i></a></li>
 									<li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
 								</ul>
 								<div class="tab-content">
@@ -227,18 +233,8 @@ const button = document.querySelector('#export-file');
   save.addEventListener('click', () => {
 
     if(updateCheck == 2) {
-      $('.card-title').html('문서 수정');
-      $('#save').html('저장하기');
       updateCheck = 1;
-
-      $('#title').attr('disabled',false);
-      daterangepickerHide = false;
-      daterangepickerShow('dateShow');
-      hotReadOnly = false;
-      
-      hotWrite();
-      
-      $('.plusBtn, #shareBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');      
+      ioAction();
       return;
     }
 
@@ -274,6 +270,11 @@ const button = document.querySelector('#export-file');
       rowDelimiter: '\r\n',
       rowHeaders: true
     });
+  });
+
+  
+  $('#saveDropdown').click(function(){
+    $('#save').trigger('click');
   });
 
   $('.plusBtn').click(function(){
@@ -388,13 +389,8 @@ const button = document.querySelector('#export-file');
 // 네비 좌표설정
 if (id) {
   //수정일때
-  $('#save').html('수정하기');
   updateCheck = 2;
-
-  $('#title').attr('disabled',true);
-  daterangepickerHide = true;
-  hotReadOnly = true;
-  $('.plusBtn, #shareBtn, #searchBtn, #templBtn, #fileUploadBtn').addClass('disabled');
+  ioAction();
 
   navFun('documentManage',1,1);
 } else {
