@@ -9,7 +9,7 @@ class post(models.Model):
     create_date         = models.DateTimeField(auto_now_add=True)
     last_update_date    = models.DateTimeField(auto_now=True)
     status              = models.CharField(max_length=10,blank=True, null=True,default='P')
-    memo                = models.TextField(null=True,default='')
+    memo                = models.TextField(null=True, blank=True, default='')
 
     class Meta : 
          db_table = 'doc_post'

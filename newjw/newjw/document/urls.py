@@ -13,5 +13,5 @@ urlpatterns = [
     path('docSearchListData/', docSearchListData.as_view(),name="docSearchListData" ),
     path('docSearchJsonData/', docSearchJsonData.as_view(),name="docSearchJsonData" ),
     path('docDelete/', docDelete.as_view(),name="docDelete" ),
-    
+    path('shareDocCheck/', shareDocCheck.as_view(),name="shareDocCheck" ),
 ]

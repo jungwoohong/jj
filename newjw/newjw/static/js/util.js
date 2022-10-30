@@ -185,10 +185,19 @@ function ioAction(){
 
 function formCheck(form){
 
-  console.log(form);
-  // $.each(obj,function(){
-  //   $('')
+  let rs = true;
+  let frm = $('#'+form).find('.requiredValue');
 
-  // });
-
+  $.each(frm,function(idx,item){
+    let id = $(item).attr('id');
+    let title = $(item).attr('title');
+    let value = $(item).val();
+    if(value =='') {
+      alert(title+'은 필수값입니다.');
+      rs = false;
+      $(id).focus();
+      return false;
+    }
+  });
+  return rs;
 }

@@ -275,3 +275,14 @@ class docDelete(LoginRequiredMixin, View):
             
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)
+
+class shareDocCheck(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        data    = ""
+        id      = request.POST.get('id')
+        rs = share_post.objects.filter(doc_post=id)
+
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)        

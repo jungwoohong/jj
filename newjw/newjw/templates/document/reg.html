@@ -178,7 +178,6 @@
 <script>
     
   const container = document.querySelector('#excelGrid');
-  const save = document.querySelector('#save');
   const id = $('#id').val();
 
   hotObj = Array();
@@ -285,6 +284,11 @@ const button = document.querySelector('#export-file');
 
     let status = $(this).data('status');
     $('#status').val(status);
+
+    if (status != 'T') {
+      let formChk = formCheck('frm');
+      if (formChk == false ) return false;     
+    }
 
     $('#save').trigger('click');
   });
