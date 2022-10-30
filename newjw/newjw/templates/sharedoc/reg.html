@@ -43,22 +43,26 @@
         </div>
         <div class="card-body">
           <div class="text-lg-end">
-            <div class="btn-group">
-              <button type="button" id="write" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
+
+            <button id="write" class="btn btn-outline-success">작성하기</button>
+
+            <div class="btn-group" style="display: none;">
+              <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                작성하기
+                저장하기
               </button>
               <div class="dropdown-menu">
                 <a id="tempSave" class="save dropdown-item" href="#" data-value="T">
-                  <i class="align-middle me-2 fas fa-fw fa-toggle-off" ></i>
+                  <i class="align-middle me-2 fas fa-fw fa-toggle-off"></i>
                   임시저장
                 </a>
-                <a id="comSave" class="save dropdown-item" href="#" data-value="C"> 
-                  <i class="align-middle me-2 fas fa-fw fa-toggle-on" ></i>
+                <a id="comSave" class="save dropdown-item" href="#" data-value="C">
+                  <i class="align-middle me-2 fas fa-fw fa-toggle-on"></i>
                   최종제출
                 </a>
               </div>
             </div>
+
             <button id="export-file" class="btn btn-outline-success">엑셀내보내기</button>
             <button id="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
@@ -69,7 +73,7 @@
             <input type="hidden" id="shareUser" name="shareUser" value="" />
             <input type="hidden" id="id" name="id" value="{{ data.id }}" />
             <input type="hidden" id="json_data" name="json_data" value="" />
-            <input type="hidden" id="status" name="status" value="" />
+            <input type="hidden" id="status" name="status" value="{{ data.status }}" />
             <div class="mb-3 row">
               <label class="col-form-label col-sm-2 text-sm-right">제목</label>
               <div class="col-sm-10">
@@ -140,16 +144,20 @@
    **/
   $(document).on("click", ".nav-tabs li a", function () {
     let id = $(this).data('id');
+    let len = $('.nav-tabs li').length;
 
-    if (!id) return;
+    if (len <= 2) return;
     let deleteBtn = '<i class="align-middle me-2 fas fa-fw fa-times position-absolute" style="margin-top:-5px!important;color:#e7adc5;"></i>';
     $('.fa-times').remove();
-    $(this).append(deleteBtn);
+    if (updateCheck == 2) $(this).append(deleteBtn);
     if (id) hotObj[id].render();
 
   });
 
   $(document).on("dblclick", ".nav-tabs li", function () {
+
+    if (updateCheck == 2) return;
+
     navAtag = $(this).html();
     let getText = $.trim($(this).find('a').text());
     let getHtml = '<input type="text" class="form-control" value="' + getText + '" />';
@@ -158,17 +166,16 @@
 
   });
 
-  $(document).on("focusout", ".nav-tabs li input", function () {
-
+  $(document).on("focusout", ".nav-tabs li input", function(){
+    
     let getText = $.trim($(this).val());
-    console.log(getText)
     $(this).parent().html(navAtag);
     $('.nav-tabs li .active span').text(getText);
   });
 
-  $(document).on("keydown", ".nav-tabs li input", function (e) {
+  $(document).on("keydown", ".nav-tabs li input", function(e){
     let keycode = e.keyCode;
-    if (keycode == 13) {
+    if(keycode == 13) {
       $(this).trigger('focusout');
     }
 
@@ -180,14 +187,37 @@
   const exportPlugin = hot.getPlugin('exportFile');
   const button = document.querySelector('#export-file');
 
-  write.addEventListener('click', () => {
-    updateCheck = 2;
-    $('.card-title').html('문서 작성');
-    $('#title').attr('disabled',false);
-    hotReadOnly = false;      
-    hotWrite();
-    $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');      
+  $('#write').click(function () {
+    let me = $(this);
+    let dataVal = $('#status').val();
+    if(dataVal == 'C'){
+      alert("문서를 최종 제출하여 수정할 수 없습니다");
       return;
+    }
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'oriDocStatusChk' %}",
+      dataType: 'json',
+      data: { id: id },
+      success: function (data) {
+        let rs = JSON.parse(data.data);
+        let status = rs[0].fields.status;
+        if (status != 'P') {
+          alert("작성자가 문서를 회수하여 작성할 수 없습니다.");
+          return;
+        } else {
+          updateCheck = 2;
+          $('.card-title').html('문서 작성');
+          $('#title').attr('disabled', false);
+          hotReadOnly = false;
+          hotWrite();
+          $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');
+
+          me.hide();
+          me.next().show();
+        }
+      }
+    });
 
   });
 
@@ -246,12 +276,14 @@
     }, 100)
   });
 
-  $(document).on("click", ".fa-times", function () {
+  $(document).on("click", ".fa-times", function(){
     let con = confirm('시트를 지울까요?');
-    if (con == false) return;
+    if(con == false) return;
 
     let navActive = $('.nav-item > .active');
-    let navActiveAdd = navActive.closest('li').prev().find('a')
+    let navActiveAdd = navActive.closest('li').next().find('a')
+    if(navActiveAdd.length == 0 ) navActiveAdd = navActive.closest('li').prev().find('a')
+    
     navActive.unwrap();
     navActive.remove();
     $('.tab-content .active').remove();

@@ -91,9 +91,7 @@ class myWriteListData(LoginRequiredMixin, DatatablesServerSideView):
     def get_initial_queryset(self, *args, **kwargs):
         qs = None
         loginId = args[0]
-        docPostRs = doc_post.objects.filter(status='I')  # Original Document ing
-        qs = post.objects.filter(doc_post__in=Subquery(docPostRs.values('id')))
-        qs = qs.filter(Q(email=loginId))
+        qs = post.objects.filter(Q(email=loginId))
 
         return qs
 
@@ -109,7 +107,6 @@ class shareDocDetail(LoginRequiredMixin, View):
             data = get_object_or_404(post, id=id)
             context = {"data": data}
 
-        print(context)
         return render(request, 'sharedoc/reg.html', context)
 
 
@@ -219,4 +216,20 @@ class shareDocJsonData(LoginRequiredMixin, View):
         data        = json.loads(data)
 
         retrunMsg = {"data": data}
-        return JsonResponse(retrunMsg)            
+        return JsonResponse(retrunMsg)      
+
+
+class oriDocStatusChk(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        id          = request.POST.get('id')
+
+        rss         = doc_post.objects.filter(id=id)
+        data = serializers.serialize("json", rss, fields = ("status"))
+
+        abc = rss.values()
+        print(abc[0]['status'])
+
+        resultMsg = {"data":data}
+        return JsonResponse(resultMsg)          
