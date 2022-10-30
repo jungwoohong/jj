@@ -44,9 +44,9 @@
         <div class="card-body">
           <div class="text-lg-end">
 
-            <button id="write" class="btn btn-outline-success">작성하기</button>
+            <button id="write" class="btn btn-outline-success io-inputShow">작성하기</button>
 
-            <div class="btn-group" style="display: none;">
+            <div class="btn-group io-input io-inputHide">
               <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 저장하기
@@ -63,10 +63,10 @@
               </div>
             </div>
 
-            <button id="export-file" class="btn btn-outline-success">엑셀내보내기</button>
-            <button id="fileUploadBtn" class="btn btn-outline-success my-1" type="button" data-bs-toggle="offcanvas"
+            <button id="export-file" class="btn btn-outline-success ">엑셀내보내기</button>
+            <button id="fileUploadBtn" class="btn btn-outline-success my-1 io-input" type="button" data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
-            <button id="searchBtn" class="btn mb-1 btn-success" style="margin-top:4px;"><i
+            <button id="searchBtn" class="btn mb-1 btn-success io-input" style="margin-top:4px;"><i
                 class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
           </div>
           <form id="frm">
@@ -77,16 +77,23 @@
             <div class="mb-3 row">
               <label class="col-form-label col-sm-2 text-sm-right">제목</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="title" name="title" placeholder="" value="{{ data.title }}">
+                <input type="text" class="form-control io-inputAttr" id="title" name="title" placeholder="" value="{{ data.title }}">
                 <label id="title-error" class="error jquery-validation-error small form-text invalid-feedback"
                   for="validation-required"></label>
               </div>
             </div>
+            <div class="mb-3 row">
+              <label class="col-form-label col-sm-2 text-sm-right">메모</label>
+              <div class="col-sm-10">
+                <textarea class="form-control io-inputAttr" name ="memo" id="memo" style="height: 100px">{{ data.memo }}</textarea>
+                <label id="memo-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
+              </div>
+            </div>  
           </form>
           <div class="col-12">
             <div class="tab" id="myTab">
               <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item"><a class="nav-link plusBtn" href="#tab-1" data-bs-toggle="tab" role="tab"><i
+                <li class="nav-item"><a class="nav-link plusBtn io-input" href="#tab-1" data-bs-toggle="tab" role="tab"><i
                       class="align-middle me-2 fas fa-plus"></i></a></li>
                 <li class="nav-item"><a class="nav-link active" href="#tab-2" data-bs-toggle="tab"
                     role="tab"><span>Sheet1</span></a></li>
@@ -132,10 +139,11 @@
   const container = document.querySelector('#excelGrid');
   const write = document.querySelector('#write');
   const id = $('#id').val();
+
   hotObj = Array();
   navAtag = '';
   newTabNum = 1;
-  updateCheck = 1;
+  updateCheck = 2;
 
   showExcelTable(container);
 
@@ -149,7 +157,7 @@
     if (len <= 2) return;
     let deleteBtn = '<i class="align-middle me-2 fas fa-fw fa-times position-absolute" style="margin-top:-5px!important;color:#e7adc5;"></i>';
     $('.fa-times').remove();
-    if (updateCheck == 2) $(this).append(deleteBtn);
+    if (updateCheck == 1) $(this).append(deleteBtn);
     if (id) hotObj[id].render();
 
   });
@@ -206,15 +214,8 @@
           alert("작성자가 문서를 회수하여 작성할 수 없습니다.");
           return;
         } else {
-          updateCheck = 2;
-          $('.card-title').html('문서 작성');
-          $('#title').attr('disabled', false);
-          hotReadOnly = false;
-          hotWrite();
-          $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').removeClass('disabled');
-
-          me.hide();
-          me.next().show();
+          updateCheck = 1;
+          ioAction();
         }
       }
     });
@@ -321,15 +322,12 @@
   });
 
   $(document).on("click", "#searchBtn", function () {
-    window.open("{% url ' ' %}", 'searchPop', 'resizable=yes,width=1000,height=800');
+    window.open("{% url 'shareDocSearchList' %}", 'searchPop', 'resizable=yes,width=1000,height=800');
   });
 
 
-  if (updateCheck == 1) {
-    $('#title').attr('disabled', true);
-    $('#write').html('작성하기');
-    hotReadOnly = true;
-    $('.plusBtn, #searchBtn, #templBtn, #fileUploadBtn').addClass('disabled');
+  if (updateCheck == 2) {
+    ioAction();
   }
 
   // 네비 좌표설정

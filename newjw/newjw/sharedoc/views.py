@@ -121,6 +121,7 @@ class shareDocSave(LoginRequiredMixin, View):
         title = request.POST.get('title')
         loginId = request.user.username
         status = request.POST.get('status')
+        memo = request.POST.get('memo')
 
         updateData = post.objects.get(id=id)
         arr = model_to_dict(updateData)
@@ -132,6 +133,7 @@ class shareDocSave(LoginRequiredMixin, View):
             # post 데이터 저장
             updateData.title = title
             updateData.status = status
+            updateData.memo = memo
             updateData.save()
             
             # 데이터 셀 저장
