@@ -65,22 +65,22 @@
                   </div>
                 </div>
                 
-                <button id ="save" class="btn btn-outline-success io-inputShow" >수정하기</button>
+                <button id ="save" class="btn btn-outline-success io-inputShow displayHide">수정하기</button>
                 <div class="btn-group io-input io-inputHide">
                   <button id="saveListBtn" type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     저장하기
                   </button>
                   <div class="dropdown-menu" >
-                    <a id ="saveDropdown" class="dropdown-item" href="#">
+                    <a class="dropdown-item saveDropdown" href="#" data-status="P">
                       <i class="align-middle me-2 fas fa-fw fa-toggle-on"></i>
-                      저장
+                      저장 & 배포
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item saveDropdown" href="#" data-status="T">
                       <i class="align-middle me-2 fas fa-fw fa-toggle-off"></i>
                       임시저장
                     </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">
+                    <div class="dropdown-divider displayHide"></div>
+                    <a class="dropdown-item saveDropdown displayHide" href="#" data-status="C">
                       <i class="align-middle me-2 fas fa-fw fa-save"></i>
                       완료
                     </a>
@@ -273,7 +273,11 @@ const button = document.querySelector('#export-file');
   });
 
   
-  $('#saveDropdown').click(function(){
+  $('.saveDropdown').click(function(){
+
+    let status = $(this).data('status');
+    $('#status').val(status);
+    
     $('#save').trigger('click');
   });
 
@@ -391,10 +395,12 @@ if (id) {
   //수정일때
   updateCheck = 2;
   ioAction();
-
   navFun('documentManage',1,1);
+
 } else {
+
   navFun('documentManage',1,0);
+  
 }
   const dataUrl = '/document/docJsonData/'  ;
   if(id != '')  loadExcelData(id, dataUrl);

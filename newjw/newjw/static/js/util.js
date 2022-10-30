@@ -161,8 +161,9 @@ function ioAction(){
       $('.card-title').html('문서 수정');
       $('.io-inputAttr').attr('disabled',false);
       $('.io-input').removeClass('disabled');
+      $('.io-inputHide, .displayHide').show();  
       $('.io-inputShow ').hide();
-      $('.io-inputHide ').show();     
+         
     break;
   
     case 2:  // 읽기모드
