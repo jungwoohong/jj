@@ -15,17 +15,19 @@ function showExcelTable(container){
 		language: 'ko-KR',
 		mergeCells:[],
 		fillHandle: true,
-		cells(row) {
-			return {
-				className: row % 2 === 0 ? 'even' : 'odd',
-			};
+		// afterChange: (changes) => {
+		// 	changes?.forEach(([row, prop, oldValue, newValue]) => {
+		// 	});
+		// }, 
+		afterChange: function (change, source) {
+			console.log(change)
 		},
-		afterChange: (changes) => {
-			changes?.forEach(([row, prop, oldValue, newValue]) => {
-			});
-		}, 
 		licenseKey: 'non-commercial-and-evaluation'
 	});
+
+	$(container).find('table').addClass('table');
+	$(container).find('table')['addClass']('table-striped');
+	$(container).find('table')['addClass']('table-hover');
 }
 
 function showExcelTableObj(container,num){
@@ -46,15 +48,14 @@ function showExcelTableObj(container,num){
 		language: 'ko-KR',
 		mergeCells:[],
 		fillHandle: true,
-		cells(row) {
-			return {
-				className: row % 2 === 0 ? 'even' : 'odd',
-			};
-		},
 		afterChange: (changes) => {
 			changes?.forEach(([row, prop, oldValue, newValue]) => {
 			});
 		}, 
 		licenseKey: 'non-commercial-and-evaluation'
 	});
+
+	$(container).find('table').addClass('table');
+	$(container).find('table')['addClass']('table-striped');
+	$(container).find('table')['addClass']('table-hover');
 }
