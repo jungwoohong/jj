@@ -97,22 +97,6 @@
                     <strong>작성 시 주의사항</strong>
                   </div>
                 </div>
-                <div class="modal fade" id="centeredModalPrimary" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title text-danger">작성 시 주의사항</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body m-3">
-                        <p class="mb-0">{{ doc_data.memo }}</p>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </label>
               <div class="col-sm-10">
                 <textarea class="form-control io-inputAttr" name ="memo" id="memo" style="height: 100px">{{ data.memo }}</textarea>
@@ -153,6 +137,23 @@
   <div class="offcanvas-body">
     <div>
       {% include "document/uploadIn.html" %}
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="centeredModalPrimary" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">작성 시 주의사항</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body m-3">
+        <p class="mb-0">{{ doc_data.memo }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -386,6 +387,11 @@
   const dataUrl = '/sharedoc/shareDocJsonData/'
   if (id != '') loadExcelData(id, dataUrl);
   const dropFile = new DropFile("drop-file", "files");
+
+  $(window).on('load',function(){
+    $('#centeredModalPrimary').modal('show');
+  })
+  
 
 </script>
 
