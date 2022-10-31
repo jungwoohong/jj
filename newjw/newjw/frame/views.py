@@ -106,8 +106,3 @@ class docToSearchListData(LoginRequiredMixin, DatatablesServerSideView):
     model = post
     columns = ['id','title','email', 'create_date']
     searchable_columns = ['title','email']
-
-    def get_initial_queryset(self):
-        loginId     = self.request.user.username
-        qs = super(docToSearchListData, self).get_initial_queryset()
-        return qs.filter(email=loginId)
