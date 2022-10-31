@@ -87,7 +87,33 @@
               </div>
             </div>
             <div class="mb-3 row">
-              <label class="col-form-label col-sm-2 text-sm-right">메모</label>
+              <label class="col-form-label col-sm-2 text-sm-right">메모
+                <div class="alert alert-danger alert-outline-coloured alert-dismissible notice" role="alert" style="cursor: pointer; padding-top: 10px;"
+                      data-bs-toggle="modal" data-bs-target="#centeredModalPrimary" >
+                  <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                  </div>
+                  <div class="alert-message">
+                    <strong>작성 시 주의사항</strong>
+                  </div>
+                </div>
+                <div class="modal fade" id="centeredModalPrimary" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title text-danger">작성 시 주의사항</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body m-3">
+                        <p class="mb-0">{{ doc_data.memo }}</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </label>
               <div class="col-sm-10">
                 <textarea class="form-control io-inputAttr" name ="memo" id="memo" style="height: 100px">{{ data.memo }}</textarea>
                 <label id="memo-error" class="error jquery-validation-error small form-text invalid-feedback" for="validation-required" ></label>
@@ -349,7 +375,7 @@
     window.open("{% url 'shareDocSearchList' %}", 'searchPop', 'resizable=yes,width=1000,height=800');
   });
 
-
+  
   if (updateCheck == 2) {
     ioAction();
   }

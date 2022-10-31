@@ -105,7 +105,15 @@ class shareDocDetail(LoginRequiredMixin, View):
 
         if(id):
             data = get_object_or_404(post, id=id)
-            context = {"data": data}
+            my_dict = data.__dict__
+            doc_post_id = my_dict.get('doc_post_id')
+            doc_data = doc_post.objects.get(id=doc_post_id)
+
+            print(data)
+            print(doc_data)
+
+            context = {"data": data,
+                        "doc_data": doc_data}
 
         return render(request, 'sharedoc/reg.html', context)
 
@@ -246,7 +254,7 @@ class statusUpdate(LoginRequiredMixin, View):
 
         id          = request.POST.get('id')
         status          = request.POST.get('status')
-        
+
         post.objects.filter(id=id).update(status=status)
         
         resultMsg = {"data": status}
