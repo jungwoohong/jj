@@ -1,0 +1,182 @@
+
+{% extends "blankUi.html" %}
+{% load static i18n %}
+{% block css %}
+<link href="{% static 'css/handsonTable.css' %}" rel="stylesheet" class="js-stylesheet">
+<style>
+.offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl{
+	--bs-offcanvas-width:70%!important;
+}
+.tab .nav-tabs .nav-link.active {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
+
+.tab .tab-content {
+  border:1px solid !important;
+  border-color:#ddd !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid p-0">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title">문서 조회</h5>
+					</div>
+					<div class="card-body">
+						<table id="datatables" class="table table-hover table-striped text-center" style="width:100%;cursor: pointer;">
+							<thead >
+								<tr >
+									<th>번호</th>
+									<th>제목</th>
+									<th>작성자</th>
+									<th>작성상태</th>
+									<th>작성일</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
+
+{% block layerHtml %}
+    
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+	<div class="alert alert-danger alert-outline-coloured alert-dismissible" role="alert">
+		<!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
+		<div class="alert-icon">
+			<i class="far fa-fw fa-bell"></i>
+		</div>
+		<div class="alert-message">
+		</div>
+	</div>	
+	<div class="tab" id="myTab">
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="nav-item"><a class="nav-link active" href="#tab-1" data-bs-toggle="tab" role="tab"><span>Sheet1</span></a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="tab-1" role="tabpanel">
+				<div id="excelGrid" class="excelGridClass"></div>
+			</div>                              
+		</div> 
+  </div>
+</div> 
+{% endblock layerHtml %}
+
+{% block inline_javascript %}
+<script src="{% static 'js/handsonTable.min.js' %}"></script>
+<script src="{% static 'js/handsonTable.js' %}"></script>
+<script src="{% static 'js/handsonLangKo.js' %}"></script>
+<script src="{% static 'js/tabExcel.js' %}"></script>
+<script src="{% static 'js/dataTables.select.min.js' %}"></script>
+<script>
+
+	window.resizeTo(1100,800);
+	const container = document.querySelector('#excelGrid');
+	showExcelTable(container);
+	hotObj = Array();
+  	const pk_id = '{{request.GET.id}}';
+
+  var table = $('#datatables').DataTable({
+      serverSide: true,
+	  processing: true,
+      ordering:  true,
+      paging: true,
+	  language : lang_kor,
+	  order: [[1, 'desc']],
+      ajax: { 
+              type: "GET",
+              datatype : 'json',
+              url: "{% url 'shareUserListData' %}",
+			  data: function ( d ) {
+      			return $.extend( {}, d, {
+        			"extra_search": pk_id
+      				} );
+				},
+            },		
+      columns: [
+					{"data": "id",
+					render: function (data, type, row, meta) {
+						return meta.row + meta.settings._iDisplayStart + 1;
+					}},
+					{ data: "title"},
+                    { data: "email"},
+                    {'data': "status",    
+						"render": function (data, type, row, meta) { 
+							let statusKor 	= "";
+							if(row.status == 'R'){
+								statusKor = "대기";
+							}else if(row.status == 'C'){
+								statusKor = "완료";
+							}else if(row.status == 'T'){
+								statusKor = "작성중";
+							}else{
+								statusKor = "작성자회수/완료";
+							}
+
+							return statusKor;
+						}
+                    },
+                    {'data': "last_update_date",    
+                      "render": function (data) { return dateFormat(data)}
+                    },               
+                ],
+	  columnDefs: [		
+					{ "name": "id",   "targets": 0, "width": "10%"},
+					{ "name": "title",  "targets": 1, "className": "text-leftIm title" },
+					{ "name": "email", "targets": 2, "width": "15%"},
+					{ "name": "status", "targets": 3, "width": "20%" },					
+					{ "name": "last_update_date",  "targets": 4, "width": "15%" }
+	  ],
+	  initComplete: function(settings, json) {
+      }			
+    });
+
+	$("#datatables").on('click', 'tbody tr .title', function () {
+
+		let row = $("#datatables").DataTable().row($(this)).data();	
+		console.log(row);
+		// 기존 데이터 초기화
+		hotObj = Array();
+		$('#myTab > .nav-tabs > li:gt(0)').remove();
+		$('.tab-content > .tab-pane:gt(0)').remove();
+		
+		// 데이터 그리기
+		const dataUrl = "{% url 'shareJsonData' %}" ;
+		loadExcelData(row.id, dataUrl);
+		$('.alert-message').html(row.memo);
+		
+		$('#offcanvasRight').offcanvas('show');	
+
+	});
+
+	var myOffcanvas = document.getElementById('offcanvasRight')
+	myOffcanvas.addEventListener('hidden.bs.offcanvas', function () {
+		let tab = new bootstrap.Tab($('#myTab > .nav-tabs > li:first a'));
+		tab.show()
+	})
+
+	$(document).on("click", ".nav-tabs li a", function(){
+		let id = $(this).data('id');
+
+		if(!id) return; 
+		if(id) hotObj[id].render();
+
+	});
+</script>
+
+{% endblock inline_javascript %}
