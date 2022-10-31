@@ -17,7 +17,7 @@ from django.core.paginator import Paginator
 from django.core import serializers
 from .task import dataCellSave
 from .share import sharePostSave, shareExcelJsonDataSave, shareDataCellSave
-from newjw.sharedoc.models import post as share_post
+from newjw.sharedoc.models import post as share_post, excel_json_data as share_excel_json_data
 from django.core.mail import EmailMessage
 
 class docReg(LoginRequiredMixin, View):
@@ -300,3 +300,57 @@ class shareDocCheck(LoginRequiredMixin, View):
 
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)        
+
+
+class shareUserList(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'document/shareUserList.html')
+
+class shareUserListData(LoginRequiredMixin, DatatablesServerSideView):
+
+    model = share_post
+    columns = ['id','title','email','status','last_update_date','memo']
+    searchable_columns = []
+
+    def get(self, request, *args, **kwargs):
+        if not request.is_ajax():            
+            return HttpResponseBadRequest()
+        try:
+            params = super(shareUserListData, self).read_parameters(request.GET)            
+        except ValueError:
+            return HttpResponseBadRequest()
+
+        qs = self.get_initial_queryset(params)
+
+        if len(params['orders']):            
+            qs = qs.order_by(
+                *[order.get_order_mode() for order in params['orders']])
+
+        paginator = Paginator(qs, params['length'])
+        return HttpResponse(
+            json.dumps(
+                self.get_response_dict(paginator, params['draw'],
+                                       params['start']),
+                cls=DjangoJSONEncoder
+            ),
+            content_type="application/json")
+
+    def get_initial_queryset(self, *args, **kwargs):
+        qs = None
+        extra_search = args[0].get('extra_search')
+
+        qs = super(shareUserListData, self).get_initial_queryset()
+        return qs.filter(doc_post=extra_search)
+
+class shareJsonData(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        id          = request.POST.get('id')
+        rss         = share_excel_json_data.objects.filter(post=id)
+        data        = serializers.serialize("json", rss)
+        data        = json.loads(data)
+
+        retrunMsg = {"data": data}
+        return JsonResponse(retrunMsg)
