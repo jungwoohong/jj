@@ -201,3 +201,11 @@ function formCheck(form){
   });
   return rs;
 }
+
+function statusFormat(str){
+  let obj = {'P':'배포중',
+             'T':'임시저장',
+             'C':'완료'
+            }
+  return obj[str];
+}

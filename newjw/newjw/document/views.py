@@ -175,7 +175,7 @@ class docLoadList(LoginRequiredMixin, View):
 class docLoadListData(LoginRequiredMixin, DatatablesServerSideView):
 
     model = post
-    columns = ['id','title','email', 'start_date','end_date','create_date']
+    columns = ['id','title','email', 'start_date','end_date','create_date','status']
     searchable_columns = ['title','email']
 
     def get_initial_queryset(self):

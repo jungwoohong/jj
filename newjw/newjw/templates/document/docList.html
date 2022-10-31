@@ -21,6 +21,7 @@
 									<th>작성자</th>
 									<th>기간</th>
 									<th>작성일</th>
+									<th>작성상태</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -46,7 +47,7 @@
       ajax: { 
               type: "GET",
               datatype : 'json',
-              url: "{% url 'docLoadListData' %}", 
+              url: "{% url 'docLoadListData' %}",
             },		
       columns: [
 					{"data": "id",
@@ -64,14 +65,18 @@
                     },
                     {'data': "create_date",    
                       "render": function (data) { return dateFormat(data)}
-                    },               
+                    },
+                    {'data': "status",    
+                      "render": function (data) { return statusFormat(data)}
+                    },   					               
                 ],
 	  columnDefs: [		
-					{ "name": "id",   "targets": 0, "width": "5%"},
+					{ "name": "id",   "targets": 0, "width": "10%"},
 					{ "name": "title",  "targets": 1, "className": "text-leftIm" },
 					{ "name": "email", "targets": 2, "width": "15%"},
 					{ "name": "start_date", "targets": 3, "width": "20%" },					
-					{ "name": "create_date",  "targets": 4, "width": "15%" }
+					{ "name": "create_date",  "targets": 4, "width": "15%" },
+					{ "name": "status",  "targets": 4, "width": "15%" }
 	  ]				
     });
 
