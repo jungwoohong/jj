@@ -237,4 +237,19 @@ class oriDocStatusChk(LoginRequiredMixin, View):
 
         resultMsg = {"data": data}
 
-        return JsonResponse(resultMsg)          
+        return JsonResponse(resultMsg)    
+
+
+class statusUpdate(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        id          = request.POST.get('id')
+        status          = request.POST.get('status')
+        
+        post.objects.filter(id=id).update(status=status)
+        
+        resultMsg = {"data": status}
+
+        return JsonResponse(resultMsg)    
+              
