@@ -44,8 +44,12 @@
         <div class="card-body">
           <div class="text-lg-end">
 
-            <button id="write" class="btn btn-outline-success io-inputShow">작성하기</button>
-
+            
+            {% if data.status == 'C' %}
+              <button id="cancle" class="btn btn-outline-success io-inputShow" data-value="T">제출취소</button>
+            {% else %}
+              <button id="write" class="btn btn-outline-success io-inputShow">작성하기</button>
+            {% endif %}
             <div class="btn-group io-input io-inputHide">
               <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
@@ -195,6 +199,26 @@
   const exportPlugin = hot.getPlugin('exportFile');
   const button = document.querySelector('#export-file');
 
+  $('#cancle').click(function(){
+    let dataVal = $(this).data("value");
+
+    $.ajax({
+      type : 'POST',
+      url: "{% url 'statusUpdate' %}",
+      dataType: 'json',
+      data: { 
+        id: id,
+        status: dataVal },
+      success: function (data) {
+        let status = data.data;
+        $('#status').val('T');
+        updateCheck = 1;
+        ioAction();
+      }
+    });
+
+  });
+
   $('#write').click(function () {
     let me = $(this);
     let dataVal = $('#status').val();
@@ -235,9 +259,9 @@
       dataType: 'json',
       data: frm.serialize(),
       success: function (data) {
-
         if (!data.form.length) {
           alert(data.msg);
+          location.href="{% url 'myWriteList' %}";
         } else {
           formError(data.form);
         }

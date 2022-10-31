@@ -12,6 +12,7 @@ urlpatterns = [
     path('shareDocSearchList/', shareDocSearchList.as_view(), name="shareDocSearchList"),
     path('shareDocSearchListData/', shareDocSearchListData.as_view(), name="shareDocSearchListData"),     
     path('shareDocJsonData/', shareDocJsonData.as_view(), name="shareDocJsonData"),
-    path('oriDocStatusChk/', oriDocStatusChk.as_view(), name="oriDocStatusChk")
+    path('oriDocStatusChk/', oriDocStatusChk.as_view(), name="oriDocStatusChk"),
+    path('statusUpdate/', statusUpdate.as_view(), name="statusUpdate")
        
 ]
