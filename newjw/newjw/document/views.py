@@ -282,7 +282,9 @@ class shareDocCheck(LoginRequiredMixin, View):
 
         data    = ""
         id      = request.POST.get('id')
-        rs = share_post.objects.filter(doc_post=id)
+        rs      = share_post.objects.filter(doc_post=id).exclude(status='R')
+        data    = serializers.serialize("json", rs)
+        data    = json.loads(data)
 
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)        

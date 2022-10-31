@@ -94,9 +94,22 @@
                     </a>
                   </div>
                 </div> 
-                   
-                <button id ="export-file" class="btn btn-outline-success io-input">엑셀내보내기</button>
-                <button id ="fileUploadBtn" class="btn btn-outline-success my-1 io-input" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Excel 업로드</button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="align-middle me-2 fas fa-fw fa-file-alt"></i>엑셀
+                  </button>
+                  <div class="dropdown-menu" >
+                    <a id ="export-file" class="dropdown-item io-input" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-file-export"></i>
+                      엑셀내보내기
+                    </a>
+                    <a id ="fileUploadBtn" class="dropdown-item io-input" href="#">
+                      <i class="align-middle me-2 fas fa-fw fa-file-import"></i>
+                      Excel 업로드
+                    </a>
+                  </div>
+                </div>
+                
                 <button id="templBtn" class="btn mb-1 btn-success io-input" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-th"></i> 템플릿</button>
                 <button id="searchBtn" class="btn mb-1 btn-success io-input" style="margin-top:4px;"><i class="align-middle me-2 fas fa-fw fa-search-plus"></i> 단어로찾기</button>
                 {% if data.id %}
@@ -186,6 +199,28 @@
   updateCheck = 1;
 
   showExcelTable(container);
+  
+  function shareDocCheck(url){
+    let bol = true
+    $.ajax({
+         url : url
+       , type : "POST"
+       , async: false
+       , data : {id:id}
+       , success:function(data) {
+          if (data.data.length != 0) {
+            alert('이미 작성중인 공유자가 있어서 불가능합니다.');
+            
+            bol = false;
+          }          
+       },
+       error: function (jqXHR) 
+       {  
+        bol = false;
+       }
+      }); 
+      return bol;
+  }
 
   /**
    * 탭 관련 시크립트
@@ -284,11 +319,21 @@ const button = document.querySelector('#export-file');
 
     let status = $(this).data('status');
     $('#status').val(status);
+    let returnBl = true;
+
+    if (status == 'B') {
+      returnBl = shareDocCheck("{% url 'shareDocCheck' %}")
+    }
 
     if (status != 'T') {
       let formChk = formCheck('frm');
-      if (formChk == false ) return false;     
-    }
+      if (formChk == false ) {
+        returnBl = false;
+        return false; 
+      }    
+    } 
+
+    if (returnBl == false) return false;
 
     $('#save').trigger('click');
   });
@@ -380,6 +425,10 @@ const button = document.querySelector('#export-file');
   $(document).on("click", "#deleteBtn", function(){
     let con = confirm('삭제 할까요?');
     if(con == false) return;
+
+    let returnBl = true;
+    returnBl = shareDocCheck("{% url 'shareDocCheck' %}")
+    if( returnBl == false) return; 
 
     $.ajax({
          url : "{% url 'docDelete' %}"
