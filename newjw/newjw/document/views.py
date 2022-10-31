@@ -18,6 +18,7 @@ from django.core import serializers
 from .task import dataCellSave
 from .share import sharePostSave, shareExcelJsonDataSave, shareDataCellSave
 from newjw.sharedoc.models import post as share_post
+from django.core.mail import EmailMessage
 
 class docReg(LoginRequiredMixin, View):
 
@@ -101,7 +102,7 @@ class docSave(LoginRequiredMixin, View):
                 for user in share_user_list:
                     share_arr = {"doc_post" : record.id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
                     share_post_id = sharePostSave(share_arr)
-                    share_post_list.append(share_post_id)
+                    share_post_list.append(share_post_id)                    
             
                 # 데이터 셀 저장
                 for idx,val in enumerate(jsonLoad):
@@ -120,7 +121,11 @@ class docSave(LoginRequiredMixin, View):
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)
                     
+                email_title = ''
+                email_body  = ''
 
+                # email = EmailMessage(email_title,email_body,to=share_user_list)  
+                # email.send()
                 msg = "저장하였습니다."    
 
             else :
@@ -156,11 +161,18 @@ class docSave(LoginRequiredMixin, View):
                         share_post_id = sharePostSave(share_arr)
                         share_post_list.append(share_post_id)
 
+
+
                     for share_id in share_post_list:
                         shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)                 
 
+                email_title = ''
+                email_body  = ''
+
+                # email = EmailMessage(email_title,email_body,to=share_user_list)  
+                # email.send()
                 msg = "수정하였습니다."                         
 
         retrunMsg = {"msg": msg, "form":form.errors}
