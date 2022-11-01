@@ -189,6 +189,12 @@
 
 	});
 
+	var myOffcanvas = document.getElementById('offcanvasRight')
+	myOffcanvas.addEventListener('hidden.bs.offcanvas', function () {
+		let tab = new bootstrap.Tab($('#myTab > .nav-tabs > li:first a'));
+		tab.show()
+	})
+
 	$(document).on("click", ".nav-tabs li a", function(){
 		let id = $(this).data('id');
 
