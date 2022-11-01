@@ -109,9 +109,6 @@ class shareDocDetail(LoginRequiredMixin, View):
             doc_post_id = my_dict.get('doc_post_id')
             doc_data = doc_post.objects.get(id=doc_post_id)
 
-            print(data)
-            print(doc_data)
-
             context = {"data": data,
                         "doc_data": doc_data}
 

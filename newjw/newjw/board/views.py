@@ -146,6 +146,9 @@ class postDetailView(LoginRequiredMixin, View):
         if id != '':
             try:
                 rs = post.objects.get(id=id)
+                rs.view_count = rs.view_count + 1
+                rs.save()
+                
                 fileRs = upload_file.objects.filter(upload=id)
                 context = {
                     'rs': rs,
