@@ -4,21 +4,21 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid p-0">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Calendar</h2>
-            </div>
-            <div class="card-body">
-                <div id="fullcalendar"></div>
-            </div>
+<div class="container-fluid p-0">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Calendar</h2>
+        </div>
+        <div class="card-body">
+            <div id="fullcalendar"></div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block inline_javascript %}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         var calendarEl = document.getElementById('fullcalendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             height: 'auto',
@@ -29,55 +29,81 @@
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            events: [{
-                    title: 'All Day Event',
-                    start: '2021-07-01'
-                },
-                {
-                    title: 'Long Event',
-                    start: '2021-07-07',
-                    end: '2021-07-10'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2021-07-09T16:00:00'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2021-07-16T16:00:00'
-                },
-                {
-                    title: 'Conference',
-                    start: '2021-07-11',
-                    end: '2021-07-13'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2021-07-12T10:30:00',
-                    end: '2021-07-12T12:30:00'
-                },
-                {
-                    title: 'Lunch',
-                    start: '2021-07-12T12:00:00'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2021-07-12T14:30:00'
-                },
-                {
-                    title: 'Birthday Party',
-                    start: '2021-07-13T07:00:00'
-                },
-                {
-                    title: 'Click for Google',
-                    url: 'http://google.com/',
-                    start: '2021-07-28'
-                }
-            ]
+            events: function (info, successCallback, failureCallback) {
+                $.ajax({
+                    url: "{% url 'scheduleChk' %}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        start: moment(info.startStr).format('YYYY-MM-DD'),
+                        end: moment(info.endStr).format('YYYY-MM-DD')
+                    },
+                    success: function (data) {
+                        var events = [];
+
+                        if (data != null) {
+                            $.each(data.doc_data, function (index, element) {
+                                console.log(element);
+                                var startdate = moment(element.fields.start_date).format('YYYY-MM-DD');
+                                var enddate = moment(element.fields.end_date).format('YYYY-MM-DD');
+                                var status = element.fields.status;
+                                if (status == "P") {
+                                    events.push({
+                                        title: "[배포완료] "+element.fields.title,
+                                        start: startdate,
+                                        end: enddate,
+                                        url: "{% url 'docReg' %}?id=" + element.pk,
+                                        color: "#84c2f2"
+                                    });
+                                } else if (status == "C") {
+                                    events.push({
+                                        title: "[취합완료] "+element.fields.title,
+                                        start: startdate,
+                                        end: enddate,
+                                        url: "{% url 'docReg' %}?id=" + element.pk,
+                                        color: "#e6f284"
+                                    });
+                                }
+                            });
+                            $.each(data.share_data, function (index, element) {
+                                var startdate = moment(element.fields.start_date).format('YYYY-MM-DD');
+                                var enddate = moment(element.fields.end_date).format('YYYY-MM-DD');
+                                var status = element.fields.status;
+
+                                if (status == "R") {
+                                    events.push({
+                                        title: "[작성필요] "+element.fields.title,
+                                        start: startdate,
+                                        end: enddate,
+                                        url: "{% url 'shareDocDetail' %}?id=" + element.pk,
+                                        color: "#f4aa8c"
+                                    });
+                                } else if (status == "T") {
+                                    events.push({
+                                        title: "[작성필요] "+element.fields.title,
+                                        start: startdate,
+                                        end: enddate,
+                                        url: "{% url 'shareDocDetail' %}?id=" + element.pk,
+                                        color: "#f4aa8c"
+                                    });
+                                } else if (status == "C") {
+                                    events.push({
+                                        title: "[제출완료] "+element.fields.title,
+                                        start: startdate,
+                                        end: enddate,
+                                        url: "{% url 'shareDocDetail' %}?id=" + element.pk,
+                                        color: "#e6f284"
+                                    });
+                                }
+
+                            });
+                        }                           
+                        successCallback(events);
+                    }
+                });
+            }
         });
-        setTimeout(function() {
+        setTimeout(function () {
             calendar.render();
         }, 250)
     });
