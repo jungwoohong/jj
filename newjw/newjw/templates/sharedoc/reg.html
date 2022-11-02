@@ -298,18 +298,11 @@
   });
 
   button.addEventListener('click', () => {
-    exportPlugin.downloadFile('csv', {
-      bom: false,
-      columnDelimiter: ',',
-      columnHeaders: false,
-      exportHiddenColumns: true,
-      exportHiddenRows: true,
-      fileExtension: 'csv',
-      filename: 'Handsontable-CSV-file_[YYYY]-[MM]-[DD]',
-      mimeType: 'text/csv',
-      rowDelimiter: '\r\n',
-      rowHeaders: true
-    });
+    let url  = "{% url 'excelExport' %}";
+    let csrf = '{{csrf_token}}';
+    let data = excelDataMake();
+    
+    excelExport(url,csrf,data)
   });
 
   $('.plusBtn').click(function () {

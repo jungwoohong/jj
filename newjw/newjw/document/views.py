@@ -1,12 +1,15 @@
 from ast import Try
+from io import BytesIO
 import json
 from django.views import View
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
+from matplotlib.pyplot import title
 import pandas as pd
 from django.utils import timezone
 from django.db.models import Subquery
+from tomlkit import date
 from .forms import postForm, dataCollectionForm, excelJsonDataForm
 from .models import post, data_collection, excel_json_data
 from datetime import datetime
@@ -353,3 +356,30 @@ class shareJsonData(LoginRequiredMixin, View):
 
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)
+
+class excelExport(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        data        = request.POST.get('data')
+        jsonLoad    = json.loads(data)
+        output      = BytesIO()
+        writer      = pd.ExcelWriter(output, engine='xlsxwriter')
+        userName    = request.user.username
+        date        = datetime.today().strftime("%Y%m%d%H%M%S")
+        fileName    = userName+date
+
+        for idx,val in enumerate(jsonLoad):
+            excelTitle  = list(val.keys())
+            dataObj     = list(val.values())
+            sheetName   = excelTitle[0]+str(idx);
+            df = pd.DataFrame(dataObj[0])
+            df.to_excel(writer, sheet_name=sheetName)
+
+        writer.save()
+        output.seek(0)
+
+        response = StreamingHttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename='+fileName+'.xlsx'
+        return response
+      

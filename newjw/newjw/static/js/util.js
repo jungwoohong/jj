@@ -209,3 +209,13 @@ function statusFormat(str){
             }
   return obj[str];
 }
+
+function excelExport(url,csrf,data){
+  let frmObj = $('<form>', {'id': 'fm_formIO', 'action': url, 'method':'POST', 'target':'_blank'}); 
+  let inpObj1 = $('<input>', {'name':'data', 'value':data}); 
+  let inpObj2 = $('<input>', {'name':'csrfmiddlewaretoken', 'value':csrf}); 
+  frmObj.append(inpObj1); 
+  frmObj.append(inpObj2);
+  $(document.body).append(frmObj);
+  $('#fm_formIO').submit(); 
+}

@@ -17,5 +17,5 @@ urlpatterns = [
     path('shareUserList/', shareUserList.as_view(),name="shareUserList" ),
     path('shareUserListData/', shareUserListData.as_view(),name="shareUserListData" ),
     path('shareJsonData/', shareJsonData.as_view(),name="shareJsonData" ),
-    
+    path('excelExport/', excelExport.as_view(),name="excelExport" ),
 ]
