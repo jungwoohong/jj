@@ -72,7 +72,16 @@
       dataType : 'json',        
       data : {id:id},
       success : function(data) {
-        hot.loadData(data.data);
+
+        let json_data = JSON.parse(data.data[0].fields.json_data.replace(/'/gi, "\""));  
+        let style_data = data.data[0].fields.style_data;
+        if(style_data !='') style_data = JSON.parse(style_data.replace(/'/gi, "\"")); 
+
+        hot.loadData(json_data);
+        $.each(style_data,function(idx,item){
+          hot.setCellMetaObject(item.row, item.col, item);
+        });
+        hot.render();
       }
     }); 
   }
@@ -85,17 +94,22 @@ save.addEventListener('click', () => {
       data : {
         id:id,
         title:$('.title').val(),
-        data: JSON.stringify(hot.getData())},
+        data: JSON.stringify(hot.getData()),
+        style_data: JSON.stringify(hot.getCellsMeta())
+      },
       success : function(data) {
         alert(data.msg)
-
+        location.href="{% url 'frameLoadList' %}";
       }
     });          
   });
 
-  navFun('template',0,0);
-  
-  if(id) loadExcelData('{{ data.id }}');
+  if (id) {
+    navFun('template',0,1);
+    loadExcelData('{{ data.id }}');
+  } else {
+    navFun('template',0,0);
+  }
 
   if(list){
     list.addEventListener('click', () => {

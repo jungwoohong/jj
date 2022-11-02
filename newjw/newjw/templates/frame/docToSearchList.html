@@ -89,8 +89,16 @@ function loadExcelData(id){
       dataType : 'json',        
       data : {id:id},
       success : function(data) {
-        console.log(data)
-        hot.loadData(data.data);
+        
+        let json_data = JSON.parse(data.data[0].fields.json_data.replace(/'/gi, "\""));  
+        let style_data = data.data[0].fields.style_data;
+        if(style_data !='') style_data = JSON.parse(style_data.replace(/'/gi, "\"")); 
+
+        hot.loadData(json_data);
+        $.each(style_data,function(idx,item){
+          hot.setCellMetaObject(item.row, item.col, item);
+        });
+        hot.render();
       }
     }); 
 }

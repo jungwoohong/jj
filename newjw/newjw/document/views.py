@@ -97,7 +97,6 @@ class docSave(LoginRequiredMixin, View):
                 record = form.save()
                 jsonLoad = json.loads(json_data)
 
-                
                 # sharedoc post에 값 저장
                 for user in share_user_list:
                     share_arr = {"doc_post" : record.id, "email": user, "title": title,"start_date":start_date,"end_date": end_date}
@@ -106,18 +105,18 @@ class docSave(LoginRequiredMixin, View):
             
                 # 데이터 셀 저장
                 for idx,val in enumerate(jsonLoad):
-                    excelTitle     = ''.join(list(val.keys()))
+                    excelTitle     = list(val.keys())
                     excelJsonData   = list(val.values())
 
-                    arrJsonLoad = {"post": record.id, "title": excelTitle,"json_data":excelJsonData}
+                    arrJsonLoad = {"post": record.id, "title": excelTitle[0],"json_data":excelJsonData[0],"style_data":excelJsonData[1]}
                     excelForm = excelJsonDataForm(arrJsonLoad) 
                     if excelForm.is_valid():
                         excelForm.save()
 
-                    dataCellSave(record.id,excelJsonData)
+                    dataCellSave(record.id,excelJsonData[0])
 
                     for share_id in share_post_list:
-                        shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
+                        shareArrJsonLoad = {"post": share_id, "title": excelTitle[0], "json_data":excelJsonData[0],"style_data":excelJsonData[1]}
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)
                     
@@ -145,10 +144,10 @@ class docSave(LoginRequiredMixin, View):
                 excel_json_data.objects.filter(post=id).delete()
                 
                 for idx,val in enumerate(jsonLoad):
-                    excelTitle     = ''.join(list(val.keys()))
+                    excelTitle     = list(val.keys())
                     excelJsonData   = list(val.values())
 
-                    arrJsonLoad = {"post": id, "title": excelTitle,"json_data":excelJsonData}
+                    arrJsonLoad = {"post": id, "title": excelTitle[0],"json_data":excelJsonData[0],"style_data":excelJsonData[1]}
                     excelForm = excelJsonDataForm(arrJsonLoad) 
                     if excelForm.is_valid():
                         excelForm.save()
@@ -164,7 +163,7 @@ class docSave(LoginRequiredMixin, View):
 
 
                     for share_id in share_post_list:
-                        shareArrJsonLoad = {"post": share_id, "title": excelTitle, "json_data":excelJsonData}
+                        shareArrJsonLoad = {"post": share_id, "title": excelTitle[0], "json_data":excelJsonData[0],"style_data":excelJsonData[1]}
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)                 
 

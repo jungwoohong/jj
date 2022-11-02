@@ -12,14 +12,14 @@ def sharePostSave(*args, **kwargs):
         
     return 0
 
-@background(schedule=1)
+# @background(schedule=1)
 def shareExcelJsonDataSave(*args, **kwargs):
     shareArrJsonLoad = args[0]
     shareExcelform = shareExcelJsonDataForm(shareArrJsonLoad)
 
     if shareExcelform.is_valid():
         shareExcelform.save()
-
+        
 @background(schedule=1)
 def shareDataCellSave(*args, **kwargs):
 

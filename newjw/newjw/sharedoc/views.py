@@ -148,10 +148,10 @@ class shareDocSave(LoginRequiredMixin, View):
             data_collection.objects.filter(post=id).delete()
 
             for idx, val in enumerate(jsonLoad):
-                excelTitle     = ''.join(list(val.keys()))
+                excelTitle     = list(val.keys())
                 excelJsonData   = list(val.values())
 
-                shareArrJsonLoad = {"post": id, "title": excelTitle,"json_data":excelJsonData}
+                shareArrJsonLoad = {"post": id, "title": excelTitle[0],"json_data":excelJsonData[0],"style_data":excelJsonData[1]}
                 
                 shareExcelJsonDataSave(shareArrJsonLoad)
                 shareDataCellSave(id, excelJsonData)

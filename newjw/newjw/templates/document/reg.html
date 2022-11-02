@@ -62,7 +62,7 @@
                       <i class="align-middle me-2 fas fa-fw fa-address-card"></i>
                       공유자목록보기
                     </a>
-                    <a id ="shareUserListBtn" class="dropdown-item io-inputShow displayHide" href="#">
+                    <a id ="shareUserListBtn" class="dropdown-item readView displayHide" href="#">
                       <i class="align-middle me-2 fas fa-fw fa-user-check"></i>
                       공유문서 확인
                     </a>                    
@@ -296,6 +296,7 @@ const button = document.querySelector('#export-file');
           
           if (!data.form.length) {
             alert(data.msg);
+            location.href="{% url 'docLoadList' %}";
           } else {
             formError(data.form);
           } 
@@ -463,6 +464,7 @@ if (id) {
   //수정일때
   updateCheck = 2;
   ioAction();
+  $('.readView').show();
   navFun('documentManage',1,1);
 
 } else {

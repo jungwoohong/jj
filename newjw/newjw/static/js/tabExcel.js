@@ -1,5 +1,13 @@
 popupListMemory = Array();
 
+function styleJsonAdd(thisObj,jsonObj){
+
+  $.each(jsonObj,function(idx,item){
+            
+    thisObj.setCellMetaObject(item.row, item.col, item);
+
+  });
+}
 function hotReadOnlyFun(){
   hot.updateSettings({
     readOnly: true, 
@@ -31,6 +39,7 @@ function hotWrite(){
     manualRowResize: true, 
     comments: true 
   });
+  update_setting(hot);
 
   for (var key in hotObj) {
     hotObj[key].updateSettings({
@@ -41,10 +50,11 @@ function hotWrite(){
       manualRowResize: true, 
       comments: true 
     });
+    update_setting(hotObj[key]);
   }
 } 
 
-function tabOpen(obj,objTitle,type,excelJson,loadId){
+function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
 
     $.each(obj,function(idx,item) {
       if ($('#tab-'+item).length >=1) return;
@@ -82,13 +92,16 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
                     let title     = [item.fields.title];
                     let loadId    = 'add';
                     let excelJson = item.fields.json_data.replace(/None/gi, "null");
-                    
+                    let styleJson = item.fields.style_data;
+          
                     excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
+                    if(excelJson.length <= 1 ) excelJson = excelJson[0];
+                    styleJson     = JSON.parse(styleJson.replace(/'/gi, "\"")); 
 
                       let len = $('.nav-tabs li').length;
                       let name = 'New'+len;
                       let obj = [name];
-                      tabOpen(obj,title,'local',excelJson[0],loadId);
+                      tabOpen(obj,title,'local',excelJson,loadId,styleJson);
 
                 });               
             }
@@ -96,6 +109,7 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
       }, 1000)
       } else if (type == 'local'){
         hotObj[item].loadData(excelJson);
+        styleJsonAdd(hotObj[item],styleJson);
       }
    });
   }
@@ -108,21 +122,28 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
       data : {id:id},
       success : function(data) {
         $.each(data.data,function(idx,item){
+          
           let title     = [item.fields.title];
           let loadId    = [item.pk];
           let excelJson = item.fields.json_data.replace(/None/gi, "null");
+          let styleJson = item.fields.style_data;
           
           excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
+          if (styleJson != '' && styleJson != null) styleJson = JSON.parse(styleJson.replace(/'/gi, "\""));
+          
+          if(excelJson.length <= 1 ) excelJson = excelJson[0];
 
           if( idx == 0 ) {
             $('.nav-item > .active > span').text(title);
-            hot.loadData(excelJson[0]);
+            hot.loadData(excelJson);
+            styleJsonAdd(hot,styleJson);
+            hot.render();
 
           } else {
             let len = $('.nav-tabs li').length;
             let name = 'New'+len;
             let obj = [name];
-            tabOpen(obj,title,'local',excelJson[0],loadId);
+            tabOpen(obj,title,'local',excelJson,loadId,styleJson);
 
           }
           
@@ -159,7 +180,12 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
             dataType : 'json',        
             data : {id:item},
             success : function(data) {
-              hotObj[item].loadData(data.data);
+              let json_data = JSON.parse(data.data[0].fields.json_data.replace(/'/gi, "\""));  
+              let style_data = data.data[0].fields.style_data;
+              if(style_data !='') style_data = JSON.parse(style_data.replace(/'/gi, "\"")); 
+      
+              hotObj[item].loadData(json_data);
+              styleJsonAdd(hotObj[item],style_data);
             }
           })
         }, 1000)
@@ -188,6 +214,7 @@ function tabOpen(obj,objTitle,type,excelJson,loadId){
       }
 
       rs[name] = hotData.getData();
+      rs['style'] = hotData.getCellsMeta();
 
       arr.push(rs);
     });

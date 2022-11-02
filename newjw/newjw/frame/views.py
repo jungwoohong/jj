@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.http import Http404, HttpResponse, JsonResponse
 from sqlalchemy import null
 from core.views import DatatablesServerSideView
+from django.core import serializers
 
 import json
 from .models import post
@@ -31,20 +32,17 @@ class frameViewReg(LoginRequiredMixin, View):
 
 class frameViewSave(LoginRequiredMixin, View):
 
-    # @method_decorator(csrf_exempt)
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super(frameViewSave, self).dispatch(request, *args, **kwargs)
-
     def post(self, request, *args, **kwargs):
 
         msg = "실패하였습니다."
 
         id          = request.POST.get('id')
-        json_data   = request.POST.get('data')
         title       = request.POST.get('title')
+        json_data   = request.POST.get('data')
+        style_data  = request.POST.get('style_data')
         loginId     = request.user.username            
                     
-        arr = {"email": loginId,"json_data": json_data, "title": title }            
+        arr = {"email": loginId,"json_data": json_data, "title": title, "style_data":style_data }            
         form = postForm(arr)
 
         if form.is_valid():
@@ -55,6 +53,7 @@ class frameViewSave(LoginRequiredMixin, View):
                 updateData = post.objects.get(id=id)
                 updateData.json_data    = json_data
                 updateData.title        = title
+                updateData.style_data   = style_data
                 updateData.save()
                 msg = "수정하였습니다."                         
 
@@ -87,11 +86,10 @@ class frameJsonData(LoginRequiredMixin, View):
         
         if request.method == 'POST':
             id          = request.POST.get('id')
-            rs          = get_object_or_404(post, id=id)
-            json_data   = rs.json_data
-            rep_data    = json_data.replace("'", "\"")
-            data        = json.loads(rep_data)
-            
+            rss         = post.objects.filter(id=id)
+            data        = serializers.serialize("json", rss)
+            data        = json.loads(data)  
+
         retrunMsg = {"data": data}
         return JsonResponse(retrunMsg)    
 

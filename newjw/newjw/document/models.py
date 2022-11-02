@@ -33,6 +33,7 @@ class excel_json_data(models.Model):
     post                = models.ForeignKey(post, on_delete=models.CASCADE)
     title               = models.CharField(max_length=200,null=True,default='empty')
     json_data           = models.TextField(null=True,default='empty')
+    style_data          = models.TextField(null=True,default='empty')
 
     class Meta : 
          db_table = 'doc_excel_json_data'         
