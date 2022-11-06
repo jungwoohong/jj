@@ -69,15 +69,17 @@
 
 {% block inline_javascript %}
 <script>
-const list = document.querySelector('#list');
-const update = document.querySelector('#update');
+  const list = document.querySelector('#list');
 
-list.addEventListener('click',() => {
-  location.href = "{% url 'indexPage' %}?page={{request.GET.page}}&pageLen={{request.GET.pageLen}}"
-})
+  list.addEventListener('click',() => {
+    location.href = "{% url 'indexPage' %}?page={{request.GET.page}}&pageLen={{request.GET.pageLen}}"
+  });
 
-update.addEventListener('click', () => {
-  location.href = "{% url 'postReg' %}?id={{rs.id}}"
-})
+  $(document).on('click','#update',function(){
+    location.href = "{% url 'postReg' %}?id={{rs.id}}"
+  })
+
+  navFun('bbs',3,0);
+
 </script>
 {% endblock inline_javascript %}

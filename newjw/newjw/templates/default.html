@@ -11,7 +11,7 @@
 
     <title>
         {% block title %}
-        J & J Project
+        Share Docs
         {% endblock title %}
     </title>
 
@@ -41,7 +41,7 @@
               c0.2,0.5,0,1.1-0.5,1.3l-9,4C10.3,20,10.1,20,10,20z"/>
           </svg>
     
-          <span class="align-middle me-3">Work Docs</span>
+          <span class="align-middle me-3">Share Docs</span>
         </a>
 
 				<ul class="sidebar-nav">
@@ -65,7 +65,18 @@
 							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'docLoadList' %}">조회</a></li>
 						</ul>
 					</li>
+			
+					<li class="sidebar-item firstLi">
+						<a data-bs-target="#share" data-bs-toggle="collapse" class="sidebar-link">
+							<i class="align-middle" data-feather="users"></i> 
+							<span class="align-middle">공유</span>
+           				 </a>
+						<ul id="share" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'myWriteList' %}">대상</a></li>
+						</ul>
+					</li>	
 					
+										
 					<li class="sidebar-item firstLi">
 						<a data-bs-target="#bbs" data-bs-toggle="collapse" class="sidebar-link">
 							<i class="align-middle" data-feather="list"></i> 
@@ -75,17 +86,7 @@
 							<li class="sidebar-item"><a class="sidebar-link" href="/board/">공지사항</a></li>
 							<!-- <li class="sidebar-item"><a class="sidebar-link" href="#">자료실</a></li> -->
 						</ul>
-					</li>		
-					
-					<li class="sidebar-item firstLi">
-						<a data-bs-target="#share" data-bs-toggle="collapse" class="sidebar-link">
-							<i class="align-middle" data-feather="users"></i> 
-							<span class="align-middle">공유</span>
-           				 </a>
-						<ul id="share" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-							<li class="sidebar-item"><a class="sidebar-link" href="{% url 'myWriteList' %}">대상</a></li>
-						</ul>
-					</li>						
+					</li>	
 				</ul>
 			</div>
 		</nav>
@@ -132,7 +133,7 @@
 						</div>
 						<div class="col-6 text-end">
 							<p class="mb-0">
-								&copy; 2022 - J & J</a>
+								&copy; 2022 - Share Docs</a>
 							</p>
 						</div>
 					</div>
