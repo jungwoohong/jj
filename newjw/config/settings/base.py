@@ -183,19 +183,6 @@ MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
-# AWS S3
-# ------------------------------------------------------------------------------
-# AWS_ACCESS_KEY_ID = 'AKIAWAV7LNL4GCFE5Q6A'
-# AWS_SECRET_ACCESS_KEY = '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'
-# AWS_REGION = 'ap-northeast-2'
-# AWS_STORAGE_BUCKET_NAME = 'sharedoc-awsbucket'
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_REGION)
-# AWS_DEFAULT_ACL = 'public-read'
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.StaticRootS3Boto3Storage'
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.MediaRootS3Boto3Storage'
-# DATA_UPLOAD_MAX_MEMORY_SIZE = 1024000000 # value in bytes 1GB here
-# FILE_UPLOAD_MAX_MEMORY_SIZE = 1024000000
-
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
