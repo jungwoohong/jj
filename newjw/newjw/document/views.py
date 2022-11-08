@@ -5,7 +5,6 @@ from django.views import View
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, StreamingHttpResponse
-from matplotlib.pyplot import title
 import pandas as pd
 from django.utils import timezone
 from django.db.models import Subquery
