@@ -121,10 +121,10 @@ class docSave(LoginRequiredMixin, View):
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)
                     
-                email_title = '취합 문서 회신 요청, 회신기간('+start_date+'~'+end_date+')'
+                email_title = '취합 문서 회신 요청, 회신기간('+request.POST.get('start_date')+'~'+request.POST.get('end_date')+')'
                 email_body  = title+' 문서에 대한 회신 요청드립니다.'
 
-                email = EmailMessage(email_title,email_body,to=share_user_list)  
+                email = EmailMessage(email_title,email_body,to=['eunju7142@gmail.com'])  
                 email.send()
                 msg = "저장하였습니다."    
 
@@ -168,10 +168,10 @@ class docSave(LoginRequiredMixin, View):
                         shareExcelJsonDataSave(shareArrJsonLoad)
                         shareDataCellSave(share_id,excelJsonData)                 
 
-                email_title = '취합 문서 회신 요청, 회신기간('+start_date+'~'+end_date+')'
+                email_title = '취합 문서 회신 요청, 회신기간('+request.POST.get('start_date')+'~'+request.POST.get('end_date')+')'
                 email_body  = title+' 문서에 대한 회신 요청드립니다.'
 
-                email = EmailMessage(email_title,email_body,to=share_user_list)  
+                email = EmailMessage(email_title,email_body,to=['eunju7142@gmail.com'])  
                 email.send()
                 msg = "수정하였습니다."                         
 
