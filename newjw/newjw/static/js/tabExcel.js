@@ -194,7 +194,9 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
 
   function excelDataMake(){
 
+    idxs = 0;
     let arr = new Array();
+    
 
     let sheet = $('#myTab .nav-tabs .nav-item');
     let data  = $('.excelGridClass');
@@ -210,12 +212,18 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
       if(idx == 0 ) {
         if ( $('#excelGrid').length == 0) {
           hotData = hotObj[Object.keys(hotObj)[idx]];
+          idxs = 1;
         } else {
           hotData = hot;
         }
         
       } else {
-        hotData = hotObj[Object.keys(hotObj)[idx-1]];
+        if(idxs == 1) {
+          hotData = hotObj[Object.keys(hotObj)[idx]];
+        } else {
+          hotData = hotObj[Object.keys(hotObj)[idx-1]];
+        }
+        
       }
 
       rs[name] = hotData.getData();
