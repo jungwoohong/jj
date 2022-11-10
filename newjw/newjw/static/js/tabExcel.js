@@ -186,6 +186,13 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
       
               hotObj[item].loadData(json_data);
               styleJsonAdd(hotObj[item],style_data);
+
+              setTimeout(function(){
+                let tabEl = document.querySelector('#myTab li:last-child a')
+                let tab = new bootstrap.Tab(tabEl)
+                tab.show();
+                tabEl.click();
+                  }, 100) 
             }
           })
         }, 1000)
