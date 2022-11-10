@@ -207,8 +207,13 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
       let hotData = "";
       let rs = new Object();
 
-      if(idx == 0) {
-        hotData = hot;
+      if(idx == 0 ) {
+        if ( $('#excelGrid').length == 0) {
+          hotData = hotObj[Object.keys(hotObj)[idx]];
+        } else {
+          hotData = hot;
+        }
+        
       } else {
         hotData = hotObj[Object.keys(hotObj)[idx-1]];
       }
