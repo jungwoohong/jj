@@ -47,5 +47,6 @@ class group_test_table(models.Model):
 
 class user_test_table(models.Model):
     email               = models.CharField(max_length=50)   
-    dept_code            = models.ForeignKey('group_test_table', on_delete=models.SET_NULL, null=True , db_column='dept_code')
+    dept_code           = models.ForeignKey('group_test_table', on_delete=models.SET_NULL, null=True , db_column='dept_code')
+    name                = models.CharField(max_length=255,blank=True, null=True) 
 
