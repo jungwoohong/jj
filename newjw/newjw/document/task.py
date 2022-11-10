@@ -13,7 +13,7 @@ def dataCellSave(*args, **kwargs):
     cell_row = 0
     cell_line = 0
 
-    for forData in listexcelJsonData[0] :
+    for forData in listexcelJsonData :
         cell_row = cell_row+1
         cell_line = 0
         
