@@ -372,7 +372,7 @@ class excelExport(LoginRequiredMixin, View):
             dataObj     = list(val.values())
             sheetName   = excelTitle[0]+str(idx);
             df = pd.DataFrame(dataObj[0])
-            df.to_excel(writer, sheet_name=sheetName)
+            df.to_excel(writer, sheet_name=sheetName, index=False, header=False)
 
         writer.save()
         output.seek(0)
