@@ -128,7 +128,9 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
           let loadId    = [item.pk];
           let excelJson = item.fields.json_data.replace(/None/gi, "null");
           let styleJson = item.fields.style_data;
+          
           styleJson = styleJson.replace(/False/ig,"'False'").replace(/True/ig,"'True'");
+          console.log(styleJson)
 
           excelJson     = JSON.parse(excelJson.replace(/'/gi, "\""));
           if (styleJson != '' && styleJson != null) styleJson = JSON.parse(styleJson.replace(/'/gi, "\""));
@@ -184,7 +186,7 @@ function tabOpen(obj,objTitle,type,excelJson,loadId,styleJson){
             success : function(data) {
               let json_data = JSON.parse(data.data[0].fields.json_data.replace(/'/gi, "\""));  
               let style_data = data.data[0].fields.style_data;
-              style_data = style_data.replace(/False/ig,"'False'").replace(/True/ig,"'True'");
+              //style_data = style_data.replace(/False/ig,"'False'").replace(/True/ig,"'True'");
               if(style_data !='') style_data = JSON.parse(style_data.replace(/'/gi, "\"")); 
       
               hotObj[item].loadData(json_data);

@@ -92,7 +92,6 @@ function loadExcelData(id){
         
         let json_data = JSON.parse(data.data[0].fields.json_data.replace(/'/gi, "\""));  
         let style_data = data.data[0].fields.style_data;
-		style_data = style_data.replace(/False/ig,"'False'").replace(/True/ig,"'True'");
         if(style_data !='') style_data = JSON.parse(style_data.replace(/'/gi, "\"")); 
 
         hot.loadData(json_data);
